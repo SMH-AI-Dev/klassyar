@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-import ImagePicker from "../components/shared/ImagePicker";
+import ImagePicker from "@/components/shared/ImagePicker";
 
 export default function CreateHotspot() {
   const navigate = useNavigate();

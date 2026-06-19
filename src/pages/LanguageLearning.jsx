@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, BookOpen, Mic, PenTool, MessageSquare, Headphones } from "lucide-react";
+import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
 
 const languageFeatures = [
@@ -95,8 +96,8 @@ export default function LanguageLearning() {
                 size="lg"
                 variant="outline"
                 className="px-8 py-4 text-lg rounded-2xl border-2 border-blue-300 hover:bg-blue-50"
-                onClick={() => window.toastAdd?.({ message: "آزمون سطح به زودی اضافه خواهد شد!", type: "info" })}
-                onKeyDown={(e) => e.key === 'Enter' && window.toastAdd?.({ message: "آزمون سطح به زودی اضافه خواهد شد!", type: "info" })}
+                onClick={() => toast.info("آزمون سطح به زودی اضافه خواهد شد!")}
+                onKeyDown={(e) => e.key === 'Enter' && toast.info("آزمون سطح به زودی اضافه خواهد شد!")}
               >
                 آزمون سطح
               </Button>
@@ -142,8 +143,8 @@ export default function LanguageLearning() {
                     <Button 
                       className="mt-4 w-full"
                       variant="outline"
-                      onClick={() => window.toastAdd?.({ message: `یادگیری ${feature.title} به زودی اضافه خواهد شد!`, type: "info" })}
-                      onKeyDown={(e) => e.key === 'Enter' && window.toastAdd?.({ message: `یادگیری ${feature.title} به زودی اضافه خواهد شد!`, type: "info" })}
+                      onClick={() => toast.info(`یادگیری ${feature.title} به زودی اضافه خواهد شد!`)}
+                      onKeyDown={(e) => e.key === 'Enter' && toast.info(`یادگیری ${feature.title} به زودی اضافه خواهد شد!`)}
                     >
                       شروع کنید
                     </Button>

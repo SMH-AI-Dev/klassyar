@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { base44 } from "@/api/base44Client";
@@ -9,8 +9,8 @@ import { ArrowRight, RotateCw } from "lucide-react";
 
 export default function PlaySpinner() {
   const navigate = useNavigate();
-  const urlParams = new URLSearchParams(window.location.search);
-  const activityId = urlParams.get('id');
+  const [searchParams] = useSearchParams();
+  const activityId = searchParams.get('id');
   
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, BookOpen, Mic, PenTool, MessageSquare, Headphones } from "lucide-react";
+import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
 
 const learningOptions = [
@@ -200,35 +201,35 @@ export default function LearningOptions() {
                 <Button
                   className="w-full"
                   variant="outline"
-                  onClick={() => window.toastAdd?.({ message: 'برای ساخت مورد جدید از صفحه گزینه مورد استفاده کنید.', type: 'info' })}
+                  onClick={() => toast.info('برای ساخت مورد جدید از صفحه گزینه مورد استفاده کنید.')}
                 >
                   ایجاد مورد جدید
                 </Button>
                 <Button
                   className="w-full"
                   variant="outline"
-                  onClick={() => window.toastAdd?.({ message: 'فایل صوتی خود را برای معلم ارسال کنید.', type: 'info' })}
+                  onClick={() => toast.info('فایل صوتی خود را برای معلم ارسال کنید.')}
                 >
                   بارگذاری صدا
                 </Button>
                 <Button
                   className="w-full"
                   variant="outline"
-                  onClick={() => window.toastAdd?.({ message: 'تصویر جدید برای تمرین بارگذاری شود.', type: 'info' })}
+                  onClick={() => toast.info('تصویر جدید برای تمرین بارگذاری شود.')}
                 >
                   بارگذاری تصویر
                 </Button>
                 <Button
                   className="w-full"
                   variant="outline"
-                  onClick={() => window.toastAdd?.({ message: 'فایل PDF درس را ارسال کنید.', type: 'info' })}
+                  onClick={() => toast.info('فایل PDF درس را ارسال کنید.')}
                 >
                   بارگذاری PDF
                 </Button>
                 <Button
                   className="w-full"
                   variant="outline"
-                  onClick={() => window.toastAdd?.({ message: 'متن توضیحات یا تمرین را وارد کنید.', type: 'info' })}
+                  onClick={() => toast.info('متن توضیحات یا تمرین را وارد کنید.')}
                 >
                   بارگذاری متن
                 </Button>

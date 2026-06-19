@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Users, Copy, Check, UserPlus, Trash2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "@/lib/sonner";
 
 export default function MyClasses() {
   const [step, setStep] = useState("main");
@@ -55,10 +56,10 @@ export default function MyClasses() {
       setTeacherName("");
       setStudentData({ firstName: "", lastName: "", phone: "", email: "" });
       setStep("main");
-      window.toastAdd("کلاس با موفقیت ایجاد شد", "success");
+      toast.success("کلاس با موفقیت ایجاد شد");
     },
     onError: (error) => {
-      window.toastAdd("خطا در ایجاد کلاس", "error");
+      toast.error("خطا در ایجاد کلاس");
     }
   });
 
@@ -85,10 +86,10 @@ export default function MyClasses() {
       queryClient.invalidateQueries({ queryKey: ['myClasses'] });
       setShowAddStudent(null);
       setStudentData({ firstName: "", lastName: "", phone: "", email: "" });
-      window.toastAdd("دانش‌آموز اضافه شد", "success");
+      toast.success("دانش‌آموز اضافه شد");
     },
     onError: (error) => {
-      window.toastAdd(error.message, "error");
+      toast.error(error.message);
     }
   });
 
@@ -100,7 +101,7 @@ export default function MyClasses() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myClasses'] });
-      window.toastAdd("دانش‌آموز حذف شد", "success");
+      toast.success("دانش‌آموز حذف شد");
     },
   });
 
@@ -110,7 +111,7 @@ export default function MyClasses() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myClasses'] });
-      window.toastAdd("کلاس حذف شد", "success");
+      toast.success("کلاس حذف شد");
     },
   });
 
@@ -137,7 +138,7 @@ export default function MyClasses() {
 
   const handleAddStudent = (classId) => {
     if (!studentData.firstName || !studentData.lastName || (!studentData.phone && !studentData.email)) {
-      window.toastAdd?.({ message: 'نام، نام خانوادگی و حداقل شماره یا ایمیل دانش‌آموز لازم است.', type: 'warning' });
+      toast.warning('نام، نام خانوادگی و حداقل شماره یا ایمیل دانش‌آموز لازم است.');
       return;
     }
 

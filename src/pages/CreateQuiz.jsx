@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "@/lib/sonner";
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function CreateQuiz() {
     },
     onError: (error) => {
       console.error("Error creating activity:", error);
-      window.toastAdd("خطا در ایجاد فعالیت", "error");
+      toast.error("خطا در ایجاد فعالیت");
     },
   });
 
@@ -100,7 +101,7 @@ export default function CreateQuiz() {
 
   const handleSave = () => {
     if (!activity.title || activity.content.questions.length === 0) {
-      window.toastAdd("لطفاً عنوان و حداقل یک سوال اضافه کنید", "error");
+      toast.error("لطفاً عنوان و حداقل یک سوال اضافه کنید");
       return;
     }
     createMutation.mutate(activity);

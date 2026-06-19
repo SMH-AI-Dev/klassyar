@@ -114,7 +114,7 @@ export default function TemplateSelector({ onClose }) {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Link to={`/Create${template.type.charAt(0).toUpperCase() + template.type.slice(1)}`}>
+                  <Link to={`/Create?type=${template.type}`}>
                     <Card className="clay-element bg-white border-0 cursor-pointer h-full hover:shadow-xl transition-all">
                       <CardContent className="p-3 md:p-4">
                         <div className={`w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br ${template.color} rounded-2xl clay-element flex items-center justify-center text-2xl md:text-3xl mb-2 md:mb-3 mx-auto`}>

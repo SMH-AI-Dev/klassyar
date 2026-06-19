@@ -11,8 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight, Image as ImageIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
-import ImagePicker from "../components/shared/ImagePicker";
-
 export default function CreateImage_quiz() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -134,8 +132,9 @@ export default function CreateImage_quiz() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label>تصویر سوال</Label>
-                    <ImagePicker currentImage={q.image} onSelect={(url) => updateQuestion(qIndex, 'image', url)} />
+                    <Label>تصویر سوال (URL)</Label>
+                    <Input value={q.image || ''} onChange={(e) => updateQuestion(qIndex, 'image', e.target.value)}
+                      placeholder="آدرس تصویر را وارد کنید" className="rounded-xl clay-element" />
                   </div>
                   <div>
                     <Label>سوال</Label>

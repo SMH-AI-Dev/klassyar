@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
-import ImagePicker from "../components/shared/ImagePicker";
+import ImagePicker from "@/components/shared/ImagePicker";
 
 export default function CreateLabelled_diagram() {
   const navigate = useNavigate();

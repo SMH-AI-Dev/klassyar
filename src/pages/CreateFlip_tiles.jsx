@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-import IconPicker from "../components/shared/IconPicker";
+import IconPicker from "@/components/shared/IconPicker";
 
 export default function CreateFlip_tiles() {
   const navigate = useNavigate();

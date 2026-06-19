@@ -9,4 +9,7 @@ export const toast = {
   info: (message) => {
     if (window.toastAdd) window.toastAdd(message, 'info');
   },
+  warning: (message) => {
+    if (window.toastAdd) window.toastAdd(message, 'warning');
+  },
 };

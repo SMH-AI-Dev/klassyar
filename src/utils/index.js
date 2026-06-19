@@ -4,10 +4,6 @@ export const createPageUrl = (pageName) => {
   return `/${pageName}`;
 };
 
-export const cn = (...inputs) => {
-  return inputs.filter(Boolean).join(' ');
-};
-
 export const formatDate = (date) => {
   try {
     return new Date(date).toLocaleDateString('fa-IR');

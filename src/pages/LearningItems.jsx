@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, BookOpen, Mic, PenTool, MessageSquare, Headphones, Play, CheckCircle } from "lucide-react";
+import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
 
 const learningData = {
@@ -218,12 +219,12 @@ export default function LearningItems() {
   const handleFileUpload = (type, file) => {
     if (!file) return;
     setUploadedFiles((prev) => ({ ...prev, [type]: file }));
-    window.toastAdd?.({ message: `${file.name} بارگذاری شد.`, type: 'success' });
+    toast.success(`${file.name} بارگذاری شد.`);
   };
 
   const handleAddCustomItem = () => {
     if (!customTitle && !customText && !uploadedFiles.sound && !uploadedFiles.image && !uploadedFiles.pdf) {
-      window.toastAdd?.({ message: 'لطفاً عنوان یا متن وارد کنید یا فایلی بارگذاری کنید.', type: 'warning' });
+      toast.warning('لطفاً عنوان یا متن وارد کنید یا فایلی بارگذاری کنید.');
       return;
     }
 
@@ -244,7 +245,7 @@ export default function LearningItems() {
     setCustomDescription("");
     setCustomText("");
     setUploadedFiles({ sound: null, image: null, pdf: null });
-    window.toastAdd?.({ message: 'مورد سفارشی با موفقیت ذخیره شد.', type: 'success' });
+    toast.success('مورد سفارشی با موفقیت ذخیره شد.');
   };
 
   const triggerUpload = (type) => {
@@ -434,8 +435,8 @@ export default function LearningItems() {
                     <Button
                       className="w-full"
                       variant="outline"
-                      onClick={() => window.toastAdd?.({ message: `"${item.title}" به زودی آماده می‌شود!`, type: "info" })}
-                      onKeyDown={(e) => e.key === 'Enter' && window.toastAdd?.({ message: `"${item.title}" به زودی آماده می‌شود!`, type: "info" })}
+                      onClick={() => toast.info(`"${item.title}" به زودی آماده می‌شود!`)}
+                      onKeyDown={(e) => e.key === 'Enter' && toast.info(`"${item.title}" به زودی آماده می‌شود!`)}
                     >
                       <Play className="w-4 h-4 ml-2" />
                       شروع کنید

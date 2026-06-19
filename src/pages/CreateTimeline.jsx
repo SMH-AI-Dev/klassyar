@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
-import IconPicker from "../components/shared/IconPicker";
-import ImagePicker from "../components/shared/ImagePicker";
+import IconPicker from "@/components/shared/IconPicker";
+import ImagePicker from "@/components/shared/ImagePicker";
 
 export default function CreateTimeline() {
   const navigate = useNavigate();

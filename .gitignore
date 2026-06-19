@@ -44,5 +44,9 @@ coverage/
 temp/
 tmp/
 
+# Editor / IDE
+.notebook/
+.qodo/
+
 # Backup files (from this session)
 *-BACKUP-*/

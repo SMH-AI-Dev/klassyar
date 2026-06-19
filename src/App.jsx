@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ErrorBoundary from './components/shared/ErrorBoundary';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider, useToast } from './components/ui/toast';
 import Layout from './components/layout/Layout';
@@ -26,6 +27,26 @@ import CreateTrue_false from './pages/CreateTrue_false';
 import CreateUnjumble from './pages/CreateUnjumble';
 import CreateWhack_a_mole from './pages/CreateWhack_a_mole';
 import CreateWordsearch from './pages/CreateWordsearch';
+import CreateFill_blank from './pages/CreateFill_blank';
+import CreateRanking from './pages/CreateRanking';
+import CreateCrossword from './pages/CreateCrossword';
+import CreateTimeline from './pages/CreateTimeline';
+import CreateSpinner from './pages/CreateSpinner';
+import CreateCard_flip from './pages/CreateCard_flip';
+import CreateHotspot from './pages/CreateHotspot';
+import CreateDrag_text from './pages/CreateDrag_text';
+import CreateBalloon_pop from './pages/CreateBalloon_pop';
+import CreateGameshow_quiz from './pages/CreateGameshow_quiz';
+import CreateMaze_chase from './pages/CreateMaze_chase';
+import CreateAirplane from './pages/CreateAirplane';
+import CreateOpen_the_box from './pages/CreateOpen_the_box';
+import CreateMissing_word from './pages/CreateMissing_word';
+import CreateAnagram from './pages/CreateAnagram';
+import CreateHangman from './pages/CreateHangman';
+import CreateFlip_tiles from './pages/CreateFlip_tiles';
+import CreateImage_quiz from './pages/CreateImage_quiz';
+import CreateLabelled_diagram from './pages/CreateLabelled_diagram';
+import CreateRandom_cards from './pages/CreateRandom_cards';
 
 // Play Pages
 import PlayQuiz from './pages/PlayQuiz';
@@ -90,17 +111,8 @@ function AppContent() {
           <Route path="/LanguageLearning/:gradeId" element={<LearningOptions />} />
           <Route path="/LanguageLearning/:gradeId/:optionId" element={<LearningItems />} />
           
-          {/* Create Routes */}
-          <Route path="/CreateFlashcard" element={<CreateFlashcard />} />
-          <Route path="/CreateQuiz" element={<CreateQuiz />} />
-          <Route path="/CreateMatching" element={<CreateMatching />} />
-          <Route path="/CreateGroup_sort" element={<CreateGroup_sort />} />
-          <Route path="/CreateMemory_game" element={<CreateMemory_game />} />
-          <Route path="/CreateRandom_wheel" element={<CreateRandom_wheel />} />
-          <Route path="/CreateTrue_false" element={<CreateTrue_false />} />
-          <Route path="/CreateUnjumble" element={<CreateUnjumble />} />
-          <Route path="/CreateWhack_a_mole" element={<CreateWhack_a_mole />} />
-          <Route path="/CreateWordsearch" element={<CreateWordsearch />} />
+          {/* Create Route */}
+          <Route path="/Create" element={<CreateRouter />} />
           
           {/* Play & Edit Routes */}
           <Route path="/Play" element={<PlayRouter />} />
@@ -117,16 +129,60 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <AppContent />
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
       </ToastProvider>
     </QueryClientProvider>
   );
 }
 
-// Router component to handle different play types based on activity type
+// Router component to handle different create types based on activity type
+function CreateRouter() {
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') || 'quiz';
+
+  const createComponents = {
+    flashcard: CreateFlashcard,
+    quiz: CreateQuiz,
+    matching: CreateMatching,
+    group_sort: CreateGroup_sort,
+    memory_game: CreateMemory_game,
+    random_wheel: CreateRandom_wheel,
+    true_false: CreateTrue_false,
+    unjumble: CreateUnjumble,
+    whack_a_mole: CreateWhack_a_mole,
+    wordsearch: CreateWordsearch,
+    fill_blank: CreateFill_blank,
+    ranking: CreateRanking,
+    crossword: CreateCrossword,
+    timeline: CreateTimeline,
+    spinner: CreateSpinner,
+    card_flip: CreateCard_flip,
+    hotspot: CreateHotspot,
+    drag_text: CreateDrag_text,
+    balloon_pop: CreateBalloon_pop,
+    gameshow_quiz: CreateGameshow_quiz,
+    maze_chase: CreateMaze_chase,
+    airplane: CreateAirplane,
+    open_the_box: CreateOpen_the_box,
+    missing_word: CreateMissing_word,
+    anagram: CreateAnagram,
+    hangman: CreateHangman,
+    flip_tiles: CreateFlip_tiles,
+    image_quiz: CreateImage_quiz,
+    labelled_diagram: CreateLabelled_diagram,
+    random_cards: CreateRandom_cards,
+  };
+
+  const Component = createComponents[type] || CreateQuiz;
+  return <Component />;
+}
+
+// Router component to handle different activity types based on type param
 function PlayRouter() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const type = urlParams.get('type') || 'quiz';
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') || 'quiz';
 
   const playComponents = {
     quiz: PlayQuiz,
@@ -150,8 +206,8 @@ function PlayRouter() {
 
 // Router component to handle different edit types based on activity type
 function EditRouter() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const type = urlParams.get('type') || 'quiz';
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') || 'quiz';
 
   const editComponents = {
     quiz: EditQuiz,

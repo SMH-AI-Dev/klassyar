@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { base44 } from "@/api/base44Client";
@@ -10,8 +10,8 @@ import RandomAnimations from "@/components/shared/RandomAnimations";
 
 export default function PlayRanking() {
   const navigate = useNavigate();
-  const urlParams = new URLSearchParams(window.location.search);
-  const activityId = urlParams.get('id');
+  const [searchParams] = useSearchParams();
+  const activityId = searchParams.get('id');
   
   const [items, setItems] = useState([]);
   const [isComplete, setIsComplete] = useState(false);
