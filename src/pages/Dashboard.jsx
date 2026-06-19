@@ -1,0 +1,164 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Gamepad2, Trophy, Users, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import StatsCards from "@/components/dashboard/StatsCards";
+import ActivityGrid from "@/components/dashboard/ActivityGrid";
+import TemplateSelector from "@/components/dashboard/TemplateSelector";
+
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const [showTemplates, setShowTemplates] = useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: activities, isLoading } = useQuery({
+    queryKey: ['activities'],
+    queryFn: async () => {
+      try {
+        const data = await base44.entities.Activity.list();
+        // مرتب‌سازی بر اساس تاریخ ساخت (جدیدترین اول)
+        return data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      } catch (error) {
+        console.error('Error loading activities:', error);
+        return [];
+      }
+    },
+    initialData: [],
+  });
+
+  const { data: results } = useQuery({
+    queryKey: ['results'],
+    queryFn: () => base44.entities.GameResult.list('-created_date', 100),
+    initialData: [],
+  });
+
+  const stats = [
+    {
+      title: "فعالیت‌های شما",
+      value: activities.length,
+      icon: Gamepad2,
+      color: "from-purple-400 to-pink-400"
+    },
+    {
+      title: "کل بازی‌ها",
+      value: activities.reduce((sum, a) => sum + (a.plays_count || 0), 0),
+      icon: Trophy,
+      color: "from-blue-400 to-cyan-400"
+    },
+    {
+      title: "امتیاز میانگین",
+      value: results.length > 0 ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length) + '%' : '0%',
+      icon: TrendingUp,
+      color: "from-green-400 to-emerald-400"
+    },
+    {
+      title: "دانش‌آموزان",
+      value: new Set(results.map(r => r.created_by)).size,
+      icon: Users,
+      color: "from-orange-400 to-red-400"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
+        >
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              سلام، {user?.name || 'کاربر'} 👋
+            </h1>
+            <p className="text-gray-600 text-lg">آماده‌اید برای ساخت یک فعالیت جدید؟</p>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setShowTemplates(true)}
+              size="lg"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-6 text-lg rounded-2xl clay-element"
+            >
+              <Plus className="w-5 h-5 ml-2" />
+              فعالیت جدید
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <StatsCards {...stat} />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Activities Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+              فعالیت‌های شما
+            </h2>
+          </div>
+
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
+            </div>
+          ) : activities.length === 0 ? (
+            <Card className="clay-element bg-white/60 border-0">
+              <CardContent className="p-12 text-center">
+                <Gamepad2 className="w-20 h-20 text-blue-300 mx-auto mb-6" />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  فعالیت دلخواه خود را ایجاد کنید
+                </h3>
+                <p 
+                  className="text-gray-600 mb-6 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={() => navigate('/SavedActivities')}
+                >
+                  در اینجا می‌توانید فعالیت‌های خود را مشاهده کنید
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    onClick={() => setShowTemplates(true)}
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 rounded-2xl clay-element"
+                  >
+                    <Plus className="w-5 h-5 ml-2" />
+                    ساخت فعالیت جدید
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <ActivityGrid activities={activities} />
+          )}
+        </motion.div>
+      </div>
+
+      {/* Template Selector Modal */}
+      {showTemplates && (
+        <TemplateSelector onClose={() => setShowTemplates(false)} />
+      )}
+    </div>
+  );
+}

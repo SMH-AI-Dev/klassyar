@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    
+    /* Clay Morphism Colors */
+    --clay-lavender: #E9D5FF;
+    --clay-lavender-dark: #C084FC;
+    --clay-mint: #A7F3D0;
+    --clay-mint-dark: #34D399;
+    --clay-sky: #BAE6FD;
+    --clay-sky-dark: #38BDF8;
+    --clay-peach: #FED7AA;
+    --clay-peach-dark: #FB923C;
+    --clay-rose: #FECDD3;
+    --clay-rose-dark: #FB7185;
+    --clay-shadow: rgba(0, 0, 0, 0.1);
+    --clay-shadow-inner: rgba(255, 255, 255, 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    font-family: 'Vazirmatn', 'IRANSans', 'B Nazanin', system-ui, -apple-system, sans-serif;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #FEF3E2 0%, #FAF4ED 50%, #F3E8FF 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .clay-element {
+    border-radius: 20px;
+    box-shadow: 
+      8px 8px 16px var(--clay-shadow),
+      -4px -4px 12px var(--clay-shadow-inner);
+    transition: all 0.3s ease;
+  }
+  
+  .clay-element:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      10px 10px 20px var(--clay-shadow),
+      -6px -6px 16px var(--clay-shadow-inner);
+  }
+  
+  .clay-pressed {
+    box-shadow: 
+      inset 4px 4px 8px var(--clay-shadow),
+      inset -2px -2px 6px var(--clay-shadow-inner);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  .clay-element {
+    border-radius: 16px;
+    box-shadow: 
+      6px 6px 12px var(--clay-shadow),
+      -3px -3px 9px var(--clay-shadow-inner);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #C084FC, #FB7185);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #A855F7, #F43F5E);
+}

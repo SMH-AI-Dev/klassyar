@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تست ذخیره‌سازی کلاس یار</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    .output {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+      direction: ltr;
+      text-align: left;
+    }
+    .status {
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 2px solid #bee5eb;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 تست سیستم ذخیره‌سازی کلاس یار</h1>
+    
+    <div class="controls">
+      <button class="btn" onclick="checkStorage()">بررسی localStorage</button>
+      <button class="btn btn-success" onclick="testCreate()">تست ساخت فعالیت</button>
+      <button class="btn btn-danger" onclick="clearStorage()">پاک کردن همه داده‌ها</button>
+      <button class="btn" onclick="showActivities()">نمایش فعالیت‌ها</button>
+      <button class="btn" onclick="fixStorage()">اصلاح ساختار داده</button>
+    </div>
+
+    <div id="status"></div>
+    <div id="output" class="output"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'klassyar_data';
+
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('status');
+      statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+    }
+
+    function showOutput(data) {
+      const outputDiv = document.getElementById('output');
+      outputDiv.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function getData() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function checkStorage() {
+      const data = getData();
+      if (!data) {
+        showStatus('❌ localStorage خالی است یا داده‌ای وجود ندارد', 'error');
+        showOutput({ message: 'No data found' });
+      } else {
+        showStatus(`✅ داده یافت شد - تعداد فعالیت‌ها: ${data.activities?.length || 0}`, 'success');
+        showOutput(data);
+      }
+    }
+
+    function clearStorage() {
+      if (confirm('آیا مطمئن هستید که می‌خواهید همه داده‌ها را پاک کنید؟')) {
+        localStorage.removeItem(STORAGE_KEY);
+        showStatus('✅ همه داده‌ها پاک شد', 'success');
+        showOutput({ message: 'All data cleared' });
+      }
+    }
+
+    function testCreate() {
+      const data = getData() || { activities: [], classes: [], results: [], user: null };
+      
+      // ساخت یک فعالیت تست
+      const testActivity = {
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+        title: 'تست چرخ گردان',
+        description: 'این یک فعالیت تست است',
+        type: 'random_wheel',
+        theme: 'sky',
+        content: {
+          items: ['گزینه 1', 'گزینه 2', 'گزینه 3', 'گزینه 4']
+        },
+        created_date: new Date().toISOString(),
+        created_by: 'test@klassyar.com',
+        plays_count: 0
+      };
+
+      data.activities.push(testActivity);
+      saveData(data);
+      
+      showStatus(`✅ فعالیت تست ساخته شد - مجموع فعالیت‌ها: ${data.activities.length}`, 'success');
+      showOutput(data);
+    }
+
+    function showActivities() {
+      const data = getData();
+      if (!data || !data.activities || data.activities.length === 0) {
+        showStatus('❌ هیچ فعالیتی یافت نشد', 'error');
+        showOutput({ message: 'No activities found' });
+      } else {
+        showStatus(`✅ تعداد فعالیت‌ها: ${data.activities.length}`, 'success');
+        showOutput(data.activities);
+      }
+    }
+
+    function fixStorage() {
+      let data = getData();
+      
+      if (!data) {
+        // ساخت ساختار پایه
+        data = {
+          activities: [],
+          classes: [],
+          results: [],
+          user: {
+            id: Date.now().toString(36),
+            email: 'demo@klassyar.com',
+            name: 'کاربر آزمایشی',
+            created_date: new Date().toISOString()
+          }
+        };
+        saveData(data);
+        showStatus('✅ ساختار داده اصلاح شد و کاربر پیش‌فرض ساخته شد', 'success');
+      } else {
+        // بررسی و اصلاح ساختار
+        if (!data.activities) data.activities = [];
+        if (!data.classes) data.classes = [];
+        if (!data.results) data.results = [];
+        if (!data.user) {
+          data.user = {
+            id: Date.now().toString(36),
+            email: 'demo@klassyar.com',
+            name: 'کاربر آزمایشی',
+            created_date: new Date().toISOString()
+          };
+        }
+        saveData(data);
+        showStatus('✅ ساختار داده بررسی و اصلاح شد', 'success');
+      }
+      showOutput(data);
+    }
+
+    // بررسی اولیه هنگام بارگذاری صفحه
+    window.onload = function() {
+      checkStorage();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "hasTailwind": true,
+  "cnUtilityPath": "src/lib/utils.js",
+  "cnImportStatement": "import { cn } from '@/lib/utils'",
+  "hasCssModules": false,
+  "namedExportConvention": false,
+  "existingVariants": [],
+  "detectedAt": "2026-05-10T09:48:33.708Z"
+}
