@@ -41,7 +41,7 @@
 
 <div dir="rtl">
 
-## <span style="font-size:2rem">✨ ویژگی‌ها</span>
+## <span style="font-size:2rem">✨    (✿◠‿◠)    ویژگی‌ها</span>
 
 <br>
 
