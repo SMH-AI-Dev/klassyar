@@ -69,11 +69,19 @@ export default function About() {
           <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-3xl mx-auto mb-4 md:mb-6 flex items-center justify-center clay-element">
             <Heart className="w-8 h-8 md:w-10 md:h-10 text-white animate-pulse" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-2">کلاس یار</h1>
-          <h2 className="text-3xl md:text-5xl font-bold text-purple-600 mb-4">کلاس، یار بود</h2>
-          <p className="text-lg md:text-2xl text-gray-600 max-w-3xl mx-auto px-4">
-            پلتفرمی که با عشق، تلاش و نوآوری ساخته شده است
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-2">🎮 کلاس یار</h1>
+          <h2 className="text-3xl md:text-5xl font-bold text-purple-600 mb-4">🏫 کلاس، یار بود 📚</h2>
+          <div className="text-lg md:text-2xl text-gray-600 max-w-3xl mx-auto px-4 space-y-3">
+            <p>
+              🌟 <strong>پلتفرم گیمیفیکیشن آموزشی</strong> با <strong>۳۰ نوع بازی تعاملی</strong> 🎯
+            </p>
+            <p>
+              👩‍🏫 ساخته شده برای <strong>معلمان</strong> ، <strong>دانش‌آموزان</strong> و <strong>والدین</strong> 🤝
+            </p>
+            <p className="text-base md:text-lg text-purple-500">
+              ✨ هر درس ، یک ماجراجویی جدید &nbsp; | &nbsp; هر بازی ، یک قدم به سوی یادگیری 🚀
+            </p>
+          </div>
         </motion.div>
 
         {/* Story Section */}

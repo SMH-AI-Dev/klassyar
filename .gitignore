@@ -57,3 +57,6 @@ tmp/
 # Large data files
 learning-content.js
 learningContent.cjs
+
+# Original screenshots with spaces (clean copies in public/screenshots/)
+Screenshot *.png

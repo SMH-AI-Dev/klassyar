@@ -1,21 +1,37 @@
 <div dir="rtl" align="center">
 
-<!-- Animated Header Logo -->
-<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+<style>
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  @keyframes pulseg { 0%,100%{opacity:.7} 50%{opacity:1} }
+  @keyframes bounce1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes pop1{0%{r:18}50%{r:22}100%{r:18}}
+  @keyframes bounce2{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes bounce3{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes bounce4{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes bounce5{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes bounce6{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes heart { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+  .floating { animation: float 3s ease-in-out infinite }
+  .pulsing { animation: pulseg 2s ease-in-out infinite }
+  .star { animation: float 2.5s ease-in-out infinite; transform-origin: center }
+  .star:nth-child(2) { animation-delay: .5s }
+  .star:nth-child(3) { animation-delay: 1s }
+  .b1{animation:bounce1 2s ease-in-out infinite}
+  .b2{animation:bounce2 2s ease-in-out infinite .3s}
+  .b3{animation:bounce3 2s ease-in-out infinite .6s}
+  .b4{animation:bounce4 2s ease-in-out infinite .9s}
+  .b5{animation:bounce5 2s ease-in-out infinite 1.2s}
+  .b6{animation:bounce6 2s ease-in-out infinite 1.5s}
+  .p1{animation:pop1 2s ease-in-out infinite}
+  .h { animation: heart 1.5s ease-in-out infinite; transform-origin: center }
+</style>
+
+<svg width="80" height="80" viewBox="0 0 80 80">
   <defs>
     <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#a855f7"/>
       <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
-    <style>
-      @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-      @keyframes pulseg { 0%,100%{opacity:.7} 50%{opacity:1} }
-      .floating { animation: float 3s ease-in-out infinite }
-      .pulsing { animation: pulseg 2s ease-in-out infinite }
-      .star { animation: float 2.5s ease-in-out infinite; transform-origin: center }
-      .star:nth-child(2) { animation-delay: .5s }
-      .star:nth-child(3) { animation-delay: 1s }
-    </style>
   </defs>
   <rect width="80" height="80" rx="20" fill="url(#hg)" opacity=".1"/>
   <g class="floating">
@@ -23,31 +39,30 @@
   </g>
 </svg>
 
-# <span style="font-size:3rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">کلاس یار</span>
+<br>
+
+# <span style="font-size:3rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🎮 کلاس یار</span>
 
 ### <span style="font-size:1.4rem;color:#7c3aed">**KlassYar** — Educational Gamification Platform</span>
 
 <br>
 
-<!-- Animated Badge Row -->
 <span>
-  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 18" style="transition:transform .3s;display:inline-block" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></a>
-  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5"></a>
-  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind 3"></a>
-  <a href="https://www.framer.com/motion/"><img src="https://img.shields.io/badge/Framer_Motion-10-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion"></a>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 18">
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 5">
+  <img src="https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind 3">
+  <img src="https://img.shields.io/badge/Framer_Motion-10-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion">
 </span>
 
 <br><br>
 
-<!-- Notice: badge hover effect won't work in GitHub README (no JS/CSS hover on external images). But the inline SVG icons below will have CSS animations. -->
-
-**یادگیری را با بازی‌های تعاملی و جذاب به یک تجربه شگفت‌انگیز تبدیل کنید**
+**یادگیری را با بازی‌های تعاملی و جذاب به یک تجربه شگفت‌انگیز تبدیل کنید** 🌈✨
 
 <br>
 
 [![Demo](https://img.shields.io/badge/🔗_مشاهده_دمو-klassyar.ir-7c3aed?style=flat-square)](https://klassyar.ir)
-[![Report Bug](https://img.shields.io/badge/🐛_گزارش_باگ-dc2626?style=flat-square)](https://github.com/smh1317/klassyar/issues/new?labels=bug)
-[![Feature Request](https://img.shields.io/badge/✨_درخواست_ویژگی-2563eb?style=flat-square)](https://github.com/smh1317/klassyar/issues/new?labels=enhancement)
+[![Report Bug](https://img.shields.io/badge/🐛_گزارش_باگ-dc2626?style=flat-square)](https://github.com/SMH-AI-Dev/klassyar/issues/new?labels=bug)
+[![Feature Request](https://img.shields.io/badge/✨_درخواست_ویژگی-2563eb?style=flat-square)](https://github.com/SMH-AI-Dev/klassyar/issues/new?labels=enhancement)
 
 </div>
 
@@ -57,58 +72,49 @@
 
 <br>
 
+<img src="public/screenshots/home.png" width="100%" style="border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,.15);margin-bottom:30px">
+
+<br>
+
 <div dir="rtl">
 
 ## <span style="font-size:2rem">✨ ویژگی‌ها</span>
 
 <br>
 
-<!-- Feature Icons with SVG animations -->
 <div align="center">
 
-<!-- 30 Games -->
 <svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <defs><style>@keyframes bounce1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes pop1{0%{r:18}50%{r:22}100%{r:18}}.b1{animation:bounce1 2s ease-in-out infinite}.p1{animation:pop1 2s ease-in-out infinite}</style></defs>
   <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
   <text x="60" y="52" text-anchor="middle" font-size="28" class="b1">🎯</text>
   <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">۳۰ نوع بازی</text>
 </svg>
 
-<!-- Teacher Tools -->
 <svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <defs><style>@keyframes bounce2{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.b2{animation:bounce2 2s ease-in-out infinite .3s}</style></defs>
   <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
   <text x="60" y="52" text-anchor="middle" font-size="28" class="b2">👩‍🏫</text>
   <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">ابزارهای معلم</text>
 </svg>
 
-<!-- PWA -->
 <svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <defs><style>@keyframes bounce3{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.b3{animation:bounce3 2s ease-in-out infinite .6s}</style></defs>
   <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
   <text x="60" y="52" text-anchor="middle" font-size="28" class="b3">📱</text>
   <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">PWA & آفلاین</text>
 </svg>
 
-<!-- RTL -->
 <svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <defs><style>@keyframes bounce4{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.b4{animation:bounce4 2s ease-in-out infinite .9s}</style></defs>
   <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
   <text x="60" y="52" text-anchor="middle" font-size="28" class="b4">🇮🇷</text>
   <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">RTL کامل فارسی</text>
 </svg>
 
-<!-- Responsive -->
 <svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <defs><style>@keyframes bounce5{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.b5{animation:bounce5 2s ease-in-out infinite 1.2s}</style></defs>
   <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
   <text x="60" y="52" text-anchor="middle" font-size="28" class="b5">📐</text>
   <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">واکنش‌گرا</text>
 </svg>
 
-<!-- Clay Design -->
 <svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <defs><style>@keyframes bounce6{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.b6{animation:bounce6 2s ease-in-out infinite 1.5s}</style></defs>
   <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
   <text x="60" y="52" text-anchor="middle" font-size="28" class="b6">🎨</text>
   <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">Clay Design</text>
@@ -118,15 +124,31 @@
 
 <br>
 
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+
+<div style="flex:1;min-width:300px">
+
 ### 🎯 **۳۰ نوع بازی آموزشی**
-<div style="font-size:1.1rem;line-height:1.8">
 
 از کارت‌های آموزشی و آزمون گرفته تا بازی‌های تعاملی مثل **موش‌کوب، چرخ شانس، جدول کلمات، هواپیما، مارپیچ، مسابقه تلویزیونی** و...
 
 </div>
 
+<div style="flex:1;min-width:300px">
+
+<img src="public/screenshots/games.png" width="100%" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+
+</div>
+
+</div>
+
+<br>
+
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+
+<div style="flex:1;min-width:300px">
+
 ### 👩‍🏫 **ابزارهای معلم**
-<div style="font-size:1.1rem;line-height:1.8">
 
 | | |
 |---|---|
@@ -136,8 +158,21 @@
 
 </div>
 
+<div style="flex:1;min-width:300px">
+
+<img src="public/screenshots/create.png" width="100%" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+
+</div>
+
+</div>
+
+<br>
+
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+
+<div style="flex:1;min-width:300px">
+
 ### 🎓 **تجربه دانش‌آموز**
-<div style="font-size:1.1rem;line-height:1.8">
 
 - رابط کاربری جذاب و کودکانه
 - یادگیری غیرمستقیم با بازی
@@ -147,14 +182,35 @@
 
 </div>
 
+<div style="flex:1;min-width:300px">
+
+<img src="public/screenshots/play.png" width="100%" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+
+</div>
+
+</div>
+
+<br>
+
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+
+<div style="flex:1;min-width:300px">
+
 ### 🌐 **قابلیت‌های فنی**
-<div style="font-size:1.1rem;line-height:1.8">
 
 - **RTL کامل** برای زبان فارسی
 - **Clay Morphism Design** — طراحی سه‌بعدی نرم
 - **مقاوم و آفلاین** — ذخیره در مرورگر (localStorage)
 - **واکنش‌گرا** — مناسب همه دستگاه‌ها
 - **قابلیت نصب** به عنوان PWA روی موبایل و دسکتاپ
+
+</div>
+
+<div style="flex:1;min-width:300px">
+
+<img src="public/screenshots/responsive.png" width="100%" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+
+</div>
 
 </div>
 
@@ -174,11 +230,13 @@
 
 <div align="center">
 
-| صفحه اصلی | داشبورد | بازی‌ها |
+| صفحه اصلی | داشبورد | مدیریت بازی‌ها |
 |:---:|:---:|:---:|
-| <img src="public/icon.svg" width="240" height="auto" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> | <img src="public/icon.svg" width="240" height="auto" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> | <img src="public/icon.svg" width="240" height="auto" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> |
+| <img src="public/screenshots/home.png" width="280" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> | <img src="public/screenshots/dashboard.png" width="280" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> | <img src="public/screenshots/games.png" width="280" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> |
 
-<p style="color:#9ca3af;font-size:.9rem">⚠️ اسکرین‌شات‌های واقعی به‌زودی اضافه می‌شوند</p>
+| بازی | ساخت فعالیت | درباره ما |
+|:---:|:---:|:---:|
+| <img src="public/screenshots/play.png" width="280" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> | <img src="public/screenshots/create.png" width="280" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> | <img src="public/screenshots/about.png" width="280" style="border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1)"> |
 
 </div>
 
@@ -210,7 +268,7 @@
 
 ```bash
 # Clone project
-git clone https://github.com/smh1317/klassyar.git
+git clone https://github.com/SMH-AI-Dev/klassyar.git
 cd klassyar
 
 # Install dependencies
@@ -335,7 +393,8 @@ npm run preview    # Preview production build
 ```
 klassyar/
 ├── .github/                    # GitHub templates
-├── public/                     # Static files (PWA assets)
+├── public/                     # Static files
+│   ├── screenshots/            # App screenshots
 │   ├── icon.svg
 │   ├── manifest.json
 │   └── sw.js
@@ -347,11 +406,11 @@ klassyar/
 │   │   ├── layout/             # Layout (Navbar, Layout)
 │   │   ├── dashboard/          # Dashboard components
 │   │   └── shared/             # Shared components
-│   ├── pages/                  # All pages (30 Play, 30 Create, 13 Edit)
-│   │   ├── Create*.jsx         # Activity creation pages
-│   │   ├── Play*.jsx           # Game play pages
-│   │   ├── Edit*.jsx           # Activity edit pages
-│   │   └── *.jsx               # Other pages (Home, Dashboard, About...)
+│   ├── pages/                  # All pages
+│   │   ├── Create*.jsx         # 30 Create pages
+│   │   ├── Play*.jsx           # 30 Play pages
+│   │   ├── Edit*.jsx           # 13 Edit pages
+│   │   └── *.jsx               # Other pages
 │   ├── hooks/                  # Custom React hooks
 │   ├── lib/                    # Library helpers
 │   ├── utils/                  # Utility functions
@@ -405,8 +464,38 @@ klassyar/
 
 <div align="center">
 
-[![Email](https://img.shields.io/badge/📧_klasyar.smh@gmail.com-7c3aed?style=for-the-badge)](mailto:klasyar.smh@gmail.com)
-[![Telegram](https://img.shields.io/badge/💬_@smh1317-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/smh1317)
+<!-- Icons around the contact section -->
+<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b1">📧</span>
+<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b2">🌐</span>
+<span style="font-size:2.2rem;display:inline-block;margin:0 10px" class="b3">📱</span>
+<span style="font-size:1.8rem;display:inline-block;margin:0 10px" class="b4">💬</span>
+<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b5">📨</span>
+<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b6">🤝</span>
+
+<br><br>
+
+<div style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8);border-radius:20px;padding:30px 40px;display:inline-block;text-align:right;box-shadow:0 4px 15px rgba(0,0,0,.08)">
+
+<span style="font-size:1.8rem">👤</span> **مهندس سید مهدی حسینی** (Engineer Seyed Mehdi Hosaini)
+<br><br>
+<span style="font-size:1.3rem">💻</span> مهندس کامپیوتر — Computer Engineer
+<br><br>
+<span style="font-size:1.3rem">📧</span> **Email:** smh.4tecksoftware@gmail.com
+<br>
+<span style="font-size:1.3rem">📧</span> **Email:** klasyar.smh@gmail.com
+<br><br>
+<span style="font-size:1.3rem">📞</span> **Tel:** +989024912785
+
+</div>
+
+<br><br>
+
+<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b1">⭐</span>
+<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b2">🌟</span>
+<span style="font-size:1.8rem;display:inline-block;margin:0 10px" class="b3">💫</span>
+<span style="font-size:2.2rem;display:inline-block;margin:0 10px" class="b4">✨</span>
+<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b5">⭐</span>
+<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b6">🌟</span>
 
 </div>
 
@@ -421,18 +510,12 @@ klassyar/
 <br>
 
 <svg width="40" height="40" viewBox="0 0 40 40">
-  <defs>
-    <style>
-      @keyframes heart { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
-      .h { animation: heart 1.5s ease-in-out infinite; transform-origin: 20px 20px }
-    </style>
-  </defs>
   <text x="20" y="28" text-anchor="middle" font-size="22" class="h">❤️</text>
 </svg>
 
 <br>
 
-**ساخته شده با عشق برای آموزش ایران**
+**ساخته شده با عشق برای آموزش ایران** 🇮🇷
 
 <br>
 
