@@ -474,6 +474,19 @@ klassyar/
 
 <br><br>
 
+<div style="background:linear-gradient(135deg,#fef2f2,#fff7ed,#fefce8);border-radius:16px;padding:20px 30px;margin-bottom:25px;display:inline-block;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.06)">
+  <span style="font-size:1.4rem;font-weight:bold;color:#dc2626">⚠️</span>
+  <span style="font-size:1.1rem;color:#4b5563">
+    گزارش هرگونه <strong>ایراد</strong> 🐛، <strong>بحران</strong> 🚨، <strong>پیشنهاد</strong> 💡 یا <strong>انتقاد</strong> 🤔
+  </span>
+  <br>
+  <span style="font-size:1.2rem;color:#7c3aed;font-weight:bold">
+    📬 خوشحال می‌شویم نظرات شما را بشنویم — از طریق راه‌های ارتباطی زیر با ما در تماس باشید ✨
+  </span>
+</div>
+
+<br>
+
 <div style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8);border-radius:20px;padding:30px 40px;display:inline-block;text-align:right;box-shadow:0 4px 15px rgba(0,0,0,.08)">
 
 <span style="font-size:1.8rem">👤</span> **مهندس سید مهدی حسینی** (Engineer Seyed Mehdi Hosaini)
