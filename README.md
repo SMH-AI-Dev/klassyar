@@ -1,37 +1,15 @@
 <div dir="rtl" align="center">
 
-<style>
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-  @keyframes pulseg { 0%,100%{opacity:.7} 50%{opacity:1} }
-  @keyframes bounce1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes pop1{0%{r:18}50%{r:22}100%{r:18}}
-  @keyframes bounce2{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes bounce3{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes bounce4{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes bounce5{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes bounce6{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  @keyframes heart { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
-  .floating { animation: float 3s ease-in-out infinite }
-  .pulsing { animation: pulseg 2s ease-in-out infinite }
-  .star { animation: float 2.5s ease-in-out infinite; transform-origin: center }
-  .star:nth-child(2) { animation-delay: .5s }
-  .star:nth-child(3) { animation-delay: 1s }
-  .b1{animation:bounce1 2s ease-in-out infinite}
-  .b2{animation:bounce2 2s ease-in-out infinite .3s}
-  .b3{animation:bounce3 2s ease-in-out infinite .6s}
-  .b4{animation:bounce4 2s ease-in-out infinite .9s}
-  .b5{animation:bounce5 2s ease-in-out infinite 1.2s}
-  .b6{animation:bounce6 2s ease-in-out infinite 1.5s}
-  .p1{animation:pop1 2s ease-in-out infinite}
-  .h { animation: heart 1.5s ease-in-out infinite; transform-origin: center }
-</style>
-
 <svg width="80" height="80" viewBox="0 0 80 80">
   <defs>
     <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#a855f7"/>
       <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
+    <style>
+      @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+      .floating { animation: float 3s ease-in-out infinite }
+    </style>
   </defs>
   <rect width="80" height="80" rx="20" fill="url(#hg)" opacity=".1"/>
   <g class="floating">
@@ -490,8 +468,6 @@ klassyar/
 <div style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8);border-radius:20px;padding:30px 40px;display:inline-block;text-align:right;box-shadow:0 4px 15px rgba(0,0,0,.08)">
 
 <span style="font-size:1.8rem">👤</span> **مهندس سید مهدی حسینی** (Engineer Seyed Mehdi Hosaini)
-<br><br>
-<span style="font-size:1.3rem">💻</span> مهندس کامپیوتر — Computer Engineer
 <br><br>
 <span style="font-size:1.3rem">📧</span> **Email:** smh.4tecksoftware@gmail.com
 <br>
