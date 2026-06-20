@@ -1,27 +1,12 @@
 <div dir="rtl" align="center">
 
-<svg width="80" height="80" viewBox="0 0 80 80">
-  <defs>
-    <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#ec4899"/>
-    </linearGradient>
-    <style>
-      @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-      .floating { animation: float 3s ease-in-out infinite }
-    </style>
-  </defs>
-  <rect width="80" height="80" rx="20" fill="url(#hg)" opacity=".1"/>
-  <g class="floating">
-    <text x="40" y="52" font-size="36" text-anchor="middle" fill="url(#hg)">🎮</text>
-  </g>
-</svg>
+<br>
+
+<h1 style="font-size:3.5rem;font-weight:900;color:#7c3aed;text-shadow:2px 2px 4px rgba(0,0,0,0.1)">🎮 کلاس یار</h1>
 
 <br>
 
-# <span style="font-size:3rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🎮 کلاس یار</span>
-
-### <span style="font-size:1.4rem;color:#7c3aed">**KlassYar** — Educational Gamification Platform</span>
+### <span style="font-size:1.4rem;color:#6b21a8">**KlassYar** — Educational Gamification Platform</span>
 
 <br>
 
@@ -62,41 +47,9 @@
 
 <div align="center">
 
-<svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
-  <text x="60" y="52" text-anchor="middle" font-size="28" class="b1">🎯</text>
-  <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">۳۰ نوع بازی</text>
-</svg>
-
-<svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
-  <text x="60" y="52" text-anchor="middle" font-size="28" class="b2">👩‍🏫</text>
-  <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">ابزارهای معلم</text>
-</svg>
-
-<svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
-  <text x="60" y="52" text-anchor="middle" font-size="28" class="b3">📱</text>
-  <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">PWA & آفلاین</text>
-</svg>
-
-<svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
-  <text x="60" y="52" text-anchor="middle" font-size="28" class="b4">🇮🇷</text>
-  <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">RTL کامل فارسی</text>
-</svg>
-
-<svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
-  <text x="60" y="52" text-anchor="middle" font-size="28" class="b5">📐</text>
-  <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">واکنش‌گرا</text>
-</svg>
-
-<svg width="120" height="110" viewBox="0 0 120 110" style="display:inline-block;margin:10px">
-  <circle cx="60" cy="45" r="30" fill="url(#hg)" opacity=".15"/>
-  <text x="60" y="52" text-anchor="middle" font-size="28" class="b6">🎨</text>
-  <text x="60" y="92" text-anchor="middle" font-size="13" fill="#6b7280">Clay Design</text>
-</svg>
+| 🎯 **۳۰ نوع بازی** | 👩‍🏫 **ابزارهای معلم** | 📱 **PWA & آفلاین** |
+|:---:|:---:|:---:|
+| 🇮🇷 **RTL کامل فارسی** | 📐 **واکنش‌گرا** | 🎨 **Clay Design** |
 
 </div>
 
@@ -442,13 +395,12 @@ klassyar/
 
 <div align="center">
 
-<!-- Icons around the contact section -->
-<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b1">📧</span>
-<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b2">🌐</span>
-<span style="font-size:2.2rem;display:inline-block;margin:0 10px" class="b3">📱</span>
-<span style="font-size:1.8rem;display:inline-block;margin:0 10px" class="b4">💬</span>
-<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b5">📨</span>
-<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b6">🤝</span>
+<span style="font-size:2.5rem;margin:0 8px">📧</span>
+<span style="font-size:1.8rem;margin:0 8px">🌐</span>
+<span style="font-size:2.8rem;margin:0 8px">📱</span>
+<span style="font-size:2rem;margin:0 8px">💬</span>
+<span style="font-size:2.5rem;margin:0 8px">📨</span>
+<span style="font-size:1.8rem;margin:0 8px">🤝</span>
 
 <br><br>
 
@@ -465,9 +417,11 @@ klassyar/
 
 <br>
 
-<div style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8);border-radius:20px;padding:30px 40px;display:inline-block;text-align:right;box-shadow:0 4px 15px rgba(0,0,0,.08)">
+<div style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8);border-radius:20px;padding:30px 40px;display:inline-block;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,.08)">
 
-<span style="font-size:1.8rem">👤</span> **مهندس سید مهدی حسینی** (Engineer Seyed Mehdi Hosaini)
+<span style="font-size:1.8rem">👤</span> **مهندس سید مهدی حسینی**
+<br><br>
+<span style="font-size:1.3rem;color:#6b21a8">_Engineer Seyed Mehdi Hosaini_</span>
 <br><br>
 <span style="font-size:1.3rem">📧</span> **Email:** smh.4tecksoftware@gmail.com
 <br>
@@ -479,12 +433,12 @@ klassyar/
 
 <br><br>
 
-<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b1">⭐</span>
-<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b2">🌟</span>
-<span style="font-size:1.8rem;display:inline-block;margin:0 10px" class="b3">💫</span>
-<span style="font-size:2.2rem;display:inline-block;margin:0 10px" class="b4">✨</span>
-<span style="font-size:1.5rem;display:inline-block;margin:0 10px" class="b5">⭐</span>
-<span style="font-size:2rem;display:inline-block;margin:0 10px" class="b6">🌟</span>
+<span style="font-size:2rem;margin:0 8px">⭐</span>
+<span style="font-size:2.8rem;margin:0 8px">🌟</span>
+<span style="font-size:2.2rem;margin:0 8px">💫</span>
+<span style="font-size:3rem;margin:0 8px">✨</span>
+<span style="font-size:2rem;margin:0 8px">⭐</span>
+<span style="font-size:2.5rem;margin:0 8px">🌟</span>
 
 </div>
 
@@ -498,9 +452,7 @@ klassyar/
 
 <br>
 
-<svg width="40" height="40" viewBox="0 0 40 40">
-  <text x="20" y="28" text-anchor="middle" font-size="22" class="h">❤️</text>
-</svg>
+❤️
 
 <br>
 
