@@ -1,32 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Trophy } from "lucide-react";
+import { ArrowRight, Trophy, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
 
 export default function PlayWhack_a_mole() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const activityId = searchParams.get('id');
-  
+  const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
+
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [activeMoles, setActiveMoles] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const gameIntervalRef = useRef(null);
-
-  const { data: activity, isLoading } = useQuery({
-    queryKey: ['activity', activityId],
-    queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
-      return activities.find(a => a.id === activityId);
-    },
-  });
 
   useEffect(() => {
     if (isPlaying && timeLeft > 0) {
@@ -89,7 +79,7 @@ export default function PlayWhack_a_mole() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
           <p className="text-xl text-gray-600 mb-4">فعالیت یافت نشد</p>
-          <Button onClick={() => navigate("/Dashboard")} className="rounded-xl clay-element">
+          <Button onClick={() => navigate(isDemo ? "/" : "/Dashboard")} className="rounded-xl clay-element">
             <ArrowRight className="w-5 h-5 ml-2" />
             بازگشت به داشبورد
           </Button>
@@ -133,7 +123,7 @@ export default function PlayWhack_a_mole() {
                   بازی مجدد
                 </Button>
                 <Button
-                  onClick={() => navigate("/Dashboard")}
+                  onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
                   variant="outline"
                   className="rounded-xl clay-element px-8 py-6 text-lg"
                 >
@@ -160,7 +150,7 @@ export default function PlayWhack_a_mole() {
         >
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate("/Dashboard")}
+              onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
               variant="outline"
               size="icon"
               className="rounded-xl clay-element"
@@ -186,6 +176,12 @@ export default function PlayWhack_a_mole() {
                 <p className="text-xl font-bold text-gray-800">{timeLeft}s</p>
               </div>
             </div>
+          )}
+          {isDemo && (
+            <Button onClick={() => saveActivity()} disabled={saving}
+              className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 rounded-xl clay-element px-4 py-2 font-bold text-sm">
+              <Save className="w-4 h-4 ml-2" />{saving ? "..." : "ذخیره فعالیت"}
+            </Button>
           )}
         </motion.div>
 

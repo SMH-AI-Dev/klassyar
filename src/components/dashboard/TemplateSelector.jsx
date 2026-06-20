@@ -91,7 +91,7 @@ export default function TemplateSelector({ onClose }) {
           <div className="p-4 md:p-6 border-b border-purple-200/50 flex items-center justify-between sticky top-0 bg-white/95 z-10">
             <div>
               <h2 className="text-xl md:text-3xl font-bold text-gray-800">انتخاب نوع فعالیت 🎮</h2>
-              <p className="text-xs md:text-base text-gray-600 mt-1">30 بازی آموزشی برای شما!</p>
+              <p className="text-xs md:text-base text-gray-600 mt-1">{templates.length} بازی آموزشی برای شما!</p>
             </div>
             <Button
               onClick={onClose}

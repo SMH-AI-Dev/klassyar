@@ -62,6 +62,23 @@ import PlayWhack_a_mole from './pages/PlayWhack_a_mole';
 import PlayFill_blank from './pages/PlayFill_blank';
 import PlayRanking from './pages/PlayRanking';
 import PlaySpinner from './pages/PlaySpinner';
+import PlayTimeline from './pages/PlayTimeline';
+import PlayCrossword from './pages/PlayCrossword';
+import PlayCard_flip from './pages/PlayCard_flip';
+import PlayDrag_text from './pages/PlayDrag_text';
+import PlayBalloon_pop from './pages/PlayBalloon_pop';
+import PlayMissing_word from './pages/PlayMissing_word';
+import PlayAnagram from './pages/PlayAnagram';
+import PlayRandom_cards from './pages/PlayRandom_cards';
+import PlayAirplane from './pages/PlayAirplane';
+import PlayGameshow_quiz from './pages/PlayGameshow_quiz';
+import PlayHangman from './pages/PlayHangman';
+import PlayHotspot from './pages/PlayHotspot';
+import PlayImage_quiz from './pages/PlayImage_quiz';
+import PlayLabelled_diagram from './pages/PlayLabelled_diagram';
+import PlayMaze_chase from './pages/PlayMaze_chase';
+import PlayOpen_the_box from './pages/PlayOpen_the_box';
+import PlayFlip_tiles from './pages/PlayFlip_tiles';
 
 // Edit Pages
 import EditQuiz from './pages/EditQuiz';
@@ -198,6 +215,23 @@ function PlayRouter() {
     fill_blank: PlayFill_blank,
     ranking: PlayRanking,
     spinner: PlaySpinner,
+    timeline: PlayTimeline,
+    crossword: PlayCrossword,
+    card_flip: PlayCard_flip,
+    drag_text: PlayDrag_text,
+    balloon_pop: PlayBalloon_pop,
+    missing_word: PlayMissing_word,
+    anagram: PlayAnagram,
+    random_cards: PlayRandom_cards,
+    airplane: PlayAirplane,
+    gameshow_quiz: PlayGameshow_quiz,
+    hangman: PlayHangman,
+    hotspot: PlayHotspot,
+    image_quiz: PlayImage_quiz,
+    labelled_diagram: PlayLabelled_diagram,
+    maze_chase: PlayMaze_chase,
+    open_the_box: PlayOpen_the_box,
+    flip_tiles: PlayFlip_tiles,
   };
 
   const Component = playComponents[type] || PlayQuiz;

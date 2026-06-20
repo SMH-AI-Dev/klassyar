@@ -1,30 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useGameData } from "@/hooks/useGameData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, X, Trophy } from "lucide-react";
+import { ArrowRight, Check, X, Trophy, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
 
 export default function PlayTrue_false() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const activityId = searchParams.get('id');
-  
+
+  const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isComplete, setIsComplete] = useState(false);
-
-  const { data: activity, isLoading } = useQuery({
-    queryKey: ['activity', activityId],
-    queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
-      return activities.find(a => a.id === activityId);
-    },
-  });
 
   useEffect(() => {
     if (selectedAnswer !== null) {
@@ -72,7 +63,7 @@ export default function PlayTrue_false() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
           <p className="text-xl text-gray-600 mb-4">فعالیت یافت نشد یا سوالی وجود ندارد</p>
-          <Button onClick={() => navigate("/Dashboard")} className="rounded-xl clay-element">
+          <Button onClick={() => navigate(isDemo ? "/" : "/Dashboard")} className="rounded-xl clay-element">
             <ArrowRight className="w-5 h-5 ml-2" />
             بازگشت به داشبورد
           </Button>
@@ -120,12 +111,12 @@ export default function PlayTrue_false() {
                   شروع مجدد
                 </Button>
                 <Button
-                  onClick={() => navigate("/Dashboard")}
-                  variant="outline"
-                  className="rounded-xl clay-element px-8 py-6 text-lg"
-                >
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                  بازگشت به داشبورد
+                onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
+                variant="outline"
+                className="rounded-xl clay-element px-8 py-6 text-lg"
+              >
+                <ArrowRight className="w-5 h-5 ml-2" />
+                بازگشت به داشبورد
                 </Button>
               </div>
             </CardContent>
@@ -149,13 +140,19 @@ export default function PlayTrue_false() {
         >
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate("/Dashboard")}
+              onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
               variant="outline"
               size="icon"
               className="rounded-xl clay-element"
             >
               <ArrowRight className="w-5 h-5" />
             </Button>
+            {isDemo && (
+              <Button onClick={() => saveActivity()} disabled={saving}
+                className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 rounded-xl clay-element px-4 py-2 font-bold text-sm">
+                <Save className="w-4 h-4 ml-2" />{saving ? "..." : "ذخیره فعالیت"}
+              </Button>
+            )}
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{activity.title}</h1>
               {activity.description && (

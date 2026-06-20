@@ -1,34 +1,26 @@
-import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Trophy, GripVertical, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowRight, Trophy, GripVertical, ArrowUp, ArrowDown, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
 
 export default function PlayRanking() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const activityId = searchParams.get('id');
-  
+  const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
+
   const [items, setItems] = useState([]);
   const [isComplete, setIsComplete] = useState(false);
   const [score, setScore] = useState(0);
 
-  const { data: activity, isLoading } = useQuery({
-    queryKey: ['activity', activityId],
-    queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
-      const found = activities.find(a => a.id === activityId);
-      if (found && found.content?.items) {
-        const shuffled = [...found.content.items].sort(() => Math.random() - 0.5);
-        setItems(shuffled);
-      }
-      return found;
-    },
-  });
+  useEffect(() => {
+    if (activity?.content?.items) {
+      const shuffled = [...activity.content.items].sort(() => Math.random() - 0.5);
+      setItems(shuffled);
+    }
+  }, [activity]);
 
   const moveItem = (index, direction) => {
     if ((direction === 'up' && index === 0) || (direction === 'down' && index === items.length - 1)) {
@@ -67,7 +59,7 @@ export default function PlayRanking() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
           <p className="text-xl text-gray-600 mb-4">فعالیت یافت نشد یا آیتمی وجود ندارد</p>
-          <Button onClick={() => navigate("/Dashboard")} className="rounded-xl clay-element">
+          <Button onClick={() => navigate(isDemo ? "/" : "/Dashboard")} className="rounded-xl clay-element">
             <ArrowRight className="w-5 h-5 ml-2" />
             بازگشت به داشبورد
           </Button>
@@ -115,7 +107,7 @@ export default function PlayRanking() {
                   شروع مجدد
                 </Button>
                 <Button
-                  onClick={() => navigate("/Dashboard")}
+                  onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
                   variant="outline"
                   className="rounded-xl clay-element px-8 py-6 text-lg"
                 >
@@ -141,7 +133,7 @@ export default function PlayRanking() {
         >
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate("/Dashboard")}
+              onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
               variant="outline"
               size="icon"
               className="rounded-xl clay-element"
@@ -155,6 +147,12 @@ export default function PlayRanking() {
               )}
             </div>
           </div>
+          {isDemo && (
+            <Button onClick={() => saveActivity()} disabled={saving}
+              className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 rounded-xl clay-element px-4 py-2 font-bold text-sm">
+              <Save className="w-4 h-4 ml-2" />{saving ? "..." : "ذخیره فعالیت"}
+            </Button>
+          )}
         </motion.div>
 
         <Card className="clay-element bg-gradient-to-br from-sky-50 to-blue-50 border-0">

@@ -1,212 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookOpen, Mic, PenTool, MessageSquare, Headphones, Play, CheckCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, Mic, PenTool, MessageSquare, Headphones, Play, Search, Volume2, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "@/lib/sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import learningContent from "@/lib/learningContent";
 
-const learningData = {
-  vocabulary: {
-    title: "یادگیری واژگان",
-    icon: BookOpen,
-    color: "from-blue-400 to-cyan-400",
-    items: [
-      {
-        title: "واژگان پایه و ضروری",
-        description: "یادگیری کلمات پایه انگلیسی مورد نیاز روزانه",
-        content: "این بخش شامل کلمات ضروری مانند سلام، تشکر، اعداد، رنگ‌ها و غیره است.",
-        duration: "15 دقیقه"
-      },
-      {
-        title: "عبارات روزمره",
-        description: "جمله‌های کاربردی برای موقعیت‌های مختلف",
-        content: "یادگیری عباراتی مانند 'How are you?'، 'What's your name?' و جملات روزمره.",
-        duration: "20 دقیقه"
-      },
-      {
-        title: "واژگان تخصصی",
-        description: "کلمات مربوط به موضوعات خاص تحصیلی",
-        content: "واژگان مربوط به ریاضیات، علوم، تاریخ و سایر دروس.",
-        duration: "25 دقیقه"
-      },
-      {
-        title: "هم‌خانواده‌های کلمات",
-        description: "یادگیری خانواده کلمات و مشتقات",
-        content: "کلماتی مانند happy, happiness, unhappy و خانواده‌های مشابه.",
-        duration: "18 دقیقه"
-      },
-      {
-        title: "کلمات مترادف و متضاد",
-        description: "گسترش دایره واژگان با مترادف‌ها و متضادها",
-        content: "یادگیری کلماتی مانند big/large، hot/cold و غیره.",
-        duration: "22 دقیقه"
-      }
-    ]
-  },
-  pronunciation: {
-    title: "تمرین تلفظ",
-    icon: Mic,
-    color: "from-green-400 to-emerald-400",
-    items: [
-      {
-        title: "صداهای پایه انگلیسی",
-        description: "یادگیری تلفظ صحیح صداهای اصلی",
-        content: "تمرین صداهای مانند /θ/, /ð/, /ʃ/, /ʒ/ و سایر صداهای دشوار.",
-        duration: "20 دقیقه"
-      },
-      {
-        title: "تلفظ کلمات دشوار",
-        description: "تمرین کلمات با تلفظ خاص",
-        content: "کلماتی مانند 'thorough'، 'rhythm'، 'colonel' و غیره.",
-        duration: "25 دقیقه"
-      },
-      {
-        title: "تمرین جملات",
-        description: "تلفظ جملات کامل با ریتم صحیح",
-        content: "تمرین تلفظ جملات روزمره با تأکید و ریتم مناسب.",
-        duration: "18 دقیقه"
-      },
-      {
-        title: "گفتار روان",
-        description: "بهبود جریان گفتار و کاهش مکث‌ها",
-        content: "تمرین برای گفتار پیوسته و طبیعی.",
-        duration: "22 دقیقه"
-      },
-      {
-        title: "تلفظ لهجه آمریکایی",
-        description: "یادگیری تلفظ استاندارد آمریکایی",
-        content: "تمرین تلفظ کلمات با لهجه آمریکایی استاندارد.",
-        duration: "20 دقیقه"
-      }
-    ]
-  },
-  grammar: {
-    title: "نوشتن و گرامر",
-    icon: PenTool,
-    color: "from-purple-400 to-pink-400",
-    items: [
-      {
-        title: "زمان‌های گذشته",
-        description: "Simple Past و Past Continuous",
-        content: "یادگیری کاربرد و ساختار زمان‌های گذشته.",
-        duration: "30 دقیقه"
-      },
-      {
-        title: "زمان‌های آینده",
-        description: "Future Simple و Future Continuous",
-        content: "تشخیص و استفاده از زمان‌های آینده در جملات.",
-        duration: "28 دقیقه"
-      },
-      {
-        title: "جمله‌های شرطی",
-        description: "Conditional Sentences",
-        content: "یادگیری انواع جمله‌های شرطی (Type 1, 2, 3).",
-        duration: "35 دقیقه"
-      },
-      {
-        title: "فعل‌های کمکی",
-        description: "Auxiliary Verbs",
-        content: "استفاده صحیح از do, does, did, have, has, had.",
-        duration: "25 دقیقه"
-      },
-      {
-        title: "ساختار جملات پیچیده",
-        description: "Complex Sentences",
-        content: "ساخت جملات مرکب با استفاده از conjunctions.",
-        duration: "32 دقیقه"
-      }
-    ]
-  },
-  conversation: {
-    title: "مکالمه",
-    icon: MessageSquare,
-    color: "from-orange-400 to-red-400",
-    items: [
-      {
-        title: "مکالمه روزمره",
-        description: "گفتگوهای日常生活",
-        content: "تمرین مکالمه درباره موضوعات روزمره مانند غذا، خانواده، مدرسه.",
-        duration: "25 دقیقه"
-      },
-      {
-        title: "گفتگوهای تجاری",
-        description: "Business English Conversations",
-        content: "مکالمه در محیط کاری و تجاری.",
-        duration: "30 دقیقه"
-      },
-      {
-        title: "مکالمه تلفنی",
-        description: "Telephone Conversations",
-        content: "تمرین مکالمه تلفنی و استفاده از عبارات مناسب.",
-        duration: "20 دقیقه"
-      },
-      {
-        title: "نقش‌آفرینی",
-        description: "Role-playing Scenarios",
-        content: "بازی نقش در موقعیت‌های مختلف اجتماعی.",
-        duration: "35 دقیقه"
-      },
-      {
-        title: "گفتگوهای اجتماعی",
-        description: "Social Conversations",
-        content: "مکالمه در مهمانی‌ها، ملاقات‌ها و رویدادهای اجتماعی.",
-        duration: "28 دقیقه"
-      }
-    ]
-  },
-  listening: {
-    title: "شنیداری",
-    icon: Headphones,
-    color: "from-indigo-400 to-purple-400",
-    items: [
-      {
-        title: "داستان‌های کوتاه",
-        description: "Short Stories Listening",
-        content: "شنیدن و درک داستان‌های کوتاه انگلیسی.",
-        duration: "20 دقیقه"
-      },
-      {
-        title: "خبرهای انگلیسی",
-        description: "News Listening",
-        content: "تمرین شنیداری اخبار و گزارش‌های خبری.",
-        duration: "25 دقیقه"
-      },
-      {
-        title: "گفتگوهای روزمره",
-        description: "Daily Conversations",
-        content: "شنیدن مکالمات روزمره و پاسخ به سوالات.",
-        duration: "22 دقیقه"
-      },
-      {
-        title: "فیلم‌های آموزشی",
-        description: "Educational Videos",
-        content: "تماشا و درک محتوای ویدیوهای آموزشی.",
-        duration: "30 دقیقه"
-      },
-      {
-        title: "مصاحبه‌ها و گزارش‌ها",
-        description: "Interviews & Reports",
-        content: "تمرین شنیداری مصاحبه‌ها و گزارش‌های تخصصی.",
-        duration: "28 دقیقه"
-      }
-    ]
-  }
-};
-
-const gradeNames = {
-  "7": "هفتم",
-  "8": "هشتم",
-  "9": "نهم",
-  "10": "دهم",
-  "11": "یازدهم",
-  "12": "دوازدهم",
-  "all": "همه کلاس‌ها"
-};
+const gradeNames = { "7": "هفتم", "8": "هشتم", "9": "نهم", "10": "دهم", "11": "یازدهم", "12": "دوازدهم", "all": "همه پایه‌ها" };
+const skillIcons = { vocabulary: BookOpen, pronunciation: Mic, grammar: PenTool, conversation: MessageSquare, listening: Headphones };
+const skillColors = { vocabulary: "from-blue-400 to-cyan-400", pronunciation: "from-green-400 to-emerald-400", grammar: "from-purple-400 to-pink-400", conversation: "from-orange-400 to-red-400", listening: "from-indigo-400 to-purple-400" };
+const skillTitles = { vocabulary: "واژگان", pronunciation: "تلفظ", grammar: "گرامر", conversation: "مکالمه", listening: "شنیداری" };
 
 export default function LearningItems() {
   const { gradeId, optionId } = useParams();
-  const optionData = learningData[optionId];
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [customItems, setCustomItems] = useState([]);
   const [customTitle, setCustomTitle] = useState("");
   const [customDescription, setCustomDescription] = useState("");
@@ -215,6 +25,48 @@ export default function LearningItems() {
   const audioRef = useRef(null);
   const imageRef = useRef(null);
   const pdfRef = useRef(null);
+
+  const gradeData = gradeId === "all"
+    ? Object.keys(learningContent).reduce((acc, g) => {
+        acc[g] = learningContent[g][optionId] || [];
+        return acc;
+      }, {})
+    : { [gradeId]: learningContent[gradeId]?.[optionId] || [] };
+
+  const allItems = useMemo(() => {
+    const items = Object.values(gradeData).flat();
+    if (!searchQuery) return items;
+    return items.filter((item) => {
+      const s = searchQuery.toLowerCase();
+      return (item.en && item.en.toLowerCase().includes(s)) ||
+             (item.fa && item.fa.includes(s)) ||
+             (item.word && (item.word.toLowerCase().includes(s) || item.fa.includes(s))) ||
+             (item.rule && item.rule.includes(s)) ||
+             (item.scenario && item.scenario.includes(s)) ||
+             (item.sound && item.sound.includes(s));
+    });
+  }, [gradeData, searchQuery]);
+
+  const perPage = 20;
+  const totalPages = Math.ceil(allItems.length / perPage);
+  const pagedItems = allItems.slice(page * perPage, (page + 1) * perPage);
+
+  const icon = skillIcons[optionId] || BookOpen;
+  const color = skillColors[optionId] || "from-blue-400 to-cyan-400";
+  const title = skillTitles[optionId] || optionId;
+
+  if (!learningContent[gradeId] && gradeId !== "all") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">پایه تحصیلی یافت نشد</h1>
+          <Link to={`/LanguageLearning/grades`}>
+            <Button>بازگشت</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleFileUpload = (type, file) => {
     if (!file) return;
@@ -254,25 +106,11 @@ export default function LearningItems() {
     if (type === 'pdf') pdfRef.current?.click();
   };
 
-  if (!optionData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">گزینه یافت نشد</h1>
-          <Link to={`/LanguageLearning/${gradeId}`}>
-            <Button>بازگشت</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <Link to={`/LanguageLearning/${gradeId}`}>
                 <Button variant="ghost" size="sm">
@@ -280,174 +118,280 @@ export default function LearningItems() {
                   بازگشت
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-800">
-                {optionData.title} - پایه {gradeNames[gradeId] || gradeId}
+              <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+                {title} - پایه {gradeNames[gradeId] || gradeId}
               </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">{allItems.length} مورد</span>
+              <div className="relative">
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input type="text" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }}
+                  className="pr-9 pl-4 py-2 rounded-xl border border-gray-200 text-sm focus:border-purple-400 focus:outline-none w-40 md:w-56"
+                  placeholder="جستجو..." />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Items Grid */}
-      <section className="py-16 px-6">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${optionData.color} flex items-center justify-center mb-4 mx-auto`}>
-              <optionData.icon className="w-8 h-8 text-white" />
+      <section className="py-8 px-6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="text-center mb-8">
+            <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${color} flex items-center justify-center mb-3 mx-auto`}>
+              {React.createElement(icon, { className: "w-7 h-7 text-white" })}
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              {optionData.title}
-            </h2>
-            <p className="text-lg text-gray-600">
-              5 بخش آموزشی برای بهبود مهارت {optionData.title.toLowerCase()}
-          </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{title}</h2>
+            <p className="text-gray-600">{allItems.length} مورد آموزشی برای پایه {gradeNames[gradeId] || gradeId}</p>
           </motion.div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
-            <div className="space-y-6">
-              <Card className="clay-element bg-white border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-4">محتوای سفارشی اضافه کنید</h3>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <Button className="w-full" variant="outline" onClick={() => triggerUpload('sound')}>بارگذاری صدا</Button>
-                    <Button className="w-full" variant="outline" onClick={() => triggerUpload('image')}>بارگذاری تصویر</Button>
-                    <Button className="w-full" variant="outline" onClick={() => triggerUpload('pdf')}>بارگذاری PDF</Button>
-                    <Button className="w-full" variant="outline" onClick={() => setCustomText(prev => prev)}>بارگذاری متن</Button>
-                  </div>
-
-                  <input
-                    ref={audioRef}
-                    type="file"
-                    accept="audio/*"
-                    className="hidden"
-                    onChange={(event) => handleFileUpload('sound', event.target.files?.[0])}
-                  />
-                  <input
-                    ref={imageRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(event) => handleFileUpload('image', event.target.files?.[0])}
-                  />
-                  <input
-                    ref={pdfRef}
-                    type="file"
-                    accept="application/pdf"
-                    className="hidden"
-                    onChange={(event) => handleFileUpload('pdf', event.target.files?.[0])}
-                  />
-
-                  <div className="space-y-4 mt-6">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700">عنوان</p>
-                      <input
-                        type="text"
-                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-purple-400 focus:outline-none"
-                        placeholder="عنوان مورد جدید"
-                        value={customTitle}
-                        onChange={(e) => setCustomTitle(e.target.value)}
-                      />
+          {selectedItem ? (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="clay-element bg-white border-0 mb-4">
+                <CardContent className="p-8">
+                  <Button variant="ghost" onClick={() => setSelectedItem(null)} className="mb-4">
+                    <ArrowLeft className="w-4 h-4 ml-2" />بازگشت به لیست
+                  </Button>
+                  {optionId === "vocabulary" && (
+                    <div className="text-center">
+                      <p className="text-4xl font-bold text-gray-800 mb-2">{selectedItem.en}</p>
+                      <p className="text-xl text-purple-600 mb-1">{selectedItem.phonetic}</p>
+                      <p className="text-2xl text-gray-600 mb-4">{selectedItem.fa}</p>
+                      <div className="bg-purple-50 rounded-2xl p-4 clay-element">
+                        <p className="text-gray-700 text-lg">{selectedItem.example}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700">توضیح</p>
-                      <textarea
-                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-purple-400 focus:outline-none"
-                        placeholder="توضیحات کوتاه"
-                        value={customDescription}
-                        onChange={(e) => setCustomDescription(e.target.value)}
-                        rows={3}
-                      />
+                  )}
+                  {optionId === "pronunciation" && (
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 clay-element">
+                        <Volume2 className="w-10 h-10 text-white" />
+                      </div>
+                      <p className="text-3xl font-bold text-green-700 mb-2">{selectedItem.sound}</p>
+                      <p className="text-2xl text-gray-800 mb-1">{selectedItem.word}</p>
+                      <p className="text-lg text-gray-600 mb-4">{selectedItem.fa}</p>
+                      <div className="bg-green-50 rounded-2xl p-4 clay-element">
+                        <p className="text-gray-700">{selectedItem.tip}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700">متن قابل بارگذاری</p>
-                      <textarea
-                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 focus:border-purple-400 focus:outline-none"
-                        placeholder="متن دانش‌آموز یا تمرین"
-                        value={customText}
-                        onChange={(e) => setCustomText(e.target.value)}
-                        rows={4}
-                      />
+                  )}
+                  {optionId === "grammar" && (
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 clay-element">
+                        <Check className="w-10 h-10 text-white" />
+                      </div>
+                      <p className="text-2xl font-bold text-purple-700 mb-2">{selectedItem.rule}</p>
+                      <div className="bg-purple-50 rounded-2xl p-4 mb-4 clay-element">
+                        <p className="text-lg font-mono text-gray-800 mb-1">{selectedItem.pattern}</p>
+                        <p className="text-lg text-gray-700">{selectedItem.example}</p>
+                      </div>
+                      <p className="text-xl text-gray-600">{selectedItem.fa}</p>
                     </div>
-                    <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white" onClick={handleAddCustomItem}>
-                      ذخیره مورد جدید
-                    </Button>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      {uploadedFiles.sound && <p>صدا: {uploadedFiles.sound.name}</p>}
-                      {uploadedFiles.image && <p>تصویر: {uploadedFiles.image.name}</p>}
-                      {uploadedFiles.pdf && <p>PDF: {uploadedFiles.pdf.name}</p>}
+                  )}
+                  {optionId === "conversation" && (
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-orange-700 mb-2">{selectedItem.scenario}</p>
+                      <div className="bg-orange-50 rounded-2xl p-6 mb-4 clay-element">
+                        <p className="text-lg text-gray-800 whitespace-pre-line">{selectedItem.dialogue}</p>
+                      </div>
+                      <p className="text-lg text-gray-600">{selectedItem.fa}</p>
                     </div>
-                  </div>
+                  )}
+                  {optionId === "listening" && (
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 clay-element">
+                        <Headphones className="w-10 h-10 text-white" />
+                      </div>
+                      <div className="bg-indigo-50 rounded-2xl p-6 mb-4 clay-element">
+                        <p className="text-lg text-gray-800">{selectedItem.text}</p>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedItem.questions?.map((q, i) => (
+                          <div key={i} className="bg-white rounded-xl p-3 border border-indigo-200">
+                            <p className="font-semibold text-indigo-700 mb-1">سوال {i + 1}: {q}</p>
+                            <p className="text-green-700">پاسخ: {selectedItem.answers?.[i]}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-
-              {customItems.length > 0 && (
+            </motion.div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className="clay-element bg-white border-0 shadow-sm">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">موارد سفارشی شما</h3>
-                    <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">افزودن محتوای سفارشی</h3>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <Button className="w-full" variant="outline" size="sm" onClick={() => audioRef.current?.click()}>بارگذاری صدا</Button>
+                      <Button className="w-full" variant="outline" size="sm" onClick={() => imageRef.current?.click()}>بارگذاری تصویر</Button>
+                      <Button className="w-full" variant="outline" size="sm" onClick={() => pdfRef.current?.click()}>بارگذاری PDF</Button>
+                      <Button className="w-full" variant="outline" size="sm" onClick={() => document.getElementById('custom-text-area')?.focus()}>افزودن متن</Button>
+                    </div>
+                    <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={(e) => handleFileUpload('sound', e.target.files?.[0])} />
+                    <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload('image', e.target.files?.[0])} />
+                    <input ref={pdfRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFileUpload('pdf', e.target.files?.[0])} />
+                    <div className="space-y-3 mt-4">
+                      <input type="text" className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:border-purple-400 focus:outline-none" placeholder="عنوان" value={customTitle} onChange={(e) => setCustomTitle(e.target.value)} />
+                      <textarea id="custom-text-area" className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:border-purple-400 focus:outline-none" placeholder="متن یا تمرین" value={customText} onChange={(e) => setCustomText(e.target.value)} rows={3} />
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm" onClick={handleAddCustomItem}>ذخیره</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="clay-element bg-white border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">آمار یادگیری</h3>
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      <div className="bg-blue-50 rounded-xl p-4 clay-element">
+                        <p className="text-3xl font-bold text-blue-600">{allItems.length}</p>
+                        <p className="text-sm text-gray-600">کل موارد</p>
+                      </div>
+                      <div className="bg-green-50 rounded-xl p-4 clay-element">
+                        <p className="text-3xl font-bold text-green-600">{totalPages}</p>
+                        <p className="text-sm text-gray-600">صفحات</p>
+                      </div>
+                    </div>
+                    {customItems.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-semibold text-gray-700">موارد سفارشی: {customItems.length}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {customItems.length > 0 && (
+                <Card className="clay-element bg-white border-0 shadow-sm mt-4">
+                  <CardContent className="p-4">
+                    <div className="flex gap-2 overflow-x-auto">
                       {customItems.map((item, idx) => (
-                        <div key={idx} className="rounded-2xl border border-gray-200 p-4 bg-gray-50">
-                          <h4 className="font-semibold text-gray-800">{item.title}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                          {item.content && <p className="text-sm text-gray-600 mt-2">{item.content}</p>}
-                          <div className="mt-3 text-xs text-gray-500">
-                            {item.sound && <span>صدا: {item.sound} </span>}
-                            {item.image && <span>تصویر: {item.image} </span>}
-                            {item.pdf && <span>PDF: {item.pdf}</span>}
-                          </div>
-                          <div className="mt-2 text-xs text-gray-500">ثبت شده در {item.createdAt}</div>
+                        <div key={idx} className="flex-shrink-0 bg-gray-50 rounded-xl p-3 border border-gray-200 min-w-[200px]">
+                          <p className="font-semibold text-sm text-gray-800">{item.title}</p>
+                          {item.content && <p className="text-xs text-gray-600 mt-1">{item.content}</p>}
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
               )}
-            </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {optionData.items.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="clay-element bg-white border-0 h-full hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg mb-2">{item.title}</CardTitle>
-                        <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span>⏱️ {item.duration}</span>
-                        </div>
-                      </div>
-                      <div className="text-2xl">{index + 1}</div>
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {optionId === "vocabulary" && "واژگان"}
+                    {optionId === "pronunciation" && "تمرین تلفظ"}
+                    {optionId === "grammar" && "دستور زبان و گرامر"}
+                    {optionId === "conversation" && "مکالمه"}
+                    {optionId === "listening" && "متن شنیداری"}
+                  </h3>
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="icon" className="rounded-xl w-8 h-8" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                      <span className="text-sm text-gray-600">صفحه {page + 1} از {totalPages}</span>
+                      <Button variant="outline" size="icon" className="rounded-xl w-8 h-8" disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}>
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 text-sm mb-4">{item.content}</p>
-                    <Button
-                      className="w-full"
-                      variant="outline"
-                      onClick={() => toast.info(`"${item.title}" به زودی آماده می‌شود!`)}
-                      onKeyDown={(e) => e.key === 'Enter' && toast.info(`"${item.title}" به زودی آماده می‌شود!`)}
-                    >
-                      <Play className="w-4 h-4 ml-2" />
-                      شروع کنید
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                  )}
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div key={page + searchQuery} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {pagedItems.map((item, idx) => (
+                      <motion.div key={page * perPage + idx} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                        <Card className="clay-element bg-white border-0 h-full cursor-pointer hover:shadow-lg transition-all"
+                          onClick={() => setSelectedItem(item)}>
+                          <CardContent className="p-4">
+                            {optionId === "vocabulary" && (
+                              <>
+                                <p className="text-lg font-bold text-blue-700 leading-tight">{item.en}</p>
+                                <p className="text-xs text-gray-500 mt-1">{item.phonetic}</p>
+                                <p className="text-sm text-gray-600 mt-1">{item.fa}</p>
+                              </>
+                            )}
+                            {optionId === "pronunciation" && (
+                              <>
+                                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                                  <Volume2 className="w-5 h-5 text-white" />
+                                </div>
+                                <p className="text-sm font-bold text-green-700 text-center leading-tight">{item.sound}</p>
+                                <p className="text-xs text-gray-600 text-center mt-1">{item.word}</p>
+                              </>
+                            )}
+                            {optionId === "grammar" && (
+                              <>
+                                <p className="text-sm font-bold text-purple-700 leading-tight">{item.rule}</p>
+                                <p className="text-xs text-gray-500 mt-1 font-mono">{item.pattern}</p>
+                                <p className="text-xs text-gray-600 mt-1">{item.fa}</p>
+                              </>
+                            )}
+                            {optionId === "conversation" && (
+                              <>
+                                <p className="text-sm font-bold text-orange-700 leading-tight">{item.scenario}</p>
+                                <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.dialogue}</p>
+                                <p className="text-xs text-gray-500 mt-1">{item.fa}</p>
+                              </>
+                            )}
+                            {optionId === "listening" && (
+                              <>
+                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                                  <Headphones className="w-5 h-5 text-white" />
+                                </div>
+                                <p className="text-xs text-gray-700 line-clamp-2">{item.text}</p>
+                                <p className="text-xs text-gray-500 mt-1">{item.questions?.length} سوال</p>
+                              </>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+
+                {allItems.length === 0 && (
+                  <Card className="clay-element bg-white/60 border-0 mt-4">
+                    <CardContent className="p-12 text-center">
+                      <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg text-gray-600">موردی یافت نشد</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-6">
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="icon" className="rounded-xl w-10 h-10" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+                        <ChevronRight className="w-5 h-5" />
+                      </Button>
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        const start = Math.max(0, Math.min(page - 2, totalPages - 5));
+                        const p = start + i;
+                        return (
+                          <Button key={p} variant={p === page ? "default" : "outline"}
+                            className={`rounded-xl w-10 h-10 ${p === page ? 'bg-gradient-to-r from-purple-500 to-pink-500' : ''}`}
+                            onClick={() => setPage(p)}>
+                            {p + 1}
+                          </Button>
+                        );
+                      })}
+                      <Button variant="outline" size="icon" className="rounded-xl w-10 h-10" disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}>
+                        <ChevronLeft className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
-      </div>
       </section>
     </div>
   );

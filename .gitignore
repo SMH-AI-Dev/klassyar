@@ -50,3 +50,10 @@ tmp/
 
 # Backup files (from this session)
 *-BACKUP-*/
+
+# LLA embeddings
+.lla-*
+
+# Large data files
+learning-content.js
+learningContent.cjs

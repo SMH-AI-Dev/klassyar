@@ -18,7 +18,7 @@ const features = [
   {
     icon: Sparkles,
     title: "گیمیفیکیشن آموزشی",
-    description: "تبدیل یادگیری به یک تجربه جذاب و سرگرم‌کننده با 9 نوع بازی مختلف",
+    description: "تبدیل یادگیری به یک تجربه جذاب و سرگرم‌کننده با 30 نوع بازی مختلف",
     color: "from-purple-400 to-pink-400"
   },
   {
@@ -62,7 +62,27 @@ const gameTypes = [
   { name: "بازی حافظه", emoji: "🃏", description: "پیدا کردن جفت‌ها" },
   { name: "درست یا غلط", emoji: "✔️", description: "تشخیص صحت" },
   { name: "ترتیب کلمات", emoji: "✏️", description: "مرتب‌سازی کلمات" },
-  { name: "بزن بزن", emoji: "🎯", description: "سرعت عمل" }
+  { name: "بزن بزن", emoji: "🎯", description: "سرعت عمل" },
+  { name: "جای خالی", emoji: "📄", description: "پر کردن جای خالی" },
+  { name: "رتبه‌بندی", emoji: "🏆", description: "مرتب‌کردن بر اساس اولویت" },
+  { name: "جدول کلمات متقاطع", emoji: "🔤", description: "حل جدول کلمات" },
+  { name: "خط زمانی", emoji: "⏰", description: "مرتب‌کردن رویدادها" },
+  { name: "اسپینر سوال", emoji: "🎰", description: "چرخاندن و پاسخ" },
+  { name: "کارت چرخان", emoji: "🔄", description: "چرخش برای دیدن پاسخ" },
+  { name: "نقطه فعال", emoji: "📍", description: "کلیک روی نقاط صحیح" },
+  { name: "کشیدن متن", emoji: "📝", description: "کشیدن کلمات به جای مناسب" },
+  { name: "ترکاندن بادکنک", emoji: "🎈", description: "بادکنک‌ها را بترکان" },
+  { name: "مسابقه تلویزیونی", emoji: "📺", description: "آزمون مسابقه‌ای" },
+  { name: "مارپیچ", emoji: "🏃", description: "فرار از هیولا با پاسخ" },
+  { name: "هواپیما", emoji: "✈️", description: "به سمت هدف پرواز کن" },
+  { name: "جعبه را باز کن", emoji: "📦", description: "جعبه‌ها را باز کن" },
+  { name: "کلمه گمشده", emoji: "🔎", description: "کلمه مناسب را انتخاب کن" },
+  { name: "آناگرام", emoji: "🔠", description: "حروف را مرتب کن" },
+  { name: "چوبه دار", emoji: "🎭", description: "حدس کلمه" },
+  { name: "کاشی چرخان", emoji: "🔲", description: "کاشی‌ها را برگردان" },
+  { name: "آزمون تصویری", emoji: "🖼️", description: "سوالات تصویری" },
+  { name: "نمودار برچسب‌دار", emoji: "🏷️", description: "برچسب‌گذاری تصویر" },
+  { name: "کارت‌های تصادفی", emoji: "🎲", description: "انتخاب تصادفی کارت" },
 ];
 
 const teacherFeatures = [
@@ -170,9 +190,9 @@ export default function Features() {
           className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl clay-element p-8 md:p-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">
-            9 نوع بازی آموزشی
+            30 نوع بازی آموزشی
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {gameTypes.map((game, index) => (
               <motion.div
                 key={game.name}

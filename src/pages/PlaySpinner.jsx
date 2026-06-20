@@ -1,31 +1,21 @@
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, RotateCw } from "lucide-react";
+import { ArrowRight, RotateCw, Save } from "lucide-react";
 
 export default function PlaySpinner() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const activityId = searchParams.get('id');
-  
+  const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
+
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [themeIndex, setThemeIndex] = useState(0);
   const [spinDuration, setSpinDuration] = useState(3200);
-
-  const { data: activity, isLoading } = useQuery({
-    queryKey: ['activity', activityId],
-    queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
-      return activities.find(a => a.id === activityId);
-    },
-  });
 
   const spinSpinner = () => {
     if (isSpinning || !activity?.content?.items?.length) return;
@@ -75,7 +65,7 @@ export default function PlaySpinner() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
           <p className="text-xl text-gray-600 mb-4">فعالیت یافت نشد یا گزینه‌ای وجود ندارد</p>
-          <Button onClick={() => navigate("/Dashboard")} className="rounded-xl clay-element">
+          <Button onClick={() => navigate(isDemo ? "/" : "/Dashboard")} className="rounded-xl clay-element">
             <ArrowRight className="w-5 h-5 ml-2" />
             بازگشت به داشبورد
           </Button>
@@ -159,7 +149,7 @@ export default function PlaySpinner() {
         >
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate("/Dashboard")}
+              onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
               variant="outline"
               size="icon"
               className="rounded-xl clay-element"
@@ -173,14 +163,22 @@ export default function PlaySpinner() {
               )}
             </div>
           </div>
-          <Button
-            onClick={resetSpinner}
-            variant="outline"
-            size="icon"
-            className="rounded-xl clay-element"
-          >
-            <RotateCw className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-4">
+            {isDemo && (
+              <Button onClick={() => saveActivity()} disabled={saving}
+                className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 rounded-xl clay-element px-4 py-2 font-bold text-sm">
+                <Save className="w-4 h-4 ml-2" />{saving ? "..." : "ذخیره فعالیت"}
+              </Button>
+            )}
+            <Button
+              onClick={resetSpinner}
+              variant="outline"
+              size="icon"
+              className="rounded-xl clay-element"
+            >
+              <RotateCw className="w-5 h-5" />
+            </Button>
+          </div>
         </motion.div>
 
         <Card className={`clay-element bg-gradient-to-br ${theme.background} border-0`}>

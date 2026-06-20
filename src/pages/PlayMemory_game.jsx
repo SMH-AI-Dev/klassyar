@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useGameData } from "@/hooks/useGameData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Trophy, RotateCw } from "lucide-react";
+import { ArrowRight, Trophy, RotateCw, Save } from "lucide-react";
 import { motion } from "framer-motion";
 import RandomAnimations from "@/components/shared/RandomAnimations";
 
 export default function PlayMemory_game() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const activityId = searchParams.get('id');
+
+  const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
 
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
   const [moves, setMoves] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-
-  const { data: activity, isLoading } = useQuery({
-    queryKey: ['activity', activityId],
-    queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
-      return activities.find(a => a.id === activityId);
-    },
-  });
 
   useEffect(() => {
     if (activity?.content?.pairs) {
@@ -91,7 +82,7 @@ export default function PlayMemory_game() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
           <p className="text-xl text-gray-600 mb-4">فعالیت یافت نشد</p>
-          <Button onClick={() => navigate("/Dashboard")}>بازگشت به داشبورد</Button>
+          <Button onClick={() => navigate(isDemo ? "/" : "/Dashboard")}>بازگشت به داشبورد</Button>
         </Card>
       </div>
     );
@@ -121,7 +112,7 @@ export default function PlayMemory_game() {
                 شروع دوباره
               </Button>
               <Button
-                onClick={() => navigate("/Dashboard")}
+                onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
                 variant="outline"
                 className="flex-1 rounded-xl clay-element"
               >
@@ -140,13 +131,19 @@ export default function PlayMemory_game() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <Button
-            onClick={() => navigate("/Dashboard")}
+            onClick={() => navigate(isDemo ? "/" : "/Dashboard")}
             variant="outline"
             className="rounded-xl clay-element"
           >
             <ArrowRight className="w-5 h-5 ml-2" />
             بازگشت
           </Button>
+          {isDemo && (
+            <Button onClick={() => saveActivity()} disabled={saving}
+              className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-gray-900 rounded-xl clay-element px-4 py-2 font-bold text-sm">
+              <Save className="w-4 h-4 ml-2" />{saving ? "..." : "ذخیره فعالیت"}
+            </Button>
+          )}
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800">{activity.title}</h1>
             <p className="text-gray-600">حرکت‌ها: {moves}</p>
