@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,6 +11,7 @@ import SavedActivities from './pages/SavedActivities';
 import Features from './pages/Features';
 import About from './pages/About';
 import MyClasses from './pages/MyClasses';
+import Login from './pages/Login';
 import TeacherReports from './pages/TeacherReports';
 import LanguageLearning from './pages/LanguageLearning';
 import GradeSelection from './pages/GradeSelection';
@@ -121,6 +123,7 @@ function AppContent() {
           <Route path="/SavedActivities" element={<SavedActivities />} />
           <Route path="/Features" element={<Features />} />
           <Route path="/About" element={<About />} />
+          <Route path="/Login" element={<Login />} />
           <Route path="/MyClasses" element={<MyClasses />} />
           <Route path="/TeacherReports" element={<TeacherReports />} />
           <Route path="/LanguageLearning" element={<LanguageLearning />} />
@@ -146,9 +149,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <ErrorBoundary>
-          <AppContent />
-        </ErrorBoundary>
+        <AuthProvider>
+          <ErrorBoundary>
+            <AppContent />
+          </ErrorBoundary>
+        </AuthProvider>
       </ToastProvider>
     </QueryClientProvider>
   );

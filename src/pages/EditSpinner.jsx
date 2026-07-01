@@ -37,7 +37,9 @@ export default function EditSpinner() {
 
   useEffect(() => {
     if (existingActivity) {
-      setActivity(existingActivity);
+      const content = existingActivity.content || {};
+      const items = content.items || (content.questions ? content.questions.map(q => q.question || "") : ["", ""]);
+      setActivity({ ...existingActivity, content: { items } });
     }
   }, [existingActivity]);
 

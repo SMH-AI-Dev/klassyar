@@ -248,7 +248,7 @@ export default function About() {
             </p>
           </div>
           <p className="text-sm md:text-base text-gray-500">
-            نسخه 1.3.0 | © 2026 کلاس یار | تمامی حقوق محفوظ است
+            نسخه 1.4.0 | © 2026 کلاس یار | تمامی حقوق محفوظ است
           </p>
         </motion.div>
       </div>

@@ -20,9 +20,7 @@ export default function CreateSpinner() {
     type: "spinner",
     theme: "emerald",
     content: {
-      questions: [
-        { question: "", answer: "" }
-      ]
+      items: ["", ""]
     }
   });
 
@@ -34,47 +32,51 @@ export default function CreateSpinner() {
     },
   });
 
-  const addQuestion = () => {
+  const addItem = () => {
     setActivity(prev => ({
       ...prev,
       content: {
         ...prev.content,
-        questions: [...prev.content.questions, { question: "", answer: "" }]
+        items: [...prev.content.items, ""]
       }
     }));
   };
 
-  const removeQuestion = (index) => {
-    if (activity.content.questions.length <= 1) {
-      alert("باید حداقل 1 سوال وجود داشته باشد");
+  const removeItem = (index) => {
+    if (activity.content.items.length <= 2) {
+      alert("حداقل 2 گزینه باید وجود داشته باشد");
       return;
     }
     setActivity(prev => ({
       ...prev,
       content: {
         ...prev.content,
-        questions: prev.content.questions.filter((_, i) => i !== index)
+        items: prev.content.items.filter((_, i) => i !== index)
       }
     }));
   };
 
-  const updateQuestion = (index, field, value) => {
+  const updateItem = (index, value) => {
     setActivity(prev => {
-      const newQuestions = [...prev.content.questions];
-      newQuestions[index] = { ...newQuestions[index], [field]: value };
+      const newItems = [...prev.content.items];
+      newItems[index] = value;
       return {
         ...prev,
-        content: { ...prev.content, questions: newQuestions }
+        content: { ...prev.content, items: newItems }
       };
     });
   };
 
   const handleSave = () => {
-    if (!activity.title || activity.content.questions.length === 0) {
-      alert("لطفاً عنوان و حداقل یک سوال اضافه کنید");
+    const validItems = activity.content.items.filter(item => item.trim());
+    if (!activity.title || validItems.length < 2) {
+      alert("لطفاً عنوان و حداقل 2 گزینه وارد کنید");
       return;
     }
-    createMutation.mutate(activity);
+    createMutation.mutate({
+      ...activity,
+      content: { items: validItems }
+    });
   };
 
   return (
@@ -135,61 +137,40 @@ export default function CreateSpinner() {
           </CardContent>
         </Card>
 
-        <div className="space-y-4 md:space-y-6">
-          {activity.content.questions.map((q, index) => (
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-800">گزینه‌های اسپینر</h3>
+          <Button onClick={addItem} variant="outline" size="sm" className="rounded-xl clay-element">
+            <Plus className="w-4 h-4 ml-2" />
+            افزودن گزینه
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {activity.content.items.map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              className="flex gap-2"
             >
-              <Card className="clay-element bg-white border-0">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="text-base md:text-lg">سوال {index + 1}</CardTitle>
-                  <Button
-                    onClick={() => removeQuestion(index)}
-                    variant="ghost"
-                    size="icon"
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </Button>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>سوال</Label>
-                    <Textarea
-                      value={q.question}
-                      onChange={(e) => updateQuestion(index, 'question', e.target.value)}
-                      placeholder="سوال خود را بنویسید..."
-                      className="rounded-xl clay-element"
-                      rows={2}
-                    />
-                  </div>
-                  <div>
-                    <Label>پاسخ</Label>
-                    <Textarea
-                      value={q.answer}
-                      onChange={(e) => updateQuestion(index, 'answer', e.target.value)}
-                      placeholder="پاسخ صحیح..."
-                      className="rounded-xl clay-element"
-                      rows={2}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <Input
+                value={item}
+                onChange={(e) => updateItem(index, e.target.value)}
+                placeholder={`گزینه ${index + 1}...`}
+                className="rounded-xl clay-element"
+              />
+              <Button
+                onClick={() => removeItem(index)}
+                variant="outline"
+                size="icon"
+                className="rounded-xl clay-element text-red-500 hover:text-red-700 shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </motion.div>
           ))}
         </div>
-
-        <Button
-          onClick={addQuestion}
-          variant="outline"
-          className="w-full mt-6 h-16 rounded-2xl clay-element border-2 border-dashed border-emerald-300 hover:bg-emerald-50"
-        >
-          <Plus className="w-5 h-5 ml-2" />
-          افزودن سوال جدید
-        </Button>
       </div>
     </div>
   );

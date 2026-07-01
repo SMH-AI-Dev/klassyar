@@ -1,7 +1,7 @@
 {
   "name": "klassyar",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,7 +15,6 @@
     "@react-pdf/renderer": "^4.3.1",
     "@tanstack/react-query": "^5.14.0",
     "axios": "^1.6.2",
-    "better-sqlite3": "^12.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.0",

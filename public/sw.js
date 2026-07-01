@@ -1,21 +1,13 @@
-const CACHE = 'klassyar-v1';
-const ASSETS = [
-  '/',
-  '/Dashboard',
-  '/SavedActivities',
-  '/Features',
-  '/About',
-  '/LanguageLearning',
-  '/LanguageLearning/grades',
-  '/MyClasses',
-  '/manifest.json',
-  '/icon.svg',
-];
+const CACHE = 'klassyar-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => {
-      return cache.addAll(ASSETS);
+      return cache.addAll([
+        '/',
+        '/manifest.json',
+        '/icon.svg',
+      ]);
     })
   );
   self.skipWaiting();
@@ -27,9 +19,14 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('fetch', (event) => {
@@ -37,18 +34,21 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
 
   if (request.method !== 'GET') return;
-
-  if (url.pathname.startsWith('/api/') || url.pathname.includes('base44')) {
-    event.respondWith(networkFirst(request));
+  if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(request).catch(() => caches.match(request)));
     return;
   }
 
-  if (url.origin === location.origin && request.mode === 'navigate') {
-    event.respondWith(networkFirst(request));
-    return;
-  }
+  const isAsset = url.pathname.startsWith('/assets/');
+  const isPage = request.mode === 'navigate';
 
-  event.respondWith(cacheFirst(request));
+  if (isAsset) {
+    event.respondWith(cacheFirst(request));
+  } else if (isPage) {
+    event.respondWith(networkFirst(request));
+  } else {
+    event.respondWith(cacheFirst(request));
+  }
 });
 
 async function cacheFirst(request) {
@@ -77,9 +77,8 @@ async function networkFirst(request) {
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
-    if (request.mode === 'navigate') {
-      return caches.match('/');
-    }
+    const fallback = await caches.match('/');
+    if (fallback) return fallback;
     return new Response('Offline', { status: 503 });
   }
 }

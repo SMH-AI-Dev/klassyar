@@ -2,62 +2,65 @@
 // This is a simulation of the Base44 SDK
 
 const STORAGE_KEY = 'klassyar_data';
+const AUTH_KEY = 'klassyar_user';
 
-// Get data from localStorage
 const getData = () => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : { activities: [], classes: [], results: [], user: null };
+    return data ? JSON.parse(data) : { activities: [], classes: [], results: [] };
   } catch {
-    return { activities: [], classes: [], results: [], user: null };
+    return { activities: [], classes: [], results: [] };
   }
 };
 
-// Save data to localStorage
 const saveData = (data) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
-// Generate unique ID
+function getAuthUser() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
 
-// Mock Base44 Client
 export const base44 = {
   auth: {
     me: async () => {
-      const data = getData();
-      if (!data.user) {
-        // Create a default user if none exists
-        const user = {
-          id: generateId(),
-          email: 'demo@klassyar.com',
-          name: 'کاربر آزمایشی',
-          created_date: new Date().toISOString(),
+      const authUser = getAuthUser();
+      if (authUser) {
+        return {
+          id: authUser.id || generateId(),
+          email: authUser.username ? `${authUser.username}@klassyar.local` : 'user@klassyar.com',
+          name: authUser.name || 'کاربر',
+          created_date: authUser.createdAt || new Date().toISOString(),
         };
-        data.user = user;
-        saveData(data);
-        return user;
       }
-      return data.user;
-    },
-    signIn: async (email, password) => {
-      const user = {
+      return {
         id: generateId(),
-        email,
-        name: 'کاربر جدید',
+        email: 'guest@klassyar.com',
+        name: 'مهمان',
         created_date: new Date().toISOString(),
       };
-      const data = getData();
-      data.user = user;
-      saveData(data);
+    },
+    signIn: async (username, password) => {
+      const user = {
+        id: generateId(),
+        email: `${username}@klassyar.local`,
+        name: username,
+        created_date: new Date().toISOString(),
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
       return user;
     },
     signOut: async () => {
-      const data = getData();
-      data.user = null;
-      saveData(data);
+      localStorage.removeItem(AUTH_KEY);
     },
   },
   entities: {
@@ -92,7 +95,7 @@ export const base44 = {
           ...activityData,
           id: generateId(),
           created_date: new Date().toISOString(),
-          created_by: data.user?.email || 'demo@klassyar.com',
+          created_by: (() => { try { const u = getAuthUser(); return u?.email; } catch {} return 'demo@klassyar.com'; })(),
           plays_count: 0,
         };
         data.activities.push(activity);
@@ -183,7 +186,7 @@ export const base44 = {
           ...resultData,
           id: generateId(),
           created_date: new Date().toISOString(),
-          created_by: data.user?.email || 'demo@klassyar.com',
+          created_by: (() => { try { const u = getAuthUser(); return u?.email; } catch {} return 'demo@klassyar.com'; })(),
         };
         data.results.push(result);
         saveData(data);

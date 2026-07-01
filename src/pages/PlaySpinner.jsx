@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, RotateCw, Save } from "lucide-react";
+import RandomAnimations from "@/components/shared/RandomAnimations";
 
 export default function PlaySpinner() {
   const navigate = useNavigate();
