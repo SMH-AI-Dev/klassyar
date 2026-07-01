@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, BookOpen, Heart, Menu, X, LayoutDashboard, Users, Lightbulb, LogOut, LogIn } from 'lucide-react';
+import { Home, BookOpen, Heart, Menu, X, LayoutDashboard, Users, Lightbulb, LogOut, LogIn, Gamepad2, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 
@@ -11,12 +11,14 @@ export default function Navbar() {
   const location = useLocation();
 
   const navItems = [
-    { name: 'خانه', path: '/', icon: Home },
+    { name: 'خانه', path: '/Home', icon: Home },
     { name: 'داشبورد', path: '/Dashboard', icon: LayoutDashboard },
+    { name: 'بازی‌ها', path: '/game-hub', icon: Gamepad2 },
     { name: 'آموزش زبان', path: '/LanguageLearning', icon: BookOpen },
+    { name: 'زبان انگلیسی', path: '/english-hub', icon: Globe },
     { name: 'کلاس‌های من', path: '/MyClasses', icon: Users },
     { name: 'امکانات', path: '/Features', icon: Lightbulb },
-    { name: 'درباره کلاس یار', path: '/About', icon: Heart },
+    { name: 'درباره', path: '/About', icon: Heart },
   ];
 
   const isActive = (path) => location.pathname === path;

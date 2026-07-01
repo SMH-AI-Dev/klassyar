@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,6 +17,10 @@ import LanguageLearning from './pages/LanguageLearning';
 import GradeSelection from './pages/GradeSelection';
 import LearningOptions from './pages/LearningOptions';
 import LearningItems from './pages/LearningItems';
+import GameHub from './pages/GameHub';
+import EnglishGameHub from './pages/EnglishGameHub';
+import PlayGame from './pages/PlayGame';
+import PlayEnglish from './pages/PlayEnglish';
 
 // Create Pages
 import CreateFlashcard from './pages/CreateFlashcard';
@@ -107,6 +111,17 @@ const queryClient = new QueryClient({
   },
 });
 
+function IndexRouter() {
+  const { isLoggedIn, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-pink-900"><div className="w-10 h-10 border-4 border-purple-400 border-t-transparent rounded-full animate-spin" /></div>;
+  if (!isLoggedIn) return <Login />;
+  return <Layout><Home /></Layout>;
+}
+
+function PublicRoute({ children }) {
+  return <>{children}</>;
+}
+
 function AppContent() {
   const { addToast } = useToast();
   
@@ -116,31 +131,39 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
-          <Route path="/SavedActivities" element={<SavedActivities />} />
-          <Route path="/Features" element={<Features />} />
-          <Route path="/About" element={<About />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/MyClasses" element={<MyClasses />} />
-          <Route path="/TeacherReports" element={<TeacherReports />} />
-          <Route path="/LanguageLearning" element={<LanguageLearning />} />
-          <Route path="/LanguageLearning/grades" element={<GradeSelection />} />
-          <Route path="/LanguageLearning/:gradeId" element={<LearningOptions />} />
-          <Route path="/LanguageLearning/:gradeId/:optionId" element={<LearningItems />} />
-          
-          {/* Create Route */}
-          <Route path="/Create" element={<CreateRouter />} />
-          
-          {/* Play & Edit Routes */}
-          <Route path="/Play" element={<PlayRouter />} />
-          <Route path="/Edit" element={<EditRouter />} />
-          
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        {/* Public routes (no Layout) */}
+        <Route path="/Login" element={<Login />} />
+        
+        {/* App routes (with Layout) */}
+        <Route element={<PublicRoute />}>
+          <Route path="/" element={<IndexRouter />} />
+        </Route>
+        <Route path="/Home" element={<Layout><Home /></Layout>} />
+        <Route path="/Dashboard" element={<Layout><Dashboard /></Layout>} />
+        <Route path="/SavedActivities" element={<Layout><SavedActivities /></Layout>} />
+        <Route path="/Features" element={<Layout><Features /></Layout>} />
+        <Route path="/About" element={<Layout><About /></Layout>} />
+        <Route path="/MyClasses" element={<Layout><MyClasses /></Layout>} />
+        <Route path="/TeacherReports" element={<Layout><TeacherReports /></Layout>} />
+        <Route path="/LanguageLearning" element={<Layout><LanguageLearning /></Layout>} />
+        <Route path="/LanguageLearning/grades" element={<Layout><GradeSelection /></Layout>} />
+        <Route path="/LanguageLearning/:gradeId" element={<Layout><LearningOptions /></Layout>} />
+        <Route path="/LanguageLearning/:gradeId/:optionId" element={<Layout><LearningItems /></Layout>} />
+        <Route path="/game-hub" element={<Layout><GameHub /></Layout>} />
+        <Route path="/english-hub" element={<Layout><EnglishGameHub /></Layout>} />
+        <Route path="/play-game/:gameId" element={<PlayGame />} />
+        <Route path="/play-english/:gameId" element={<PlayEnglish />} />
+        
+        {/* Create Route */}
+        <Route path="/Create" element={<CreateRouter />} />
+        
+        {/* Play & Edit Routes */}
+        <Route path="/Play" element={<PlayRouter />} />
+        <Route path="/Edit" element={<EditRouter />} />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }
