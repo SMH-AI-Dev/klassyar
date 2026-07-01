@@ -9,7 +9,7 @@
     "build": "vite build",
     "postbuild": "copy /Y dist\\index.html dist\\404.html >nul",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -t true",
+    "deploy": "gh-pages -d dist --dotfiles",
     "preview": "vite preview",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run build && electron-builder"
