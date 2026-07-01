@@ -131,13 +131,11 @@ export default function Login() {
         initial={{ opacity: 0, x: -100 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.3 }}
-        className="relative z-10 w-full max-w-3xl mb-6 md:mb-8 text-right px-2"
+        className="relative z-10 w-full flex justify-center mb-4 md:mb-6 px-2"
       >
-        <div className="inline-block bg-white/10 backdrop-blur-md px-5 md:px-8 py-4 md:py-5 rounded-3xl border border-white/20 shadow-xl">
-          <p className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-white leading-relaxed">
-            درس می‌خونم،
-            <br className="md:hidden" />
-            {" "}چون آینده‌ای در انتظارمه
+        <div className="inline-block bg-white/10 backdrop-blur-md px-4 md:px-6 py-2 md:py-3 rounded-3xl border border-white/20 shadow-xl">
+          <p className="text-sm md:text-base lg:text-lg font-black bg-gradient-to-l from-pink-300 via-yellow-200 to-purple-300 bg-clip-text text-transparent leading-relaxed text-center">
+            درس می‌خونم چون آینده‌ای در انتظارمه
             <br />
             که لیاقتش رو دارم{" "}
             <motion.span
@@ -290,7 +288,7 @@ export default function Login() {
                 className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-100"
               >
                 <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-[10px] md:text-xs text-gray-400">
-                  <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> ۳۰ بازی آموزشی</span>
+                  <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> ۱۳۰ بازی آموزشی</span>
                   <span className="flex items-center gap-1"><Brain className="w-3 h-3" /> یادگیری هوشمند</span>
                   <span className="flex items-center gap-1"><Heart className="w-3 h-3" /> کاملاً رایگان</span>
                 </div>
@@ -305,17 +303,13 @@ export default function Login() {
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="relative z-10 w-full max-w-3xl mt-6 md:mt-8 text-left px-2"
+        className="relative z-10 w-full flex justify-center mt-4 md:mt-6 px-2"
       >
-        <div className="inline-block float-left bg-white/10 backdrop-blur-md px-5 md:px-8 py-4 md:py-5 rounded-3xl border border-white/20 shadow-xl">
-          <p className="text-xl md:text-3xl lg:text-4xl font-bold text-white leading-relaxed">
-            برای موفق شدن،
+        <div className="inline-block bg-white/10 backdrop-blur-md px-4 md:px-6 py-2 md:py-3 rounded-3xl border border-white/20 shadow-xl">
+          <p className="text-sm md:text-base lg:text-lg font-black bg-gradient-to-r from-yellow-200 via-pink-300 to-purple-300 bg-clip-text text-transparent leading-relaxed text-center">
+            برای موفق شدن فقط باور داشته باش
             <br />
-            اولین قدم این است که
-            <br />
-            باور داشته باشید
-            <br />
-            که می‌توانید
+            که می‌تونی از پس هر چیزی بر بیای
           </p>
         </div>
       </motion.div>

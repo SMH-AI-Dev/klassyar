@@ -1,11 +1,13 @@
 {
   "name": "klassyar",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "copy /Y dist\\index.html dist\\404.html >nul",
+    "deploy": "npm run build && npm run postbuild",
     "preview": "vite preview",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
     "electron:build": "npm run build && electron-builder"

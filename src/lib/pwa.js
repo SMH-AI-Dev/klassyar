@@ -71,6 +71,8 @@ async function checkForUpdates(reg) {
   }, 1000 * 60 * 30);
 }
 
-navigator.serviceWorker.addEventListener("controllerchange", () => {
-  window.location.reload();
-});
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+}

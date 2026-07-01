@@ -73,7 +73,7 @@ export default function About() {
           <h2 className="text-3xl md:text-5xl font-bold text-purple-600 mb-4">🏫 کلاس، یار بود 📚</h2>
           <div className="text-lg md:text-2xl text-gray-600 max-w-3xl mx-auto px-4 space-y-3">
             <p>
-              🌟 <strong>پلتفرم گیمیفیکیشن آموزشی</strong> با <strong>۳۰ نوع بازی تعاملی</strong> 🎯
+              🌟 <strong>پلتفرم گیمیفیکیشن آموزشی</strong> با <strong>۱۳۰ بازی تعاملی</strong> 🎯
             </p>
             <p>
               👩‍🏫 ساخته شده برای <strong>معلمان</strong> ، <strong>دانش‌آموزان</strong> و <strong>والدین</strong> 🤝

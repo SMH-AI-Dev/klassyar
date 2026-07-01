@@ -1,7 +1,7 @@
 {
   "name": "کلاس یار",
   "short_name": "کلاس یار",
-  "description": "پلتفرم گیمیفیکیشن آموزشی با ۳۰ نوع بازی جذاب برای معلمان و دانش‌آموزان",
+  "description": "پلتفرم گیمیفیکیشن آموزشی با ۱۰۰+ بازی جذاب برای معلمان و دانش‌آموزان",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone"],

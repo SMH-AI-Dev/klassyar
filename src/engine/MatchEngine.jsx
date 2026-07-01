@@ -97,8 +97,9 @@ export default function MatchEngine({ game }) {
                   <div className="w-full h-full flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 text-white" style={{ backfaceVisibility: "hidden" }}>
                     <span className="text-3xl">?</span>
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-                    <span className="text-4xl">{card.emoji}</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-white p-2" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
+                    <span className="text-3xl md:text-4xl">{card.emoji}</span>
+                    <span className="text-xs md:text-sm font-bold text-gray-700 mt-1">{card.id}</span>
                   </div>
                 </motion.div>
               </motion.button>

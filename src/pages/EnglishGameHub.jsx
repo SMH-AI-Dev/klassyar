@@ -27,9 +27,9 @@ export default function EnglishGameHub() {
     <div className="min-h-screen p-4 sm:p-8 bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50" dir="rtl">
       <div className="max-w-6xl mx-auto">
         <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
-          🇬🇧 بازی‌های آموزش زبان انگلیسی
+          🎯 باشگاه چالش انگلیسی
         </motion.h1>
-        <p className="text-gray-500 text-center mb-8">۵۰ بازی برای یادگیری لغات، گرامر، مکالمه و بیشتر</p>
+        <p className="text-gray-500 text-center mb-8">۵۰ چالش انگلیسی برای تقویت لغات، گرامر، مکالمه و بیشتر</p>
 
         <div className="relative max-w-md mx-auto mb-6">
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

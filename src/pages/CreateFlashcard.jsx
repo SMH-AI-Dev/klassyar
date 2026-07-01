@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Save, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import IconPicker from "@/components/shared/IconPicker";
 
 export default function CreateFlashcard() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function CreateFlashcard() {
       cards: [{ front: "", back: "", image: "", icon: "🎴" }]
     }
   });
+  const [iconPicker, setIconPicker] = useState({ open: false, cardIndex: 0, field: "front" });
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
@@ -157,21 +159,49 @@ export default function CreateFlashcard() {
                 <CardContent className="space-y-4">
                   <div>
                     <Label>جلوی کارت (سوال)</Label>
-                    <Textarea
-                      value={card.front}
-                      onChange={(e) => updateCard(index, 'front', e.target.value)}
-                      placeholder="سوال یا موضوع..."
-                      className="rounded-xl clay-element"
-                    />
+                    <div className="relative">
+                      <Textarea
+                        value={card.front}
+                        onChange={(e) => updateCard(index, 'front', e.target.value)}
+                        placeholder="سوال یا موضوع..."
+                        className="rounded-xl clay-element"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIconPicker({ open: true, cardIndex: index, field: "front" })}
+                        className="absolute left-2 top-2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-purple-100 transition-all"
+                        title="افزودن آیکون"
+                      >😊</button>
+                    </div>
+                    {iconPicker.open && iconPicker.cardIndex === index && iconPicker.field === "front" && (
+                      <IconPicker
+                        onSelect={(icon) => { updateCard(index, 'front', card.front + icon); setIconPicker({ open: false, cardIndex: 0, field: "front" }); }}
+                        onClose={() => setIconPicker({ open: false, cardIndex: 0, field: "front" })}
+                      />
+                    )}
                   </div>
                   <div>
                     <Label>پشت کارت (جواب)</Label>
-                    <Textarea
-                      value={card.back}
-                      onChange={(e) => updateCard(index, 'back', e.target.value)}
-                      placeholder="پاسخ یا توضیحات..."
-                      className="rounded-xl clay-element"
-                    />
+                    <div className="relative">
+                      <Textarea
+                        value={card.back}
+                        onChange={(e) => updateCard(index, 'back', e.target.value)}
+                        placeholder="پاسخ یا توضیحات..."
+                        className="rounded-xl clay-element"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIconPicker({ open: true, cardIndex: index, field: "back" })}
+                        className="absolute left-2 top-2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-purple-100 transition-all"
+                        title="افزودن آیکون"
+                      >😊</button>
+                    </div>
+                    {iconPicker.open && iconPicker.cardIndex === index && iconPicker.field === "back" && (
+                      <IconPicker
+                        onSelect={(icon) => { updateCard(index, 'back', card.back + icon); setIconPicker({ open: false, cardIndex: 0, field: "front" }); }}
+                        onClose={() => setIconPicker({ open: false, cardIndex: 0, field: "front" })}
+                      />
+                    )}
                   </div>
                 </CardContent>
               </Card>

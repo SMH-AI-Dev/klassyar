@@ -35,7 +35,11 @@ const templates = [
   { type: "flip_tiles", name: "کاشی‌های چرخان", emoji: "🔄", description: "کاشی‌ها را برگردان", color: "from-purple-400 to-violet-400" },
   { type: "image_quiz", name: "آزمون تصویری", emoji: "🖼️", description: "سوالات با تصویر", color: "from-cyan-400 to-blue-400" },
   { type: "labelled_diagram", name: "نمودار برچسب‌دار", emoji: "🏷️", description: "برچسب‌گذاری تصویر", color: "from-emerald-400 to-green-400" },
-  { type: "random_cards", name: "کارت‌های تصادفی", emoji: "🎴", description: "انتخاب تصادفی کارت", color: "from-amber-400 to-yellow-400" }
+  { type: "random_cards", name: "کارت‌های تصادفی", emoji: "🎴", description: "انتخاب تصادفی کارت", color: "from-amber-400 to-yellow-400" },
+  // New engine types
+  { type: "match", name: "حافظه با کارت", emoji: "🃏", description: "پیدا کردن جفت کارت‌های مشابه", color: "from-violet-400 to-purple-400", isNew: true },
+  { type: "type", name: "پاسخ تشریحی", emoji: "✍️", description: "نوشتن پاسخ به صورت دستی", color: "from-cyan-400 to-blue-400", isNew: true },
+  { type: "scramble", name: "حروف بهم ریخته", emoji: "🔀", description: "مرتب کردن حروف برای ساخت کلمه", color: "from-lime-400 to-green-400", isNew: true },
 ];
 
 const templateSamples = {
@@ -91,7 +95,7 @@ export default function TemplateSelector({ onClose }) {
           <div className="p-4 md:p-6 border-b border-purple-200/50 flex items-center justify-between sticky top-0 bg-white/95 z-10">
             <div>
               <h2 className="text-xl md:text-3xl font-bold text-gray-800">انتخاب نوع فعالیت 🎮</h2>
-              <p className="text-xs md:text-base text-gray-600 mt-1">{templates.length} بازی آموزشی برای شما!</p>
+              <p className="text-xs md:text-base text-gray-600 mt-1">۱۳۰ بازی آموزشی برای شما!</p>
             </div>
             <Button
               onClick={onClose}

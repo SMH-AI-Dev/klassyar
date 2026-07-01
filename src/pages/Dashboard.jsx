@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Gamepad2, Trophy, Users, TrendingUp } from "lucide-react";
+import { Plus, Gamepad2, Trophy, Users, TrendingUp, BookOpen, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ActivityGrid from "@/components/dashboard/ActivityGrid";
@@ -20,23 +20,30 @@ export default function Dashboard() {
   });
 
   const { data: activities, isLoading } = useQuery({
-    queryKey: ['activities'],
+    queryKey: ['activities', user?.email],
     queryFn: async () => {
       try {
         const data = await base44.entities.Activity.list();
-        // مرتب‌سازی بر اساس تاریخ ساخت (جدیدترین اول)
-        return data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+        const filtered = user?.email
+          ? data.filter(a => a.created_by === user.email)
+          : data;
+        return filtered.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
       } catch (error) {
         console.error('Error loading activities:', error);
         return [];
       }
     },
+    enabled: !!user,
     initialData: [],
   });
 
   const { data: results } = useQuery({
-    queryKey: ['results'],
-    queryFn: () => base44.entities.GameResult.list('-created_date', 100),
+    queryKey: ['results', user?.email],
+    queryFn: async () => {
+      const all = await base44.entities.GameResult.list('-created_date', 100);
+      return user?.email ? all.filter(r => r.created_by === user.email) : all;
+    },
+    enabled: !!user,
     initialData: [],
   });
 
@@ -107,6 +114,49 @@ export default function Dashboard() {
             </motion.div>
           ))}
         </div>
+
+        {/* Game Hubs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"
+        >
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <Card
+              className="clay-element bg-gradient-to-br from-green-50 to-emerald-50 border-0 cursor-pointer hover:shadow-lg transition-all"
+              onClick={() => navigate('/game-hub')}
+            >
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white text-2xl shadow-lg">
+                  <BookOpen className="w-7 h-7" />
+                </div>
+                <div className="flex-1 text-right">
+                  <h3 className="text-lg font-bold text-gray-800">بازی‌های آموزشی</h3>
+                  <p className="text-sm text-gray-500">۵۰ بازی آموزشی تعاملی</p>
+                </div>
+                <span className="text-2xl">🎮</span>
+              </CardContent>
+            </Card>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <Card
+              className="clay-element bg-gradient-to-br from-blue-50 to-indigo-50 border-0 cursor-pointer hover:shadow-lg transition-all"
+              onClick={() => navigate('/english-hub')}
+            >
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-2xl shadow-lg">
+                  <Globe className="w-7 h-7" />
+                </div>
+                <div className="flex-1 text-right">
+                  <h3 className="text-lg font-bold text-gray-800">باشگاه چالش انگلیسی</h3>
+                  <p className="text-sm text-gray-500">۵۰ بازی آموزش زبان انگلیسی</p>
+                </div>
+                <span className="text-2xl">🏴</span>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
 
         {/* Activities Section */}
         <motion.div

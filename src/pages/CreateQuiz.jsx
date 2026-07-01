@@ -28,6 +28,8 @@ export default function CreateQuiz() {
       }]
     }
   });
+  const [iconPickerFor, setIconPickerFor] = useState(null);
+  const [iconPickerType, setIconPickerType] = useState("");
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -188,23 +190,45 @@ export default function CreateQuiz() {
                 <CardContent className="space-y-4">
                   <div>
                     <Label>متن سوال</Label>
-                    <Textarea
-                      value={question.question}
-                      onChange={(e) => updateQuestion(qIndex, 'question', e.target.value)}
-                      placeholder="سوال خود را بنویسید..."
-                      className="rounded-xl clay-element"
-                    />
+                    <div className="relative">
+                      <Textarea
+                        value={question.question}
+                        onChange={(e) => updateQuestion(qIndex, 'question', e.target.value)}
+                        placeholder="سوال خود را بنویسید..."
+                        className="rounded-xl clay-element"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { setIconPickerFor(`${qIndex}-question`); setIconPickerType("question"); }}
+                        className="absolute left-2 top-2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-purple-100 transition-all"
+                        title="افزودن آیکون"
+                      >😊</button>
+                    </div>
+                    {iconPickerFor === `${qIndex}-question` && (
+                      <IconPicker
+                        onSelect={(icon) => { updateQuestion(qIndex, 'question', question.question + icon); setIconPickerFor(null); }}
+                        onClose={() => setIconPickerFor(null)}
+                      />
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>گزینه‌ها</Label>
                     {question.options.map((option, optIndex) => (
                       <div key={optIndex} className="flex items-center gap-2">
-                        <Input
-                          value={option}
-                          onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
-                          placeholder={`گزینه ${optIndex + 1}`}
-                          className="rounded-xl clay-element"
-                        />
+                        <div className="relative flex-1">
+                          <Input
+                            value={option}
+                            onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
+                            placeholder={`گزینه ${optIndex + 1}`}
+                            className="rounded-xl clay-element"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => { setIconPickerFor(`${qIndex}-opt-${optIndex}`); setIconPickerType("option"); }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded hover:bg-purple-100 transition-all text-sm"
+                            title="افزودن آیکون"
+                          >😊</button>
+                        </div>
                         <input
                           type="radio"
                           name={`correct-${qIndex}`}
@@ -214,6 +238,16 @@ export default function CreateQuiz() {
                         />
                       </div>
                     ))}
+                    {iconPickerFor?.startsWith(`${qIndex}-opt-`) && (
+                      <IconPicker
+                        onSelect={(icon) => {
+                          const idx = parseInt(iconPickerFor.split('-').pop());
+                          updateOption(qIndex, idx, activity.content.questions[qIndex].options[idx] + icon);
+                          setIconPickerFor(null);
+                        }}
+                        onClose={() => setIconPickerFor(null)}
+                      />
+                    )}
                   </div>
                 </CardContent>
               </Card>

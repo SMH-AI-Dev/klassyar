@@ -26,6 +26,13 @@ function getAuthUser() {
   }
 }
 
+function currentUserEmail() {
+  const u = getAuthUser();
+  if (u?.username) return `${u.username}@klassyar.local`;
+  if (u?.email) return u.email;
+  return null;
+}
+
 const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
@@ -37,30 +44,17 @@ export const base44 = {
       if (authUser) {
         return {
           id: authUser.id || generateId(),
-          email: authUser.username ? `${authUser.username}@klassyar.local` : 'user@klassyar.com',
+          email: currentUserEmail() || 'user@klassyar.com',
           name: authUser.name || 'کاربر',
           created_date: authUser.createdAt || new Date().toISOString(),
         };
       }
       return {
         id: generateId(),
-        email: 'guest@klassyar.com',
+        email: 'guest@klassyar.local',
         name: 'مهمان',
         created_date: new Date().toISOString(),
       };
-    },
-    signIn: async (username, password) => {
-      const user = {
-        id: generateId(),
-        email: `${username}@klassyar.local`,
-        name: username,
-        created_date: new Date().toISOString(),
-      };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-      return user;
-    },
-    signOut: async () => {
-      localStorage.removeItem(AUTH_KEY);
     },
   },
   entities: {
@@ -95,7 +89,7 @@ export const base44 = {
           ...activityData,
           id: generateId(),
           created_date: new Date().toISOString(),
-          created_by: (() => { try { const u = getAuthUser(); return u?.email; } catch {} return 'demo@klassyar.com'; })(),
+          created_by: currentUserEmail() || 'guest@klassyar.local',
           plays_count: 0,
         };
         data.activities.push(activity);
@@ -186,7 +180,7 @@ export const base44 = {
           ...resultData,
           id: generateId(),
           created_date: new Date().toISOString(),
-          created_by: (() => { try { const u = getAuthUser(); return u?.email; } catch {} return 'demo@klassyar.com'; })(),
+          created_by: currentUserEmail() || 'guest@klassyar.local',
         };
         data.results.push(result);
         saveData(data);
