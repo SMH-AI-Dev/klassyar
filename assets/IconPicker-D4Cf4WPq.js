@@ -1,0 +1,1 @@
+import{j as e}from"./vendor-react-BUnnUkSt.js";import{I as s}from"./input-Cv8wg4f1.js";function o({currentIcon:r,onSelect:a}){return e.jsx("div",{className:"space-y-2",children:e.jsx(s,{value:r||"",onChange:t=>a(t.target.value),placeholder:"نام آیکون را وارد کنید (مثلاً: Star, Heart)",className:"rounded-xl clay-element",dir:"ltr"})})}export{o as I};

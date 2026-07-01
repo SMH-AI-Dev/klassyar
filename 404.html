@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>کلاس یار</title>
+  <script>
+    sessionStorage.redirect = location.href;
+  </script>
+</head>
+<body>
+  <script>
+    const path = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    if (path && path !== location.href) {
+      history.replaceState(null, '', path);
+    }
+  </script>
+</body>
+</html>

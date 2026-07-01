@@ -1,0 +1,48 @@
+{
+  "name": "کلاس یار",
+  "short_name": "کلاس یار",
+  "description": "پلتفرم گیمیفیکیشن آموزشی با ۱۰۰+ بازی جذاب برای معلمان و دانش‌آموزان",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#ffffff",
+  "theme_color": "#a855f7",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "fa",
+  "categories": ["education", "games"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "داشبورد",
+      "short_name": "داشبورد",
+      "description": "مشاهده فعالیت‌ها و آمار",
+      "url": "/Dashboard",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "آموزش زبان",
+      "short_name": "زبان",
+      "description": "آموزش زبان انگلیسی پایه هفتم تا دوازدهم",
+      "url": "/LanguageLearning",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "فعالیت‌های من",
+      "short_name": "فعالیت‌ها",
+      "description": "مشاهده فعالیت‌های ذخیره شده",
+      "url": "/SavedActivities",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

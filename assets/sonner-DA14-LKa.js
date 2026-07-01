@@ -1,0 +1,1 @@
+const o={success:d=>{window.toastAdd&&window.toastAdd(d,"success")},error:d=>{window.toastAdd&&window.toastAdd(d,"error")},info:d=>{window.toastAdd&&window.toastAdd(d,"info")},warning:d=>{window.toastAdd&&window.toastAdd(d,"warning")}};export{o as t};
