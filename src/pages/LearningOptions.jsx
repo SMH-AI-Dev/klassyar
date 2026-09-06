@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, BookOpen, Mic, PenTool, MessageSquare, Headphones } from "lucide-react";
 import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
+import lessonsIcon from "@/assets/pic/lessons.png";
 
 const learningOptions = [
   {
@@ -136,6 +137,7 @@ export default function LearningOptions() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
+            <img src={lessonsIcon} alt="آموزش زبان" className="w-20 h-20 mx-auto mb-2 icon-float drop-shadow-lg" />
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               مهارت مورد نظر خود را انتخاب کنید
             </h2>

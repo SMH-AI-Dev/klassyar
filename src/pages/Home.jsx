@@ -8,6 +8,9 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import FloatingEmojis from "@/components/shared/FloatingEmojis";
+import gamesImg from "@/assets/pic/games.png";
+import progressImg from "@/assets/pic/progress.png";
+import successImg from "@/assets/pic/success.png";
 
 const gameTypes = [
   { name: "کارت‌های آموزشی", emoji: "🎴", type: "flashcard", color: "from-purple-400 to-pink-400" },
@@ -46,16 +49,19 @@ const gameTypes = [
 
 const features = [
   {
+    image: gamesImg,
     icon: Gamepad2, title: "بازی‌های متنوع",
     description: "۱۳۰ بازی مختلف برای یادگیری جذاب",
     color: "from-purple-400 to-pink-400"
   },
   {
+    image: progressImg,
     icon: Users, title: "مدیریت کلاس",
     description: "دعوت و پیگیری پیشرفت دانش‌آموزان",
     color: "from-blue-400 to-cyan-400"
   },
   {
+    image: successImg,
     icon: Trophy, title: "سیستم امتیازدهی",
     description: "رقابت سالم و انگیزه‌بخشی",
     color: "from-orange-400 to-red-400"
@@ -239,9 +245,13 @@ export default function Home() {
                 >
                   <Card className="clay-element bg-white/60 border-0 h-full">
                     <CardContent className="p-8">
-                      <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl clay-element flex items-center justify-center mb-4`}>
-                        <feature.icon className="w-8 h-8 text-white" />
-                      </div>
+                      {feature.image ? (
+                        <img src={feature.image} alt={feature.title} className="w-16 h-16 icon-float rounded-2xl object-cover mb-4" />
+                      ) : (
+                        <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl clay-element flex items-center justify-center mb-4`}>
+                          <feature.icon className="w-8 h-8 text-white" />
+                        </div>
+                      )}
                       <h3 className="text-2xl font-bold text-gray-800 mb-3">{feature.title}</h3>
                       <p className="text-gray-600 text-lg">{feature.description}</p>
                     </CardContent>

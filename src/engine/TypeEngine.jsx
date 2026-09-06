@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, RotateCcw, Star, Timer, Lightbulb } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw, Timer, Lightbulb } from "lucide-react";
+import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
 export default function TypeEngine({ game }) {
   const [qIdx, setQIdx] = useState(0);
@@ -62,9 +63,7 @@ export default function TypeEngine({ game }) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-900 to-indigo-900">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-white/95 rounded-3xl p-8 max-w-md w-full text-center clay-element">
-          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-            <Star className="w-12 h-12 text-white" />
-          </motion.div>
+          <img src={bestSelfBadge} alt="بهترین خودت باش!" className="w-24 h-24 mx-auto mb-4 icon-float rounded-2xl" />
           <h2 className="text-3xl font-bold text-gray-800 mb-2">{game.title}</h2>
           <p className="text-gray-500 mb-6">نتیجه نهایی</p>
           <div className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">{pct}%</div>
@@ -96,8 +95,9 @@ export default function TypeEngine({ game }) {
         <div className="bg-white/95 rounded-3xl p-6 mb-4 clay-element">
           <div className="flex items-center gap-3 mb-4">
             <Lightbulb className="w-6 h-6 text-yellow-500" />
-            <p className="text-xl font-bold text-gray-800">{q.hint}</p>
+            <p dir="auto" className="text-xl font-bold text-gray-800">{q.hint}</p>
           </div>
+          {q.fa && <p dir="rtl" className="text-sm text-gray-500 mt-1 text-right">{q.fa}</p>}
         </div>
         <div className="relative">
           <input

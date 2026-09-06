@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Star, Timer, Lightbulb, Shuffle } from "lucide-react";
+import { RotateCcw, Timer, Lightbulb, Shuffle } from "lucide-react";
+import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
 export default function ScrambleEngine({ game }) {
   const [wIdx, setWIdx] = useState(0);
@@ -78,9 +79,7 @@ export default function ScrambleEngine({ game }) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-pink-900 to-rose-900">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-white/95 rounded-3xl p-8 max-w-md w-full text-center clay-element">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1 }} className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-            <Star className="w-12 h-12 text-white" />
-          </motion.div>
+          <img src={bestSelfBadge} alt="بهترین خودت باش!" className="w-24 h-24 mx-auto mb-4 icon-float rounded-2xl" />
           <h2 className="text-3xl font-bold text-gray-800 mb-2">{game.title}</h2>
           <p className="text-gray-500 mb-6">نتیجه نهایی</p>
           <div className="text-6xl font-bold mb-4 bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">{pct}%</div>

@@ -1,0 +1,17 @@
+// Repo order for this machine: local pre-fetched mirror first, then Aliyun
+// mirrors, then the originals. dl.google.com is unreachable from this network.
+// Usage: gradlew assembleDebug --init-script force-mirrors.init.gradle
+allprojects {
+    buildscript {
+        repositories {
+            maven { url uri('file:///C:/Users/SMH/.openclaw-autoclaw/workspace/klassyar/android/local-mirror') }
+            maven { url 'https://maven.aliyun.com/repository/google' }
+            maven { url 'https://maven.aliyun.com/repository/central' }
+        }
+    }
+    repositories {
+        maven { url uri('file:///C:/Users/SMH/.openclaw-autoclaw/workspace/klassyar/android/local-mirror') }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+    }
+}

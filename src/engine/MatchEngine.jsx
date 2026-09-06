@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Timer as TimerIcon } from "lucide-react";
+import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
 function shuffle(arr) {
   const a = [...arr];
@@ -66,7 +67,7 @@ export default function MatchEngine({ game }) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-900 to-teal-900">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-white/95 rounded-3xl p-8 max-w-md w-full text-center clay-element">
-          <div className="text-6xl mb-4">🎉</div>
+          <img src={bestSelfBadge} alt="بهترین خودت باش!" className="w-24 h-24 mx-auto mb-4 icon-float rounded-2xl" />
           <h2 className="text-3xl font-bold text-gray-800 mb-2">{game.title}</h2>
           <p className="text-gray-500 mb-4">تبریک! همه جفت‌ها رو پیدا کردی</p>
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -99,7 +100,8 @@ export default function MatchEngine({ game }) {
                   </div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-white p-2" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
                     <span className="text-3xl md:text-4xl">{card.emoji}</span>
-                    <span className="text-xs md:text-sm font-bold text-gray-700 mt-1">{card.id}</span>
+                    <span className="text-xs md:text-sm font-bold text-gray-700 mt-1">{card.en || card.text}</span>
+                    {card.en && <span className="text-[10px] md:text-xs text-gray-400 mt-0.5">{card.text}</span>}
                   </div>
                 </motion.div>
               </motion.button>

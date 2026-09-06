@@ -60,3 +60,11 @@ learningContent.cjs
 
 # Original screenshots with spaces (clean copies in public/screenshots/)
 Screenshot *.png
+
+# Release artifacts (uploaded to GitHub Releases, not committed)
+/*.apk
+*.zip
+
+# Temp analysis sheets
+Pic/_contact-sheet.jpg
+Pic/_ico-sheet.png

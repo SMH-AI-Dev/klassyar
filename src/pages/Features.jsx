@@ -13,9 +13,13 @@ import {
   Clock
 } from "lucide-react";
 import { motion } from "framer-motion";
+import gamesImg from "@/assets/pic/games.png";
+import progressImg from "@/assets/pic/progress.png";
+import successImg from "@/assets/pic/success.png";
 
 const features = [
   {
+    image: gamesImg,
     icon: Sparkles,
     title: "گیمیفیکیشن آموزشی",
     description: "تبدیل یادگیری به یک تجربه جذاب و سرگرم‌کننده با 30 نوع بازی مختلف",
@@ -28,6 +32,7 @@ const features = [
     color: "from-blue-400 to-cyan-400"
   },
   {
+    image: successImg,
     icon: Trophy,
     title: "سیستم امتیازدهی",
     description: "رقابت سالم و انگیزه‌بخش با امتیازات و رتبه‌بندی",
@@ -40,6 +45,7 @@ const features = [
     color: "from-green-400 to-emerald-400"
   },
   {
+    image: progressImg,
     icon: BarChart3,
     title: "گزارشات پیشرفت",
     description: "مشاهده آمار دقیق عملکرد دانش‌آموزان",
@@ -167,9 +173,13 @@ export default function Features() {
               >
                 <Card className="clay-element bg-white border-0 h-full">
                   <CardContent className="p-6">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl mb-4 flex items-center justify-center clay-element`}>
-                      <feature.icon className="w-8 h-8 text-white" />
-                    </div>
+                    {feature.image ? (
+                      <img src={feature.image} alt={feature.title} className="w-16 h-16 icon-float rounded-2xl object-cover mb-4" />
+                    ) : (
+                      <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl mb-4 flex items-center justify-center clay-element`}>
+                        <feature.icon className="w-8 h-8 text-white" />
+                      </div>
+                    )}
                     <h3 className="text-xl font-bold text-gray-800 mb-3">
                       {feature.title}
                     </h3>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import gameLibrary from "@/lib/gameLibrary";
+import gamesIcon from "@/assets/pic/games.png";
 
 const categories = ["همه", "ریاضی", "علوم", "تاریخ", "جغرافیا", "هوش", "دقت", "حافظه", "خلاقیت"];
 
@@ -26,6 +27,7 @@ export default function GameHub() {
   return (
     <div className="min-h-screen p-4 sm:p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50" dir="rtl">
       <div className="max-w-6xl mx-auto">
+        <img src={gamesIcon} alt="بازیهای آموزشی" className="w-20 h-20 mx-auto mb-2 icon-float drop-shadow-lg" />
         <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
           🎮 بازی‌های آموزشی
         </motion.h1>

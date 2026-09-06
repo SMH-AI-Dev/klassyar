@@ -3,6 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Sparkles, Users, Trophy, Zap, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
+// All about-page images, sorted by their 2-digit number (02.jpg .. 33.jpg).
+const aboutImagesModule = import.meta.glob('../assets/about/*.jpg', { eager: true, import: 'default' });
+const aboutImages = Object.keys(aboutImagesModule)
+  .sort((a, b) => {
+    const na = parseInt(a.match(/(\d{2})\.jpg$/)?.[1] ?? "99", 10);
+    const nb = parseInt(b.match(/(\d{2})\.jpg$/)?.[1] ?? "99", 10);
+    return na - nb;
+  })
+  .map((key) => aboutImagesModule[key]);
+
 const teamMembers = [
   {
     name: "مهندس سید مهدی حسینی",
@@ -206,6 +216,36 @@ export default function About() {
                     )}
                   </CardContent>
                 </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Gallery Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <div className="text-center mb-6 md:mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">نگاهی به کلاس یار</h2>
+            <p className="text-gray-600 text-base md:text-lg px-4">تصاویری از دنیای کلاس یار</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {aboutImages.map((src, index) => (
+              <motion.div
+                key={src}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: (index % 8) * 0.05 }}
+              >
+                <img
+                  src={src}
+                  alt="تصویری از کلاس یار"
+                  loading="lazy"
+                  className="w-full h-auto rounded-2xl clay-element"
+                />
               </motion.div>
             ))}
           </div>

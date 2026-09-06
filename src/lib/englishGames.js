@@ -1,4 +1,4 @@
-﻿const englishGames = [
+const englishGames = [
   {
     id: "eng-voc-colors",
     title: "رنگ‌ها به انگلیسی",
@@ -8,14 +8,14 @@
     difficulty: "Beginner",
     engine: "match",
     cards: [
-      { id: "red", text: "قرمز", emoji: "🔴" },
-      { id: "blue", text: "آبی", emoji: "🔵" },
-      { id: "green", text: "سبز", emoji: "🟢" },
-      { id: "yellow", text: "زرد", emoji: "🟡" },
-      { id: "white", text: "سفید", emoji: "⚪" },
-      { id: "black", text: "سیاه", emoji: "⚫" },
-      { id: "orange", text: "نارنجی", emoji: "🟠" },
-      { id: "purple", text: "بنفش", emoji: "🟣" },
+      { id: "red", text: "قرمز", emoji: "🔴", en: "red" },
+      { id: "blue", text: "آبی", emoji: "🔵", en: "blue" },
+      { id: "green", text: "سبز", emoji: "🟢", en: "green" },
+      { id: "yellow", text: "زرد", emoji: "🟡", en: "yellow" },
+      { id: "white", text: "سفید", emoji: "⚪", en: "white" },
+      { id: "black", text: "سیاه", emoji: "⚫", en: "black" },
+      { id: "orange", text: "نارنجی", emoji: "🟠", en: "orange" },
+      { id: "purple", text: "بنفش", emoji: "🟣", en: "purple" },
     ]
   },
   {
@@ -27,12 +27,12 @@
     difficulty: "Beginner",
     engine: "match",
     cards: [
-      { id: "dog", text: "سگ", emoji: "🐕" },
-      { id: "cat", text: "گربه", emoji: "🐈" },
-      { id: "bird", text: "پرنده", emoji: "🐦" },
-      { id: "fish", text: "ماهی", emoji: "🐟" },
-      { id: "horse", text: "اسب", emoji: "🐴" },
-      { id: "rabbit", text: "خرگوش", emoji: "🐇" },
+      { id: "dog", text: "سگ", emoji: "🐕", en: "dog" },
+      { id: "cat", text: "گربه", emoji: "🐈", en: "cat" },
+      { id: "bird", text: "پرنده", emoji: "🐦", en: "bird" },
+      { id: "fish", text: "ماهی", emoji: "🐟", en: "fish" },
+      { id: "horse", text: "اسب", emoji: "🐴", en: "horse" },
+      { id: "rabbit", text: "خرگوش", emoji: "🐇", en: "rabbit" },
     ]
   },
   {
@@ -61,14 +61,14 @@
     difficulty: "Beginner",
     engine: "match",
     cards: [
-      { id: "head", text: "سر", emoji: "🗣️" },
-      { id: "hand", text: "دست", emoji: "✋" },
-      { id: "foot", text: "پا", emoji: "🦶" },
-      { id: "eye", text: "چشم", emoji: "👁️" },
-      { id: "ear", text: "گوش", emoji: "👂" },
-      { id: "nose", text: "بینی", emoji: "👃" },
-      { id: "arm", text: "بازو", emoji: "💪" },
-      { id: "leg", text: "پا", emoji: "🦵" },
+      { id: "head", text: "سر", emoji: "🗣️", en: "head" },
+      { id: "hand", text: "دست", emoji: "✋", en: "hand" },
+      { id: "foot", text: "پا", emoji: "🦶", en: "foot" },
+      { id: "eye", text: "چشم", emoji: "👁️", en: "eye" },
+      { id: "ear", text: "گوش", emoji: "👂", en: "ear" },
+      { id: "nose", text: "بینی", emoji: "👃", en: "nose" },
+      { id: "arm", text: "بازو", emoji: "💪", en: "arm" },
+      { id: "leg", text: "پا", emoji: "🦵", en: "leg" },
     ]
   },
   {
@@ -80,12 +80,12 @@
     difficulty: "Beginner",
     engine: "match",
     cards: [
-      { id: "shirt", text: "پیراهن", emoji: "👔" },
-      { id: "pants", text: "شلوار", emoji: "👖" },
-      { id: "shoes", text: "کفش", emoji: "👟" },
-      { id: "hat", text: "کلاه", emoji: "🧢" },
-      { id: "socks", text: "جوراب", emoji: "🧦" },
-      { id: "dress", text: "لباس زنانه", emoji: "👗" },
+      { id: "shirt", text: "پیراهن", emoji: "👔", en: "shirt" },
+      { id: "pants", text: "شلوار", emoji: "👖", en: "pants" },
+      { id: "shoes", text: "کفش", emoji: "👟", en: "shoes" },
+      { id: "hat", text: "کلاه", emoji: "🧢", en: "hat" },
+      { id: "socks", text: "جوراب", emoji: "🧦", en: "socks" },
+      { id: "dress", text: "لباس زنانه", emoji: "👗", en: "dress" },
     ]
   },
   {
@@ -113,12 +113,12 @@
     difficulty: "Beginner",
     engine: "match",
     cards: [
-      { id: "book", text: "کتاب", emoji: "📕" },
-      { id: "pen", text: "خودکار", emoji: "🖊️" },
-      { id: "pencil", text: "مداد", emoji: "✏️" },
-      { id: "bag", text: "کیف", emoji: "🎒" },
-      { id: "ruler", text: "خط‌کش", emoji: "📏" },
-      { id: "eraser", text: "پاک‌کن", emoji: "🧹" },
+      { id: "book", text: "کتاب", emoji: "📕", en: "book" },
+      { id: "pen", text: "خودکار", emoji: "🖊️", en: "pen" },
+      { id: "pencil", text: "مداد", emoji: "✏️", en: "pencil" },
+      { id: "bag", text: "کیف", emoji: "🎒", en: "bag" },
+      { id: "ruler", text: "خط‌کش", emoji: "📏", en: "ruler" },
+      { id: "eraser", text: "پاک‌کن", emoji: "🧹", en: "eraser" },
     ]
   },
   {
@@ -146,14 +146,14 @@
     difficulty: "Intermediate",
     engine: "match",
     cards: [
-      { id: "doctor", text: "دکتر", emoji: "👨‍⚕️" },
-      { id: "teacher", text: "معلم", emoji: "👩‍🏫" },
-      { id: "engineer", text: "مهندس", emoji: "👷" },
-      { id: "pilot", text: "خلبان", emoji: "👨‍✈️" },
-      { id: "nurse", text: "پرستار", emoji: "👩‍⚕️" },
-      { id: "farmer", text: "کشاورز", emoji: "👨‍🌾" },
-      { id: "cook", text: "آشپز", emoji: "👨‍🍳" },
-      { id: "artist", text: "هنرمند", emoji: "👩‍🎨" },
+      { id: "doctor", text: "دکتر", emoji: "👨‍⚕️", en: "doctor" },
+      { id: "teacher", text: "معلم", emoji: "👩‍🏫", en: "teacher" },
+      { id: "engineer", text: "مهندس", emoji: "👷", en: "engineer" },
+      { id: "pilot", text: "خلبان", emoji: "👨‍✈️", en: "pilot" },
+      { id: "nurse", text: "پرستار", emoji: "👩‍⚕️", en: "nurse" },
+      { id: "farmer", text: "کشاورز", emoji: "👨‍🌾", en: "farmer" },
+      { id: "cook", text: "آشپز", emoji: "👨‍🍳", en: "cook" },
+      { id: "artist", text: "هنرمند", emoji: "👩‍🎨", en: "artist" },
     ]
   },
   {
@@ -165,12 +165,12 @@
     difficulty: "Beginner",
     engine: "match",
     cards: [
-      { id: "car", text: "ماشین", emoji: "🚗" },
-      { id: "bus", text: "اتوبوس", emoji: "🚌" },
-      { id: "train", text: "قطار", emoji: "🚂" },
-      { id: "plane", text: "هواپیما", emoji: "✈️" },
-      { id: "bike", text: "دوچرخه", emoji: "🚲" },
-      { id: "ship", text: "کشتی", emoji: "🚢" },
+      { id: "car", text: "ماشین", emoji: "🚗", en: "car" },
+      { id: "bus", text: "اتوبوس", emoji: "🚌", en: "bus" },
+      { id: "train", text: "قطار", emoji: "🚂", en: "train" },
+      { id: "plane", text: "هواپیما", emoji: "✈️", en: "plane" },
+      { id: "bike", text: "دوچرخه", emoji: "🚲", en: "bike" },
+      { id: "ship", text: "کشتی", emoji: "🚢", en: "ship" },
     ]
   },
   {
@@ -182,12 +182,12 @@
     difficulty: "Beginner",
     engine: "quiz",
     questions: [
-      { question: "Complete: I ___ a student.", options: ["am", "is", "are", "be"], correctIndex: 0 },
-      { question: "Complete: She ___ to school every day.", options: ["go", "goes", "going", "went"], correctIndex: 1 },
-      { question: "Choose the correct article: ___ apple a day keeps the doctor away.", options: ["A", "An", "The", "None"], correctIndex: 1 },
-      { question: "Which is correct?", options: ["He don't like", "He doesn't like", "He not like", "He no like"], correctIndex: 1 },
-      { question: "Complete: They ___ playing football now.", options: ["is", "am", "are", "be"], correctIndex: 2 },
-      { question: "Choose: This ___ my book.", options: ["am", "is", "are", "be"], correctIndex: 1 },
+      { question: "Complete: I ___ a student.", fa: "جمله را کامل کن: من دانش‌آموز ___ .", options: ["am", "is", "are", "be"], correctIndex: 0 },
+      { question: "Complete: She ___ to school every day.", fa: "جمله را کامل کن: او هر روز به مدرسه ___ .", options: ["go", "goes", "going", "went"], correctIndex: 1 },
+      { question: "Choose the correct article: ___ apple a day keeps the doctor away.", fa: "حرف تعریف درست را انتخاب کن: روزی یک ___ سیب، آدم را از دکتر دور می‌کند.", options: ["A", "An", "The", "None"], correctIndex: 1 },
+      { question: "Which is correct?", fa: "کدام جمله درست است؟", options: ["He don't like", "He doesn't like", "He not like", "He no like"], correctIndex: 1 },
+      { question: "Complete: They ___ playing football now.", fa: "جمله را کامل کن: آنها الان در حال بازی فوتبال ___ .", options: ["is", "am", "are", "be"], correctIndex: 2 },
+      { question: "Choose: This ___ my book.", fa: "انتخاب کن: این کتاب من ___ .", options: ["am", "is", "are", "be"], correctIndex: 1 },
     ]
   },
   {
@@ -199,12 +199,12 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "Which sentence is in the past tense?", options: ["I eat pizza", "I ate pizza", "I will eat pizza", "I am eating pizza"], correctIndex: 1 },
-      { question: "Complete: I ___ (see) a movie yesterday.", options: ["see", "saw", "seen", "seeing"], correctIndex: 1 },
-      { question: "Which is future tense?", options: ["I go", "I went", "I have gone", "I will go"], correctIndex: 3 },
-      { question: "Complete: She ___ (live) here for 5 years.", options: ["lives", "has lived", "is living", "lived"], correctIndex: 1 },
-      { question: "Which is present continuous?", options: ["She sings", "She sang", "She is singing", "She has sung"], correctIndex: 2 },
-      { question: "Complete: They ___ (arrive) tomorrow.", options: ["arrive", "arrived", "will arrive", "have arrived"], correctIndex: 2 },
+      { question: "Which sentence is in the past tense?", fa: "کدام جمله در زمان گذشته است؟", options: ["I eat pizza", "I ate pizza", "I will eat pizza", "I am eating pizza"], correctIndex: 1 },
+      { question: "Complete: I ___ (see) a movie yesterday.", fa: "جمله را کامل کن: من دیروز یک فیلم ___ .", options: ["see", "saw", "seen", "seeing"], correctIndex: 1 },
+      { question: "Which is future tense?", fa: "کدام در زمان آینده است؟", options: ["I go", "I went", "I have gone", "I will go"], correctIndex: 3 },
+      { question: "Complete: She ___ (live) here for 5 years.", fa: "جمله را کامل کن: او پنج سال است که اینجا ___ .", options: ["lives", "has lived", "is living", "lived"], correctIndex: 1 },
+      { question: "Which is present continuous?", fa: "کدام در زمان حال استمراری است؟", options: ["She sings", "She sang", "She is singing", "She has sung"], correctIndex: 2 },
+      { question: "Complete: They ___ (arrive) tomorrow.", fa: "جمله را کامل کن: آنها فردا ___ .", options: ["arrive", "arrived", "will arrive", "have arrived"], correctIndex: 2 },
     ]
   },
   {
@@ -216,12 +216,12 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "I go to school ___ bus.", options: ["by", "on", "in", "with"], correctIndex: 0 },
-      { question: "My birthday is ___ June.", options: ["in", "on", "at", "by"], correctIndex: 0 },
-      { question: "The cat is ___ the table.", options: ["in", "on", "under", "between"], correctIndex: 2 },
-      { question: "I will meet you ___ 5 o'clock.", options: ["in", "on", "at", "by"], correctIndex: 2 },
-      { question: "She is afraid ___ spiders.", options: ["from", "of", "to", "about"], correctIndex: 1 },
-      { question: "We arrived ___ the airport at 6.", options: ["to", "in", "at", "on"], correctIndex: 2 },
+      { question: "I go to school ___ bus.", fa: "من ___ اتوبوس به مدرسه می‌روم.", options: ["by", "on", "in", "with"], correctIndex: 0 },
+      { question: "My birthday is ___ June.", fa: "تولد من ___ ژوئن است.", options: ["in", "on", "at", "by"], correctIndex: 0 },
+      { question: "The cat is ___ the table.", fa: "گربه ___ میز است.", options: ["in", "on", "under", "between"], correctIndex: 2 },
+      { question: "I will meet you ___ 5 o'clock.", fa: "تو را ___ ساعت ۵ می‌بینم.", options: ["in", "on", "at", "by"], correctIndex: 2 },
+      { question: "She is afraid ___ spiders.", fa: "او ___ عنکبوت‌ها می‌ترسد.", options: ["from", "of", "to", "about"], correctIndex: 1 },
+      { question: "We arrived ___ the airport at 6.", fa: "ما ساعت ۶ ___ فرودگاه رسیدیم.", options: ["to", "in", "at", "on"], correctIndex: 2 },
     ]
   },
   {
@@ -250,12 +250,12 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "She sings ___.", options: ["beautiful", "beautifully", "beauty", "more beautiful"], correctIndex: 1 },
-      { question: "He is a ___ driver.", options: ["careful", "carefully", "care", "more careful"], correctIndex: 0 },
-      { question: "This test is ___ than the last one.", options: ["easy", "easier", "easiest", "more easy"], correctIndex: 1 },
-      { question: "She runs very ___.", options: ["quick", "quickly", "quicker", "quickest"], correctIndex: 1 },
-      { question: "Mount Everest is the ___ mountain in the world.", options: ["high", "higher", "highest", "most high"], correctIndex: 2 },
-      { question: "He is ___ than his brother.", options: ["tall", "taller", "tallest", "more tall"], correctIndex: 1 },
+      { question: "She sings ___.", fa: "او ___ آواز می‌خواند.", options: ["beautiful", "beautifully", "beauty", "more beautiful"], correctIndex: 1 },
+      { question: "He is a ___ driver.", fa: "او یک راننده ___ است.", options: ["careful", "carefully", "care", "more careful"], correctIndex: 0 },
+      { question: "This test is ___ than the last one.", fa: "این آزمون ___ آزمون قبلی است.", options: ["easy", "easier", "easiest", "more easy"], correctIndex: 1 },
+      { question: "She runs very ___.", fa: "او خیلی ___ می‌دود.", options: ["quick", "quickly", "quicker", "quickest"], correctIndex: 1 },
+      { question: "Mount Everest is the ___ mountain in the world.", fa: "کوه اورست ___ کوهِ دنیاست.", options: ["high", "higher", "highest", "most high"], correctIndex: 2 },
+      { question: "He is ___ than his brother.", fa: "او از برادرش ___ است.", options: ["tall", "taller", "tallest", "more tall"], correctIndex: 1 },
     ]
   },
   {
@@ -267,12 +267,12 @@
     difficulty: "Intermediate",
     engine: "type",
     questions: [
-      { hint: "What article goes before 'apple'?", answer: "an" },
-      { hint: "What article goes before 'book'?", answer: "a" },
-      { hint: "What article completes: '___ sun is very hot'?", answer: "the" },
-      { hint: "What article goes before 'hour'?", answer: "an" },
-      { hint: "What article goes before 'university'?", answer: "a" },
-      { hint: "Complete: 'I have ___ idea!'", answer: "an" },
+      { hint: "What article goes before 'apple'?", fa: "قبل از «apple» کدام حرف تعریف می‌آید؟", answer: "an" },
+      { hint: "What article goes before 'book'?", fa: "قبل از «book» کدام حرف تعریف می‌آید؟", answer: "a" },
+      { hint: "What article completes: '___ sun is very hot'?", fa: "جمله «___ sun is very hot» با کدام حرف تعریف کامل می‌شود؟", answer: "the" },
+      { hint: "What article goes before 'hour'?", fa: "قبل از «hour» کدام حرف تعریف می‌آید؟", answer: "an" },
+      { hint: "What article goes before 'university'?", fa: "قبل از «university» کدام حرف تعریف می‌آید؟", answer: "a" },
+      { hint: "Complete: 'I have ___ idea!'", fa: "جمله را کامل کن: «I have ___ idea!»", answer: "an" },
     ]
   },
   {
@@ -284,12 +284,12 @@
     difficulty: "Beginner",
     engine: "type",
     questions: [
-      { hint: "What is the plural of 'cat'?", answer: "cats" },
-      { hint: "What is the plural of 'bus'?", answer: "buses" },
-      { hint: "What is the plural of 'child'?", answer: "children" },
-      { hint: "What is the plural of 'woman'?", answer: "women" },
-      { hint: "What is the plural of 'box'?", answer: "boxes" },
-      { hint: "What is the plural of 'foot'?", answer: "feet" },
+      { hint: "What is the plural of 'cat'?", fa: "جمع «cat» چیست؟", answer: "cats" },
+      { hint: "What is the plural of 'bus'?", fa: "جمع «bus» چیست؟", answer: "buses" },
+      { hint: "What is the plural of 'child'?", fa: "جمع «child» چیست؟", answer: "children" },
+      { hint: "What is the plural of 'woman'?", fa: "جمع «woman» چیست؟", answer: "women" },
+      { hint: "What is the plural of 'box'?", fa: "جمع «box» چیست؟", answer: "boxes" },
+      { hint: "What is the plural of 'foot'?", fa: "جمع «foot» چیست؟", answer: "feet" },
     ]
   },
   {
@@ -301,12 +301,12 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "Which is a correct question?", options: ["You are ready?", "Are you ready?", "You ready are?", "Ready you are?"], correctIndex: 1 },
-      { question: "Complete: ___ she like coffee?", options: ["Do", "Does", "Is", "Are"], correctIndex: 1 },
-      { question: "Which question is correct?", options: ["Where you live?", "Where do you live?", "Where does you live?", "Where are you live?"], correctIndex: 1 },
-      { question: "___ you seen my keys?", options: ["Do", "Did", "Have", "Are"], correctIndex: 2 },
-      { question: "Complete: ___ he coming to the party?", options: ["Do", "Does", "Is", "Are"], correctIndex: 2 },
-      { question: "Which is a tag question?", options: ["You are tired, aren't you?", "Are you tired?", "You are tired?", "Why are you tired?"], correctIndex: 0 },
+      { question: "Which is a correct question?", fa: "کدام سوال درست است؟", options: ["You are ready?", "Are you ready?", "You ready are?", "Ready you are?"], correctIndex: 1 },
+      { question: "Complete: ___ she like coffee?", fa: "جمله را کامل کن: ___ او قهوه دوست دارد؟", options: ["Do", "Does", "Is", "Are"], correctIndex: 1 },
+      { question: "Which question is correct?", fa: "کدام جمله پرسشی درست است؟", options: ["Where you live?", "Where do you live?", "Where does you live?", "Where are you live?"], correctIndex: 1 },
+      { question: "___ you seen my keys?", fa: "___ کلیدهایم را دیده‌ای؟", options: ["Do", "Did", "Have", "Are"], correctIndex: 2 },
+      { question: "Complete: ___ he coming to the party?", fa: "جمله را کامل کن: ___ او به مهمانی می‌آید؟", options: ["Do", "Does", "Is", "Are"], correctIndex: 2 },
+      { question: "Which is a tag question?", fa: "کدام یک سوال دنباله‌دار است؟", options: ["You are tired, aren't you?", "Are you tired?", "You are tired?", "Why are you tired?"], correctIndex: 0 },
     ]
   },
   {
@@ -318,11 +318,11 @@
     difficulty: "Advanced",
     engine: "fillblank",
     questions: [
-      { text: "He went to school ___ he was sick.", answer: "although" },
-      { text: "She is smart ___ kind.", answer: "and" },
-      { text: "I like tea ___ I don't like coffee.", answer: "but" },
-      { text: "You can have tea ___ coffee.", answer: "or" },
-      { text: "___ it was raining, we went out.", answer: "Although" },
+      { text: "He went to school ___ he was sick.", fa: "او به مدرسه رفت ___ مریض بود.", answer: "although" },
+      { text: "She is smart ___ kind.", fa: "او باهوش است ___ مهربان.", answer: "and" },
+      { text: "I like tea ___ I don't like coffee.", fa: "چای دوست دارم ___ قهوه دوست ندارم.", answer: "but" },
+      { text: "You can have tea ___ coffee.", fa: "می‌توانی چای ___ قهوه بخوری.", answer: "or" },
+      { text: "___ it was raining, we went out.", fa: "___ باران می‌بارید، ما بیرون رفتیم.", answer: "Although" },
     ]
   },
   {
@@ -334,11 +334,11 @@
     difficulty: "Beginner",
     engine: "quiz",
     questions: [
-      { question: "How do you greet someone in the morning?", options: ["Good night", "Good morning", "Good evening", "Good bye"], correctIndex: 1 },
-      { question: "What is the response to 'How are you?'", options: ["I'm fine, thank you", "I'm a student", "I'm 10", "I'm here"], correctIndex: 0 },
-      { question: "How do you say goodbye formally?", options: ["See ya", "Goodbye", "Bye bye", "Later"], correctIndex: 1 },
-      { question: "What do you say when you meet someone for the first time?", options: ["Goodbye", "Nice to meet you", "See you later", "How old are you"], correctIndex: 1 },
-      { question: "How do you introduce yourself?", options: ["I am a boy", "My name is...", "I live in...", "I like..."], correctIndex: 1 },
+      { question: "How do you greet someone in the morning?", fa: "صبح چطور به کسی سلام می‌کنی؟", options: ["Good night", "Good morning", "Good evening", "Good bye"], correctIndex: 1 },
+      { question: "What is the response to 'How are you?'", fa: "به «How are you?» چه جوابی می‌دهی؟", options: ["I'm fine, thank you", "I'm a student", "I'm 10", "I'm here"], correctIndex: 0 },
+      { question: "How do you say goodbye formally?", fa: "چطور رسمی و مؤدبانه خداحافظی می‌کنی؟", options: ["See ya", "Goodbye", "Bye bye", "Later"], correctIndex: 1 },
+      { question: "What do you say when you meet someone for the first time?", fa: "وقتی برای اولین بار کسی را ملاقات می‌کنی چه می‌گویی؟", options: ["Goodbye", "Nice to meet you", "See you later", "How old are you"], correctIndex: 1 },
+      { question: "How do you introduce yourself?", fa: "چطور خودت را معرفی می‌کنی؟", options: ["I am a boy", "My name is...", "I live in...", "I like..."], correctIndex: 1 },
     ]
   },
   {
@@ -350,11 +350,11 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "How do you ask someone's name?", options: ["What is your name?", "Who are you?", "What you are?", "How is your name?"], correctIndex: 0 },
-      { question: "How do you ask for the time?", options: ["What time is it?", "How is time?", "What is clock?", "When is time?"], correctIndex: 0 },
-      { question: "How do you ask for directions?", options: ["Where is the station?", "How station?", "What station?", "Where station go?"], correctIndex: 0 },
-      { question: "How do you order food in a restaurant?", options: ["Give me food", "I want food", "I would like to order...", "Food please"], correctIndex: 2 },
-      { question: "How do you ask the price?", options: ["How many cost?", "How much is it?", "What price?", "How price?"], correctIndex: 1 },
+      { question: "How do you ask someone's name?", fa: "چطور نام کسی را می‌پرسی؟", options: ["What is your name?", "Who are you?", "What you are?", "How is your name?"], correctIndex: 0 },
+      { question: "How do you ask for the time?", fa: "چطور ساعت را می‌پرسی؟", options: ["What time is it?", "How is time?", "What is clock?", "When is time?"], correctIndex: 0 },
+      { question: "How do you ask for directions?", fa: "چطور آدرس و مسیر را می‌پرسی؟", options: ["Where is the station?", "How station?", "What station?", "Where station go?"], correctIndex: 0 },
+      { question: "How do you order food in a restaurant?", fa: "در رستوران چطور غذا سفارش می‌دهی؟", options: ["Give me food", "I want food", "I would like to order...", "Food please"], correctIndex: 2 },
+      { question: "How do you ask the price?", fa: "چطور قیمت چیزی را می‌پرسی؟", options: ["How many cost?", "How much is it?", "What price?", "How price?"], correctIndex: 1 },
     ]
   },
   {
@@ -366,11 +366,11 @@
     difficulty: "Intermediate",
     engine: "fillblank",
     questions: [
-      { text: "Hello, ___ I speak to Mr. Smith?", answer: "may" },
-      { text: "___ is Sarah speaking.", answer: "This" },
-      { text: "Can I take a ___?", answer: "message" },
-      { text: "I'll call you ___ later.", answer: "back" },
-      { text: "Please ___ on.", answer: "hold" },
+      { text: "Hello, ___ I speak to Mr. Smith?", fa: "سلام، ___ می‌توانم با آقای اسمیت صحبت کنم؟", answer: "may" },
+      { text: "___ is Sarah speaking.", fa: "___ سارا هستم.", answer: "This" },
+      { text: "Can I take a ___?", fa: "می‌توانم یک ___ یادداشت کنم؟", answer: "message" },
+      { text: "I'll call you ___ later.", fa: "بعداً دوباره با شما تماس می‌گیرم.", answer: "back" },
+      { text: "Please ___ on.", fa: "لطفاً روی خط بمانید.", answer: "hold" },
     ]
   },
   {
@@ -382,11 +382,11 @@
     difficulty: "Intermediate",
     engine: "type",
     questions: [
-      { hint: "How do you say you like something? 'I ___ it'", answer: "like" },
-      { hint: "How do you say you are happy? 'I feel ___'", answer: "happy" },
-      { hint: "Complete: 'I ___ sorry'", answer: "am" },
-      { hint: "How do you express surprise? '___!'", answer: "Wow" },
-      { hint: "How do you say something is good? 'It's ___'", answer: "great" },
+      { hint: "How do you say you like something? 'I ___ it'", fa: "چطور بگویی چیزی را دوست داری؟ «I ___ it»", answer: "like" },
+      { hint: "How do you say you are happy? 'I feel ___'", fa: "چطور بگویی خوشحال هستی؟ «I feel ___»", answer: "happy" },
+      { hint: "Complete: 'I ___ sorry'", fa: "جمله را کامل کن: «I ___ sorry»", answer: "am" },
+      { hint: "How do you express surprise? '___!'", fa: "چطور تعجبت را نشان دهی؟ «___!»", answer: "Wow" },
+      { hint: "How do you say something is good? 'It's ___'", fa: "چطور بگویی چیزی عالی است؟ «It's ___»", answer: "great" },
     ]
   },
   {
@@ -398,11 +398,11 @@
     difficulty: "Beginner",
     engine: "quiz",
     questions: [
-      { question: "What do you say when you want water?", options: ["Give me water", "Can I have some water please?", "Water!", "I want water"], correctIndex: 1 },
-      { question: "How do you thank someone?", options: ["Please", "Sorry", "Thank you", "Excuse me"], correctIndex: 2 },
-      { question: "How do you apologize?", options: ["Thank you", "I'm sorry", "Excuse me", "Please"], correctIndex: 1 },
-      { question: "How do you ask someone to repeat?", options: ["What?", "Say again", "Could you repeat that please?", "Again"], correctIndex: 2 },
-      { question: "How do you offer help?", options: ["What do you want?", "Can I help you?", "You need help?", "Help!"], correctIndex: 1 },
+      { question: "What do you say when you want water?", fa: "وقتی آب می‌خواهی چه می‌گویی؟", options: ["Give me water", "Can I have some water please?", "Water!", "I want water"], correctIndex: 1 },
+      { question: "How do you thank someone?", fa: "چطور از کسی تشکر می‌کنی؟", options: ["Please", "Sorry", "Thank you", "Excuse me"], correctIndex: 2 },
+      { question: "How do you apologize?", fa: "چطور عذرخواهی می‌کنی؟", options: ["Thank you", "I'm sorry", "Excuse me", "Please"], correctIndex: 1 },
+      { question: "How do you ask someone to repeat?", fa: "چطور از کسی می‌خواهی که حرفش را تکرار کند؟", options: ["What?", "Say again", "Could you repeat that please?", "Again"], correctIndex: 2 },
+      { question: "How do you offer help?", fa: "چطور به کسی کمک پیشنهاد می‌دهی؟", options: ["What do you want?", "Can I help you?", "You need help?", "Help!"], correctIndex: 1 },
     ]
   },
   {
@@ -414,11 +414,11 @@
     difficulty: "Advanced",
     engine: "type",
     questions: [
-      { hint: "How do you start giving your opinion? 'I ___ that...'", answer: "think" },
-      { hint: "Complete: 'In my ___ , this is correct'", answer: "opinion" },
-      { hint: "How to agree: 'I ___ with you'", answer: "agree" },
-      { hint: "How to disagree politely: 'I'm ___, but I disagree'", answer: "sorry" },
-      { hint: "Complete: '___ me, this is the best option'", answer: "Believe" },
+      { hint: "How do you start giving your opinion? 'I ___ that...'", fa: "نظر دادن را چطور شروع می‌کنی؟ «I ___ that...»", answer: "think" },
+      { hint: "Complete: 'In my ___ , this is correct'", fa: "جمله را کامل کن: «In my ___ , this is correct»", answer: "opinion" },
+      { hint: "How to agree: 'I ___ with you'", fa: "چطور موافقت کنی؟ «I ___ with you»", answer: "agree" },
+      { hint: "How to disagree politely: 'I'm ___, but I disagree'", fa: "چطور مؤدبانه مخالفت کنی؟ «I'm ___, but I disagree»", answer: "sorry" },
+      { hint: "Complete: '___ me, this is the best option'", fa: "جمله را کامل کن: «___ me, this is the best option»", answer: "Believe" },
     ]
   },
   {
@@ -431,10 +431,10 @@
     engine: "quiz",
     questions: [
       { question: "What does 'The cat is on the mat' mean?", options: ["گربه زیر تشک است", "گربه روی تشک است", "گربه کنار تشک است", "گربه داخل تشک است"], correctIndex: 1 },
-      { question: "I have a red book. What color is the book?", options: ["Blue", "Red", "Green", "Yellow"], correctIndex: 1 },
-      { question: "She is a teacher. What is her job?", options: ["Student", "Doctor", "Teacher", "Engineer"], correctIndex: 2 },
-      { question: "The boy is happy. How does he feel?", options: ["Sad", "Angry", "Happy", "Tired"], correctIndex: 2 },
-      { question: "We go to school by bus. How do we go to school?", options: ["By car", "By bus", "By bike", "On foot"], correctIndex: 1 },
+      { question: "I have a red book. What color is the book?", fa: "من یک کتاب قرمز دارم. رنگ کتاب چیست؟", options: ["Blue", "Red", "Green", "Yellow"], correctIndex: 1 },
+      { question: "She is a teacher. What is her job?", fa: "او معلم است. شغل او چیست؟", options: ["Student", "Doctor", "Teacher", "Engineer"], correctIndex: 2 },
+      { question: "The boy is happy. How does he feel?", fa: "آن پسر خوشحال است. چه حسی دارد؟", options: ["Sad", "Angry", "Happy", "Tired"], correctIndex: 2 },
+      { question: "We go to school by bus. How do we go to school?", fa: "ما با اتوبوس به مدرسه می‌رویم. چطور به مدرسه می‌رویم؟", options: ["By car", "By bus", "By bike", "On foot"], correctIndex: 1 },
     ]
   },
   {
@@ -446,11 +446,11 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "Tom is 10 years old. He likes playing football. How old is Tom?", options: ["8", "9", "10", "11"], correctIndex: 2 },
-      { question: "Sara has a dog. The dog is brown and white. What color is the dog?", options: ["Black", "Brown and white", "White only", "Brown only"], correctIndex: 1 },
-      { question: "Ali lives in Tehran. Tehran is a big city. Where does Ali live?", options: ["Shiraz", "Isfahan", "Mashhad", "Tehran"], correctIndex: 3 },
-      { question: "I wake up at 7 AM. I eat breakfast at 7:30. When do I wake up?", options: ["6 AM", "7 AM", "8 AM", "7:30 AM"], correctIndex: 1 },
-      { question: "My mother is a nurse. She works in a hospital. Where does she work?", options: ["School", "Office", "Hospital", "Bank"], correctIndex: 2 },
+      { question: "Tom is 10 years old. He likes playing football. How old is Tom?", fa: "تام ۱۰ سالش است و فوتبال بازی کردن را دوست دارد. تام چند ساله است؟", options: ["8", "9", "10", "11"], correctIndex: 2 },
+      { question: "Sara has a dog. The dog is brown and white. What color is the dog?", fa: "سارا یک سگ دارد که قهوه‌ای و سفید است. رنگ سگ چیست؟", options: ["Black", "Brown and white", "White only", "Brown only"], correctIndex: 1 },
+      { question: "Ali lives in Tehran. Tehran is a big city. Where does Ali live?", fa: "علی در تهران زندگی می‌کند. تهران شهری بزرگ است. علی کجا زندگی می‌کند؟", options: ["Shiraz", "Isfahan", "Mashhad", "Tehran"], correctIndex: 3 },
+      { question: "I wake up at 7 AM. I eat breakfast at 7:30. When do I wake up?", fa: "من ساعت ۷ صبح بیدار می‌شوم و ساعت ۷:۳۰ صبحانه می‌خورم. کی بیدار می‌شوم؟", options: ["6 AM", "7 AM", "8 AM", "7:30 AM"], correctIndex: 1 },
+      { question: "My mother is a nurse. She works in a hospital. Where does she work?", fa: "مادرم پرستار است و در بیمارستان کار می‌کند. او کجا کار می‌کند؟", options: ["School", "Office", "Hospital", "Bank"], correctIndex: 2 },
     ]
   },
   {
@@ -462,11 +462,11 @@
     difficulty: "Advanced",
     engine: "quiz",
     questions: [
-      { question: "The Amazon is a very long river in South America. It flows through Brazil. Which continent is it in?", options: ["Africa", "Asia", "South America", "Europe"], correctIndex: 2 },
-      { question: "Water freezes at 0 degrees Celsius. At what temperature does water freeze?", options: ["100°C", "50°C", "0°C", "-10°C"], correctIndex: 2 },
-      { question: "The Earth orbits the Sun. The Moon orbits the Earth. What does the Moon orbit?", options: ["The Sun", "The Earth", "Mars", "Venus"], correctIndex: 1 },
-      { question: "Honey is made by bees. Bees collect nectar from flowers. What do bees collect?", options: ["Pollen", "Nectar", "Honey", "Water"], correctIndex: 1 },
-      { question: "There are 24 hours in a day. How many hours are in 3 days?", options: ["48", "72", "24", "96"], correctIndex: 1 },
+      { question: "The Amazon is a very long river in South America. It flows through Brazil. Which continent is it in?", fa: "رود آمازون رودی بسیار طولانی در آمریکای جنوبی است و از برزیل می‌گذرد. در کدام قاره قرار دارد؟", options: ["Africa", "Asia", "South America", "Europe"], correctIndex: 2 },
+      { question: "Water freezes at 0 degrees Celsius. At what temperature does water freeze?", fa: "آب در دمای صفر درجه سانتی‌گراد یخ می‌زند. آب در چه دمایی یخ می‌زند؟", options: ["100°C", "50°C", "0°C", "-10°C"], correctIndex: 2 },
+      { question: "The Earth orbits the Sun. The Moon orbits the Earth. What does the Moon orbit?", fa: "زمین به دور خورشید می‌چرخد و ماه به دور زمین. ماه به دور چه چیزی می‌چرخد؟", options: ["The Sun", "The Earth", "Mars", "Venus"], correctIndex: 1 },
+      { question: "Honey is made by bees. Bees collect nectar from flowers. What do bees collect?", fa: "عسل را زنبورها می‌سازند و زنبورها شهد گل‌ها را جمع می‌کنند. زنبورها چه چیزی جمع می‌کنند؟", options: ["Pollen", "Nectar", "Honey", "Water"], correctIndex: 1 },
+      { question: "There are 24 hours in a day. How many hours are in 3 days?", fa: "هر روز ۲۴ ساعت است. سه روز چند ساعت می‌شود؟", options: ["48", "72", "24", "96"], correctIndex: 1 },
     ]
   },
   {
@@ -478,11 +478,11 @@
     difficulty: "Intermediate",
     engine: "type",
     questions: [
-      { hint: "The boy who cried '___' - a famous story", answer: "wolf" },
-      { hint: "The tortoise and the ___ - a famous fable", answer: "hare" },
-      { hint: "Little Red Riding ___", answer: "Hood" },
-      { hint: "The ___ and the Grasshopper", answer: "Ant" },
-      { hint: "The ___ Prince", answer: "Frog" },
+      { hint: "The boy who cried '___' - a famous story", fa: "پسرکی که فریاد «___» سر داد — داستانی معروف", answer: "wolf" },
+      { hint: "The tortoise and the ___ - a famous fable", fa: "لاک‌پشت و ___ — افسانه‌ای معروف", answer: "hare" },
+      { hint: "Little Red Riding ___", fa: "داستان معروف «شنل‌قرمزی»", answer: "Hood" },
+      { hint: "The ___ and the Grasshopper", fa: "افسانه معروف «مورچه و ملخ»", answer: "Ant" },
+      { hint: "The ___ Prince", fa: "افسانه معروف «شاهزاده قورباغه»", answer: "Frog" },
     ]
   },
   {
@@ -510,12 +510,12 @@
     difficulty: "Intermediate",
     engine: "match",
     cards: [
-      { id: "tall", text: "بلند", emoji: "📏" },
-      { id: "round", text: "گرد", emoji: "⭕" },
-      { id: "big", text: "بزرگ", emoji: "📐" },
-      { id: "small", text: "کوچک", emoji: "🔹" },
-      { id: "fast", text: "سریع", emoji: "⚡" },
-      { id: "slow", text: "آرام", emoji: "🐢" },
+      { id: "tall", text: "بلند", emoji: "📏", en: "tall" },
+      { id: "round", text: "گرد", emoji: "⭕", en: "round" },
+      { id: "big", text: "بزرگ", emoji: "📐", en: "big" },
+      { id: "small", text: "کوچک", emoji: "🔹", en: "small" },
+      { id: "fast", text: "سریع", emoji: "⚡", en: "fast" },
+      { id: "slow", text: "آرام", emoji: "🐢", en: "slow" },
     ]
   },
   {
@@ -527,11 +527,11 @@
     difficulty: "Advanced",
     engine: "fillblank",
     questions: [
-      { text: "The ___ Ocean is the largest ocean on Earth.", answer: "Pacific" },
-      { text: "Light travels at 300,000 ___ per second.", answer: "kilometers" },
-      { text: "Humans have ___ senses.", answer: "five" },
-      { text: "Mount ___ is the tallest mountain in the world.", answer: "Everest" },
-      { text: "The ___ Desert is the largest hot desert.", answer: "Sahara" },
+      { text: "The ___ Ocean is the largest ocean on Earth.", fa: "اقیانوس ___ بزرگ‌ترین اقیانوس کره زمین است.", answer: "Pacific" },
+      { text: "Light travels at 300,000 ___ per second.", fa: "نور با سرعت ۳۰۰٬۰۰۰ ___ در ثانیه حرکت می‌کند.", answer: "kilometers" },
+      { text: "Humans have ___ senses.", fa: "انسان‌ها ___ حس دارند.", answer: "five" },
+      { text: "Mount ___ is the tallest mountain in the world.", fa: "کوه ___ بلندترین کوه دنیاست.", answer: "Everest" },
+      { text: "The ___ Desert is the largest hot desert.", fa: "بیابان ___ بزرگ‌ترین بیابان گرم دنیاست.", answer: "Sahara" },
     ]
   },
   {
@@ -641,11 +641,11 @@
     difficulty: "Advanced",
     engine: "type",
     questions: [
-      { hint: "Spell the word meaning 'a Sudden event that causes damage': d_s_ster", answer: "disaster" },
-      { hint: "Spell the word meaning 'a system of words used to communicate': l_n_u_g_", answer: "language" },
-      { hint: "Spell the word meaning 'extremely large': e_o_m_u_", answer: "enormous" },
-      { hint: "Spell the word meaning 'happening once a year': a_n_a_", answer: "annual" },
-      { hint: "Spell the word meaning 'to say something will happen': p_e_i_t", answer: "predict" },
+      { hint: "Spell the word meaning 'a Sudden event that causes damage': d_s_ster", fa: "کلمه‌ای به معنی «رویداد ناگهانی که خسارت وارد می‌کند» را املا کن: d_s_ster", answer: "disaster" },
+      { hint: "Spell the word meaning 'a system of words used to communicate': l_n_u_g_", fa: "کلمه‌ای به معنی «مجموعه‌ای از کلمات برای ارتباط» را املا کن: l_n_u_g_", answer: "language" },
+      { hint: "Spell the word meaning 'extremely large': e_o_m_u_", fa: "کلمه‌ای به معنی «بسیار بسیار بزرگ» را املا کن: e_o_m_u_", answer: "enormous" },
+      { hint: "Spell the word meaning 'happening once a year': a_n_a_", fa: "کلمه‌ای به معنی «هر سال یک‌بار اتفاق می‌افتد» را املا کن: a_n_a_", answer: "annual" },
+      { hint: "Spell the word meaning 'to say something will happen': p_e_i_t", fa: "کلمه‌ای به معنی «گفتن اینکه چیزی اتفاق خواهد افتاد» را املا کن: p_e_i_t", answer: "predict" },
     ]
   },
   {
@@ -657,11 +657,11 @@
     difficulty: "Beginner",
     engine: "type",
     questions: [
-      { hint: "Write the number 'thirteen' as a digit", answer: "13" },
-      { hint: "Write the number 'twenty-five' as a digit", answer: "25" },
-      { hint: "Write the number 'ninety' as a digit", answer: "90" },
-      { hint: "Write the number 'one hundred' as a digit", answer: "100" },
-      { hint: "Write the number 'sixty-seven' as a digit", answer: "67" },
+      { hint: "Write the number 'thirteen' as a digit", fa: "عدد «thirteen» را با رقم بنویس", answer: "13" },
+      { hint: "Write the number 'twenty-five' as a digit", fa: "عدد «twenty-five» را با رقم بنویس", answer: "25" },
+      { hint: "Write the number 'ninety' as a digit", fa: "عدد «ninety» را با رقم بنویس", answer: "90" },
+      { hint: "Write the number 'one hundred' as a digit", fa: "عدد «one hundred» را با رقم بنویس", answer: "100" },
+      { hint: "Write the number 'sixty-seven' as a digit", fa: "عدد «sixty-seven» را با رقم بنویس", answer: "67" },
     ]
   },
   {
@@ -673,11 +673,11 @@
     difficulty: "Intermediate",
     engine: "quiz",
     questions: [
-      { question: "What does 'Nice to meet you' express?", options: ["Goodbye", "Greeting when first meeting", "Asking for help", "Saying sorry"], correctIndex: 1 },
-      { question: "What does 'See you later' mean?", options: ["We will meet again", "Goodbye forever", "I'm leaving now", "I don't want to see you"], correctIndex: 0 },
-      { question: "What does 'I'm afraid I can't' express?", options: ["Anger", "Polite refusal", "Excitement", "Confusion"], correctIndex: 1 },
-      { question: "What does 'Could you repeat that?' mean?", options: ["Say it again", "Say it louder", "Say it slower", "Write it down"], correctIndex: 0 },
-      { question: "What does 'It's up to you' mean?", options: ["You decide", "I decide", "We decide together", "Nobody decides"], correctIndex: 0 },
+      { question: "What does 'Nice to meet you' express?", fa: "عبارت «Nice to meet you» چه چیزی را نشان می‌دهد؟", options: ["Goodbye", "Greeting when first meeting", "Asking for help", "Saying sorry"], correctIndex: 1 },
+      { question: "What does 'See you later' mean?", fa: "«See you later» یعنی چه؟", options: ["We will meet again", "Goodbye forever", "I'm leaving now", "I don't want to see you"], correctIndex: 0 },
+      { question: "What does 'I'm afraid I can't' express?", fa: "عبارت «I'm afraid I can't» چه چیزی را نشان می‌دهد؟", options: ["Anger", "Polite refusal", "Excitement", "Confusion"], correctIndex: 1 },
+      { question: "What does 'Could you repeat that?' mean?", fa: "«Could you repeat that?» یعنی چه؟", options: ["Say it again", "Say it louder", "Say it slower", "Write it down"], correctIndex: 0 },
+      { question: "What does 'It's up to you' mean?", fa: "«It's up to you» یعنی چه؟", options: ["You decide", "I decide", "We decide together", "Nobody decides"], correctIndex: 0 },
     ]
   },
   {
@@ -689,11 +689,11 @@
     difficulty: "Beginner",
     engine: "quiz",
     questions: [
-      { question: "What should you do when you hear 'Sit down'?", options: ["Stand up", "Sit", "Run", "Jump"], correctIndex: 1 },
-      { question: "What should you do when you hear 'Open your book'?", options: ["Close it", "Open it", "Put it away", "Read it"], correctIndex: 1 },
-      { question: "What should you do when you hear 'Raise your hand'?", options: ["Sit down", "Put your hand up", "Speak", "Stand up"], correctIndex: 1 },
-      { question: "What should you do when you hear 'Be quiet'?", options: ["Talk loudly", "Stop talking", "Whisper", "Shout"], correctIndex: 1 },
-      { question: "What should you do when you hear 'Come here'?", options: ["Go away", "Come closer", "Run", "Stay still"], correctIndex: 1 },
+      { question: "What should you do when you hear 'Sit down'?", fa: "وقتی می‌شنوی «Sit down» چه کار باید بکنی؟", options: ["Stand up", "Sit", "Run", "Jump"], correctIndex: 1 },
+      { question: "What should you do when you hear 'Open your book'?", fa: "وقتی می‌شنوی «Open your book» چه کار باید بکنی؟", options: ["Close it", "Open it", "Put it away", "Read it"], correctIndex: 1 },
+      { question: "What should you do when you hear 'Raise your hand'?", fa: "وقتی می‌شنوی «Raise your hand» چه کار باید بکنی؟", options: ["Sit down", "Put your hand up", "Speak", "Stand up"], correctIndex: 1 },
+      { question: "What should you do when you hear 'Be quiet'?", fa: "وقتی می‌شنوی «Be quiet» چه کار باید بکنی؟", options: ["Talk loudly", "Stop talking", "Whisper", "Shout"], correctIndex: 1 },
+      { question: "What should you do when you hear 'Come here'?", fa: "وقتی می‌شنوی «Come here» چه کار باید بکنی؟", options: ["Go away", "Come closer", "Run", "Stay still"], correctIndex: 1 },
     ]
   },
   {
@@ -705,11 +705,11 @@
     difficulty: "Intermediate",
     engine: "fillblank",
     questions: [
-      { text: "A: 'What's your ___?' B: 'My name is Tom.'", answer: "name" },
-      { text: "A: 'How ___ are you?' B: 'I'm 10 years old.'", answer: "old" },
-      { text: "A: '___ do you live?' B: 'I live in Tehran.'", answer: "Where" },
-      { text: "A: 'What ___ do you like?' B: 'I like blue.'", answer: "color" },
-      { text: "A: 'What is your favorite ___?' B: 'Pizza!'", answer: "food" },
+      { text: "A: 'What's your ___?' B: 'My name is Tom.'", fa: "«___ تو چیست؟» — «اسم من تام است.»", answer: "name" },
+      { text: "A: 'How ___ are you?' B: 'I'm 10 years old.'", fa: "«چند سالت است؟» — «من ۱۰ سالم است.»", answer: "old" },
+      { text: "A: '___ do you live?' B: 'I live in Tehran.'", fa: "«___ زندگی می‌کنی؟» — «در تهران زندگی می‌کنم.»", answer: "Where" },
+      { text: "A: 'What ___ do you like?' B: 'I like blue.'", fa: "«چه ___ دوست داری؟» — «آبی دوست دارم.»", answer: "color" },
+      { text: "A: 'What is your favorite ___?' B: 'Pizza!'", fa: "«___ مورد علاقه‌ات چیست؟» — «پیتزا!»", answer: "food" },
     ]
   },
   {
@@ -721,11 +721,11 @@
     difficulty: "Advanced",
     engine: "type",
     questions: [
-      { hint: "Complete: 'First, ___ the eggs'", answer: "beat" },
-      { hint: "Complete: 'Then, ___ the pan'", answer: "heat" },
-      { hint: "Complete: 'Next, ___ the mixture'", answer: "pour" },
-      { hint: "Complete: '___ for 10 minutes'", answer: "Wait" },
-      { hint: "Complete: 'Finally, ___ it hot'", answer: "serve" },
+      { hint: "Complete: 'First, ___ the eggs'", fa: "اول، تخم‌مرغ‌ها را هم بزن.", answer: "beat" },
+      { hint: "Complete: 'Then, ___ the pan'", fa: "بعد، ماهیتابه را گرم کن.", answer: "heat" },
+      { hint: "Complete: 'Next, ___ the mixture'", fa: "سپس، مخلوط را بریز.", answer: "pour" },
+      { hint: "Complete: '___ for 10 minutes'", fa: "ده دقیقه صبر کن.", answer: "Wait" },
+      { hint: "Complete: 'Finally, ___ it hot'", fa: "آخرش، آن را گرم سرو کن.", answer: "serve" },
     ]
   },
   {
@@ -737,12 +737,12 @@
     difficulty: "Intermediate",
     engine: "match",
     cards: [
-      { id: "big", text: "بزرگ", emoji: "🦒" },
-      { id: "small", text: "کوچک", emoji: "🐭" },
-      { id: "hot", text: "داغ", emoji: "🔥" },
-      { id: "cold", text: "سرد", emoji: "❄️" },
-      { id: "fast", text: "سریع", emoji: "🐆" },
-      { id: "slow", text: "آرام", emoji: "🐌" },
+      { id: "big", text: "بزرگ", emoji: "🦒", en: "big" },
+      { id: "small", text: "کوچک", emoji: "🐭", en: "small" },
+      { id: "hot", text: "داغ", emoji: "🔥", en: "hot" },
+      { id: "cold", text: "سرد", emoji: "❄️", en: "cold" },
+      { id: "fast", text: "سریع", emoji: "🐆", en: "fast" },
+      { id: "slow", text: "آرام", emoji: "🐌", en: "slow" },
     ]
   },
   {
@@ -793,12 +793,12 @@
     difficulty: "Advanced",
     engine: "quiz",
     questions: [
-      { question: "Complete: If it rains, I ___ stay home.", options: ["will", "would", "am", "do"], correctIndex: 0 },
-      { question: "Complete: If I ___ rich, I would travel the world.", options: ["am", "was", "were", "will be"], correctIndex: 2 },
-      { question: "Complete: If you study hard, you ___ pass.", options: ["would", "will", "could", "might"], correctIndex: 1 },
-      { question: "Which is a second conditional?", options: ["If it rains, I will stay", "If I were you, I would go", "If you heat ice, it melts", "I will go if you come"], correctIndex: 1 },
-      { question: "Complete: If she ___ (come), I will tell you.", options: ["comes", "came", "will come", "would come"], correctIndex: 0 },
-      { question: "If I had money, I ___ (buy) a car.", options: ["buy", "bought", "would buy", "will buy"], correctIndex: 2 },
+      { question: "Complete: If it rains, I ___ stay home.", fa: "جمله را کامل کن: اگر باران ببارد، من ___ خانه می‌مانم.", options: ["will", "would", "am", "do"], correctIndex: 0 },
+      { question: "Complete: If I ___ rich, I would travel the world.", fa: "جمله را کامل کن: اگر من ___ پولدار بودم، دور دنیا سفر می‌کردم.", options: ["am", "was", "were", "will be"], correctIndex: 2 },
+      { question: "Complete: If you study hard, you ___ pass.", fa: "جمله را کامل کن: اگر سخت درس بخوانی، ___ قبول می‌شوی.", options: ["would", "will", "could", "might"], correctIndex: 1 },
+      { question: "Which is a second conditional?", fa: "کدام جمله شرطی نوع دوم است؟", options: ["If it rains, I will stay", "If I were you, I would go", "If you heat ice, it melts", "I will go if you come"], correctIndex: 1 },
+      { question: "Complete: If she ___ (come), I will tell you.", fa: "جمله را کامل کن: اگر او ___ بیاید، به تو می‌گویم.", options: ["comes", "came", "will come", "would come"], correctIndex: 0 },
+      { question: "If I had money, I ___ (buy) a car.", fa: "اگر پول داشتم، یک ماشین ___ .", options: ["buy", "bought", "would buy", "will buy"], correctIndex: 2 },
     ]
   },
   {
@@ -835,14 +835,14 @@
     difficulty: "Intermediate",
     engine: "match",
     cards: [
-      { id: "hot", text: "Hot", emoji: "🌡️" },
-      { id: "fast", text: "Fast", emoji: "⚡" },
-      { id: "big", text: "Big", emoji: "📏" },
-      { id: "day", text: "Day", emoji: "☀️" },
-      { id: "happy", text: "Happy", emoji: "😊" },
-      { id: "light", text: "Light", emoji: "💡" },
-      { id: "rich", text: "Rich", emoji: "💰" },
-      { id: "old", text: "Old", emoji: "👴" },
+      { id: "hot", text: "گرم", emoji: "🌡️", en: "hot" },
+      { id: "fast", text: "سریع", emoji: "⚡", en: "fast" },
+      { id: "big", text: "بزرگ", emoji: "📏", en: "big" },
+      { id: "day", text: "روز", emoji: "☀️", en: "day" },
+      { id: "happy", text: "خوشحال", emoji: "😊", en: "happy" },
+      { id: "light", text: "روشن", emoji: "💡", en: "light" },
+      { id: "rich", text: "ثروتمند", emoji: "💰", en: "rich" },
+      { id: "old", text: "پیر", emoji: "👴", en: "old" },
     ]
   },
 ];

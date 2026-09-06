@@ -106,3 +106,20 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #A855F7, #F43F5E);
 }
+
+/* Gentle in-place wobble+lift for feature/badge images */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0) rotate(-2.5deg); }
+  50% { transform: translateY(-7px) rotate(2.5deg); }
+}
+
+.icon-float {
+  animation: gentle-float 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-float {
+    animation: none;
+  }
+}

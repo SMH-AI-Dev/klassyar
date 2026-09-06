@@ -3,8 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import englishGames from "@/lib/englishGames";
+import englishClassImg from "@/assets/pic/english-class.png";
 
 const categories = ["All", "Vocabulary", "Grammar", "Speaking", "Reading", "Spelling", "Listening"];
+
+const categoryFa = {
+  "All": "همه",
+  "Vocabulary": "واژگان",
+  "Grammar": "گرامر",
+  "Speaking": "مکالمه",
+  "Reading": "خواندن",
+  "Spelling": "املا",
+  "Listening": "شنیداری",
+};
+
+const difficultyFa = {
+  "Beginner": "مبتدی",
+  "Intermediate": "متوسط",
+  "Advanced": "پیشرفته",
+};
 
 const difficultyColors = {
   "Beginner": "bg-green-100 text-green-700",
@@ -26,6 +43,7 @@ export default function EnglishGameHub() {
   return (
     <div className="min-h-screen p-4 sm:p-8 bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50" dir="rtl">
       <div className="max-w-6xl mx-auto">
+        <img src={englishClassImg} alt="آموزش زبان انگلیسی" className="w-20 h-20 mx-auto mb-2 icon-float drop-shadow-lg" />
         <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
           🎯 باشگاه چالش انگلیسی
         </motion.h1>
@@ -51,7 +69,8 @@ export default function EnglishGameHub() {
                 activeCat === cat ? "bg-blue-600 text-white" : "bg-white/80 text-gray-700 hover:bg-blue-50"
               }`}
             >
-              {cat === "All" ? "همه" : cat}
+              <span className="block text-sm leading-tight">{cat}</span>
+              <span className="block text-[10px] opacity-70 leading-tight">{categoryFa[cat]}</span>
             </button>
           ))}
         </div>
@@ -74,7 +93,8 @@ export default function EnglishGameHub() {
                   <p className="text-sm text-gray-500 mb-3 line-clamp-2">{game.description}</p>
                   <div className="flex items-center gap-2">
                     <span className={`px-3 py-1 rounded-xl text-xs font-medium ${difficultyColors[game.difficulty] || "bg-gray-100 text-gray-600"}`}>
-                      {game.difficulty}
+                      <span className="block leading-tight">{game.difficulty}</span>
+                      <span className="block text-[10px] opacity-70 leading-tight">{difficultyFa[game.difficulty]}</span>
                     </span>
                     <span className="px-3 py-1 rounded-xl text-xs font-medium bg-blue-50 text-blue-600">
                       {game.category}

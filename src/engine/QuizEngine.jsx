@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, RotateCcw, Star, Timer } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw, Timer } from "lucide-react";
+import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
 export default function QuizEngine({ game }) {
   const [qIdx, setQIdx] = useState(0);
@@ -60,9 +61,7 @@ export default function QuizEngine({ game }) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-900 to-indigo-900">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-white/95 rounded-3xl p-8 max-w-md w-full text-center clay-element">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1 }} className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-            <Star className="w-12 h-12 text-white" />
-          </motion.div>
+          <img src={bestSelfBadge} alt="بهترین خودت باش!" className="w-24 h-24 mx-auto mb-4 icon-float rounded-2xl" />
           <h2 className="text-3xl font-bold text-gray-800 mb-2">{game.title}</h2>
           <p className="text-gray-500 mb-6">نتیجه نهایی</p>
           <div className="text-6xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">{pct}%</div>
@@ -92,7 +91,8 @@ export default function QuizEngine({ game }) {
         </div>
         <div className="text-white/60 text-sm mb-4">سوال {qIdx + 1} از {game.questions.length}</div>
         <div className="bg-white/95 rounded-3xl p-6 mb-4 clay-element">
-          <p className="text-xl font-bold text-gray-800 text-right">{q.question}</p>
+          <p dir="auto" className="text-xl font-bold text-gray-800 text-right">{q.question}</p>
+          {q.fa && <p dir="rtl" className="text-sm text-gray-500 mt-2 text-right">{q.fa}</p>}
         </div>
         <div className="space-y-3">
           {q.options.map((opt, i) => {
