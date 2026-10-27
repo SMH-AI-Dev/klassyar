@@ -1,7 +1,7 @@
 {
   "name": "klassyar",
   "private": true,
-  "version": "1.6.1",
+  "version": "1.6.2",
   "homepage": "https://SMH-AI-Dev.github.io/klassyar",
   "type": "module",
   "scripts": {
@@ -32,7 +32,7 @@
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
+    "react-router-dom": "^7.18.4",
     "react-to-print": "^3.2.0",
     "sql.js": "^1.13.0",
     "tailwind-merge": "^2.1.0"
