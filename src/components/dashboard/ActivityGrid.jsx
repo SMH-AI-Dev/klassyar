@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Share2, Edit, Eye, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/lib/sonner";
 
@@ -55,7 +55,7 @@ export default function ActivityGrid({ activities }) {
   const queryClient = useQueryClient();
   
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Activity.delete(id),
+    mutationFn: (id) => localData.entities.Activity.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
       toast.success("فعالیت با موفقیت حذف شد");

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowRight, Save, Plus, Trash2, Check, X } from "lucide-react";
@@ -33,7 +33,7 @@ export default function EditTrue_false() {
   const { data: existingActivity, isLoading } = useQuery({
     queryKey: ['activity', activityId],
     queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
+      const activities = await localData.entities.Activity.list();
       return activities.find(a => a.id === activityId);
     },
     enabled: !!activityId,
@@ -46,7 +46,7 @@ export default function EditTrue_false() {
   }, [existingActivity]);
 
   const updateMutation = useMutation({
-    mutationFn: (data) => base44.entities.Activity.update(activityId, data),
+    mutationFn: (data) => localData.entities.Activity.update(activityId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
       queryClient.invalidateQueries({ queryKey: ['activity', activityId] });

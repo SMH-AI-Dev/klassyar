@@ -1,5 +1,4 @@
-// Mock Base44 Client - Replace with actual implementation when backend is ready
-// This is a simulation of the Base44 SDK
+// Local-first data client. Data intentionally remains on the current device.
 
 const STORAGE_KEY = 'klassyar_data';
 const AUTH_KEY = 'klassyar_user';
@@ -33,11 +32,16 @@ function currentUserEmail() {
   return null;
 }
 
+function owns(record) {
+  const owner = currentUserEmail();
+  return !record?.created_by || !owner || record.created_by === owner;
+}
+
 const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
 
-export const base44 = {
+export const localData = {
   auth: {
     me: async () => {
       const authUser = getAuthUser();
@@ -61,7 +65,7 @@ export const base44 = {
     Activity: {
       list: async (sortField = '-created_date', limit = 1000) => {
         const data = getData();
-        return data.activities || [];
+        return (data.activities || []).filter(owns);
       },
       filter: async (filters, sortField = '-created_date') => {
         const data = getData();
@@ -99,7 +103,7 @@ export const base44 = {
       update: async (id, updates) => {
         const data = getData();
         const index = data.activities.findIndex(a => a.id === id);
-        if (index !== -1) {
+        if (index !== -1 && owns(data.activities[index])) {
           data.activities[index] = { ...data.activities[index], ...updates };
           saveData(data);
           return data.activities[index];
@@ -108,7 +112,7 @@ export const base44 = {
       },
       delete: async (id) => {
         const data = getData();
-        data.activities = data.activities.filter(a => a.id !== id);
+        data.activities = data.activities.filter(a => a.id !== id || !owns(a));
         saveData(data);
       },
     },

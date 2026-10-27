@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { toast } from "@/lib/sonner";
 import { useState } from "react";
 import { demoSamples } from "@/lib/demoData";
@@ -15,7 +15,7 @@ export function useGameData() {
   const { data: activity, isLoading } = useQuery({
     queryKey: ["activity", activityId],
     queryFn: async () => {
-      const acts = await base44.entities.Activity.list();
+      const acts = await localData.entities.Activity.list();
       return acts.find((a) => a.id === activityId);
     },
     enabled: !isDemo && !!activityId,
@@ -30,7 +30,7 @@ export function useGameData() {
     setSaving(true);
     try {
       const overrides = localStorage.getItem("customTitle");
-      await base44.entities.Activity.create({
+      await localData.entities.Activity.create({
         title: overrides || title || demoActivity?.title || "فعالیت جدید",
         type: type,
         description: "",

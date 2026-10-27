@@ -34,6 +34,18 @@ function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
+async function hashPassword(password) {
+  if (globalThis.crypto?.subtle) {
+    const bytes = new TextEncoder().encode(password);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  // Old browsers still get a deterministic non-plaintext value.
+  let hash = 2166136261;
+  for (const char of password) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+  return `fallback-${(hash >>> 0).toString(16)}`;
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,12 +55,21 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = (username, password) => {
+  const login = async (username, password) => {
     const users = getAllUsers();
     const stored = users[username.toLowerCase()];
+    const passwordHash = await hashPassword(password);
 
-    if (!stored || stored.password !== password) {
+    if (!stored || (stored.passwordHash !== passwordHash && stored.password !== password)) {
       throw new Error("نام کاربری یا رمز عبور اشتباه است");
+    }
+
+    // Migrate legacy local accounts after a successful login without losing access.
+    if (!stored.passwordHash) {
+      stored.passwordHash = passwordHash;
+      delete stored.password;
+      users[username.toLowerCase()] = stored;
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
     }
 
     const userData = {
@@ -62,7 +83,7 @@ export function AuthProvider({ children }) {
     return userData;
   };
 
-  const register = (username, password) => {
+  const register = async (username, password) => {
     if (!username || username.length < 2) {
       throw new Error("نام کاربری باید حداقل ۲ کاراکتر باشد");
     }
@@ -81,7 +102,7 @@ export function AuthProvider({ children }) {
       id: generateId(),
       name: username,
       username: key,
-      password,
+      passwordHash: await hashPassword(password),
       createdAt: new Date().toISOString(),
     };
 

@@ -83,7 +83,7 @@
 ### ساختار کلی:
 ```javascript
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -104,7 +104,7 @@ export default function Play[GameName]() {
   const { data: activity, isLoading } = useQuery({
     queryKey: ['activity', activityId],
     queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
+      const activities = await localData.entities.Activity.list();
       return activities.find(a => a.id === activityId);
     },
   });
@@ -204,7 +204,7 @@ export default function Play[GameName]() {
 ### ساختار کلی:
 ```javascript
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -235,7 +235,7 @@ export default function Edit[GameName]() {
   const { data: existingActivity, isLoading } = useQuery({
     queryKey: ['activity', activityId],
     queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
+      const activities = await localData.entities.Activity.list();
       return activities.find(a => a.id === activityId);
     },
     enabled: !!activityId,
@@ -250,7 +250,7 @@ export default function Edit[GameName]() {
 
   // به‌روزرسانی فعالیت
   const updateMutation = useMutation({
-    mutationFn: (data) => base44.entities.Activity.update(activityId, data),
+    mutationFn: (data) => localData.entities.Activity.update(activityId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
       queryClient.invalidateQueries({ queryKey: ['activity', activityId] });

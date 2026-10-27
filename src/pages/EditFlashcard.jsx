@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +29,7 @@ export default function EditFlashcard() {
   const { data: existingActivity, isLoading } = useQuery({
     queryKey: ['activity', activityId],
     queryFn: async () => {
-      const activities = await base44.entities.Activity.list();
+      const activities = await localData.entities.Activity.list();
       return activities.find(a => a.id === activityId);
     },
     enabled: !!activityId,
@@ -42,7 +42,7 @@ export default function EditFlashcard() {
   }, [existingActivity]);
 
   const updateMutation = useMutation({
-    mutationFn: (data) => base44.entities.Activity.update(activityId, data),
+    mutationFn: (data) => localData.entities.Activity.update(activityId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
       queryClient.invalidateQueries({ queryKey: ['activity', activityId] });

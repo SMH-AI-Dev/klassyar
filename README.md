@@ -334,7 +334,7 @@ klassyar/
 │   └── sw.js
 ├── src/
 │   ├── api/                    # API client (mock)
-│   │   └── base44Client.js
+│   │   └── localDataClient.js
 │   ├── components/             # React components
 │   │   ├── ui/                 # Base UI components
 │   │   ├── layout/             # Layout (Navbar, Layout)

@@ -554,10 +554,10 @@
     engine: "quiz",
     questions: [
       { question: "املای صحیح کدام است؟", options: ["تهران", "تهرن", "تهرون", "تخران"], correctIndex: 0 },
-      { question: "املای صحیح کدام است؟", options: ["سفید", "سفید", "سفد", "سفید"], correctIndex: 1 },
-      { question: "املای صحیح کدام است؟", options: ["مدرسه", "مدرسه", "مدرس", "مدرسه"], correctIndex: 1 },
-      { question: "املای صحیح کدام است؟", options: ["کیتاب", "کتخاب", "کتاب", "کتاب"], correctIndex: 3 },
-      { question: "املای صحیح کدام است؟", options: ["ستاندارد", "استاندارد", "استاندارد", "استاندارد"], correctIndex: 2 },
+      { question: "املای صحیح کدام است؟", options: ["سفید", "سفد", "سفیدّ", "سفیدا"], correctIndex: 0 },
+      { question: "املای صحیح کدام است؟", options: ["مدرسه", "مدرس", "مدرثه", "مدرسته"], correctIndex: 0 },
+      { question: "املای صحیح کدام است؟", options: ["کیتاب", "کتخاب", "کتاب", "کتابب"], correctIndex: 2 },
+      { question: "املای صحیح کدام است؟", options: ["ستاندارد", "استاندرد", "استاندار", "استاندارت"], correctIndex: 0 },
     ]
   },
   {
@@ -803,7 +803,7 @@
     difficulty: "متوسط",
     engine: "type",
     questions: [
-      { hint: "کلمه‌ای که با 'باران' هم قافیه است؟", answer: "باران" },
+      { hint: "کلمه‌ای که با «باران» هم‌قافیه است؟", answer: "یاران" },
       { hint: "کلمه‌ای که با 'گل' هم قافیه است", answer: "بلبل" },
       { hint: "قافیه 'ماه' در شعر فارسی", answer: "گاه" },
       { hint: "کلمه‌ای که با 'دل' هم قافیه است", answer: "گل" },
@@ -838,7 +838,7 @@
       { scrambled: "روک", answer: "کور", hint: "نقطه مقابل بینا" },
       { scrambled: "شبز", answer: "سبز", hint: "رنگ طبیعت" },
       { scrambled: "نازر", answer: "راز", hint: "چیزی که پنهان است" },
-      { scrambled: "قاع", answer: "عقاب", hint: "پرنده شکاری" },
+      { scrambled: "باقع", answer: "عقاب", hint: "پرنده شکاری" },
       { scrambled: "نود", answer: "دون", hint: "مخالف جلو" },
     ]
   },
@@ -876,4 +876,23 @@
   },
 ];
 
-export default gameLibrary;
+function toMultipleChoice(game) {
+  if (!['type', 'fillblank', 'scramble'].includes(game.engine)) return game;
+  const source = game.questions || game.words || [];
+  const answers = [...new Set(source.map((item) => item.answer).filter(Boolean))];
+  const questions = source.map((item, index) => {
+    const answer = item.answer;
+    const distractors = answers.filter((candidate) => candidate !== answer).slice(0, 3);
+    const options = [answer, ...distractors];
+    const shift = index % options.length;
+    const rotated = [...options.slice(shift), ...options.slice(0, shift)];
+    return {
+      question: item.question || item.hint || item.text || 'پاسخ درست را انتخاب کن',
+      options: rotated,
+      correctIndex: rotated.indexOf(answer),
+    };
+  });
+  return { ...game, engine: 'quiz', questions };
+}
+
+export default gameLibrary.map(toMultipleChoice);

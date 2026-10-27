@@ -1,11 +1,11 @@
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 
 /**
  * ساخت فعالیت جدید با اضافه کردن created_by
  */
 export const createActivity = async (activityData) => {
-  const me = await base44.auth.me();
-  return base44.entities.Activity.create({
+  const me = await localData.auth.me();
+  return localData.entities.Activity.create({
     ...activityData,
     created_by: me.email,
     created_date: new Date().toISOString(),
@@ -17,7 +17,7 @@ export const createActivity = async (activityData) => {
  * بروزرسانی فعالیت
  */
 export const updateActivity = async (activityId, activityData) => {
-  return base44.entities.Activity.update(activityId, {
+  return localData.entities.Activity.update(activityId, {
     ...activityData,
     updated_date: new Date().toISOString()
   });

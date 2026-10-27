@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,13 +33,13 @@ export default function CreateQuiz() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => localData.auth.me(),
   });
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
-      const me = await base44.auth.me();
-      return base44.entities.Activity.create({
+      const me = await localData.auth.me();
+      return localData.entities.Activity.create({
         ...data,
         created_by: me.email
       });

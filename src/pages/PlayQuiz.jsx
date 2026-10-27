@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useGameData } from "@/hooks/useGameData";
@@ -22,7 +22,7 @@ export default function PlayQuiz() {
 
   const saveResultMutation = useMutation({
     mutationFn: async (resultData) => {
-      return base44.entities.GameResult.create(resultData);
+      return localData.entities.GameResult.create(resultData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['results'] });

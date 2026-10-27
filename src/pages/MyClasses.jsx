@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,23 +26,23 @@ export default function MyClasses() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => localData.auth.me(),
   });
 
   const { data: classes, isLoading } = useQuery({
     queryKey: ['myClasses'],
     queryFn: async () => {
-      const me = await base44.auth.me();
-      return base44.entities.Class.filter({ teacher_id: me.id });
+      const me = await localData.auth.me();
+      return localData.entities.Class.filter({ teacher_id: me.id });
     },
     initialData: [],
   });
 
   const createClassMutation = useMutation({
     mutationFn: async (classData) => {
-      const me = await base44.auth.me();
+      const me = await localData.auth.me();
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      return base44.entities.Class.create({
+      return localData.entities.Class.create({
         ...classData,
         teacher_id: me.id,
         teacher_name: teacherName,
@@ -80,7 +80,7 @@ export default function MyClasses() {
         joined_date: new Date().toISOString()
       }];
 
-      return base44.entities.Class.update(classId, { students: newStudents });
+      return localData.entities.Class.update(classId, { students: newStudents });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myClasses'] });
@@ -97,7 +97,7 @@ export default function MyClasses() {
     mutationFn: async ({ classId, studentIndex }) => {
       const classItem = classes.find(c => c.id === classId);
       const students = classItem.students.filter((_, i) => i !== studentIndex);
-      return base44.entities.Class.update(classId, { students });
+      return localData.entities.Class.update(classId, { students });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myClasses'] });
@@ -107,7 +107,7 @@ export default function MyClasses() {
 
   const deleteClassMutation = useMutation({
     mutationFn: async (classId) => {
-      return base44.entities.Class.delete(classId);
+      return localData.entities.Class.delete(classId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myClasses'] });

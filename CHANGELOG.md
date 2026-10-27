@@ -1,3 +1,15 @@
+# تغییرات نسخه 1.6.1
+
+## بهبودهای اصلی
+
+- حذف کامل ارجاع‌های سرویس اولیه و یکپارچه‌سازی ذخیره‌سازی local-first
+- امن‌تر شدن نگهداری رمز عبور محلی با SHA-256 و مهاجرت کاربران قدیمی
+- محافظت از مسیرهای خصوصی برنامه
+- اضافه شدن بانک مرکزی سؤال و roundهای تصادفی تا ۴۰۰ چینش
+- اصلاح بازی‌های نوشتاری ابتدایی و تبدیل آن‌ها به بازی‌های گزینه‌ای
+- ارتقای وابستگی‌های امنیتی Axios، jsPDF، Electron و electron-builder
+- اضافه شدن انتشار خودکار artifactهای Android و Desktop در GitHub Releases
+
 # تغییرات نسخه 1.2.1
 
 ## 🐛 رفع مشکلات
@@ -89,8 +101,8 @@
 ```javascript
 const createMutation = useMutation({
   mutationFn: async (data) => {
-    const me = await base44.auth.me();
-    return base44.entities.Activity.create({
+    const me = await localData.auth.me();
+    return localData.entities.Activity.create({
       ...data,
       created_by: me.email
     });
@@ -103,8 +115,8 @@ const createMutation = useMutation({
 const { data: activities } = useQuery({
   queryKey: ['activities'],
   queryFn: async () => {
-    const me = await base44.auth.me();
-    return base44.entities.Activity.filter({ 
+    const me = await localData.auth.me();
+    return localData.entities.Activity.filter({
       created_by: me.email 
     });
   }

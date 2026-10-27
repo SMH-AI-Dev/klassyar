@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -28,7 +28,7 @@ export default function CreateRandom_cards() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Activity.create(data),
+    mutationFn: (data) => localData.entities.Activity.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
       navigate(createPageUrl("Dashboard"));

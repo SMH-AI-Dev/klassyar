@@ -272,7 +272,7 @@ npm install
 
 برای production، باید:
 1. یک Backend API بسازید (Node.js, Django, Laravel, etc.)
-2. فایل `src/api/base44Client.js` را با API واقعی جایگزین کنید
+2. فایل `src/api/localDataClient.js` را با API واقعی جایگزین کنید
 3. Authentication واقعی اضافه کنید
 
 ---

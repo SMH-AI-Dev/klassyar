@@ -126,6 +126,16 @@ function PublicRoute() {
   return <Outlet />;
 }
 
+function ProtectedRoute({ children }) {
+  const { isLoggedIn, loading } = useAuth();
+  if (loading) return null;
+  return isLoggedIn ? children : <Navigate to="/Login" replace />;
+}
+
+function ProtectedLayout({ children }) {
+  return <ProtectedRoute><Layout>{children}</Layout></ProtectedRoute>;
+}
+
 function AppContent() {
   const { addToast } = useToast();
   
@@ -143,28 +153,28 @@ function AppContent() {
         <Route element={<PublicRoute />}>
           <Route path="/" element={<IndexRouter />} />
         </Route>
-        <Route path="/Home" element={<Layout><Home /></Layout>} />
-        <Route path="/Dashboard" element={<Layout><Dashboard /></Layout>} />
-        <Route path="/SavedActivities" element={<Layout><SavedActivities /></Layout>} />
-        <Route path="/Features" element={<Layout><Features /></Layout>} />
-        <Route path="/About" element={<Layout><About /></Layout>} />
-        <Route path="/MyClasses" element={<Layout><MyClasses /></Layout>} />
-        <Route path="/TeacherReports" element={<Layout><TeacherReports /></Layout>} />
-        <Route path="/LanguageLearning" element={<Layout><LanguageLearning /></Layout>} />
-        <Route path="/LanguageLearning/grades" element={<Layout><GradeSelection /></Layout>} />
-        <Route path="/LanguageLearning/:gradeId" element={<Layout><LearningOptions /></Layout>} />
-        <Route path="/LanguageLearning/:gradeId/:optionId" element={<Layout><LearningItems /></Layout>} />
-        <Route path="/game-hub" element={<Layout><GameHub /></Layout>} />
-        <Route path="/english-hub" element={<Layout><EnglishGameHub /></Layout>} />
+        <Route path="/Home" element={<ProtectedLayout><Home /></ProtectedLayout>} />
+        <Route path="/Dashboard" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
+        <Route path="/SavedActivities" element={<ProtectedLayout><SavedActivities /></ProtectedLayout>} />
+        <Route path="/Features" element={<ProtectedLayout><Features /></ProtectedLayout>} />
+        <Route path="/About" element={<ProtectedLayout><About /></ProtectedLayout>} />
+        <Route path="/MyClasses" element={<ProtectedLayout><MyClasses /></ProtectedLayout>} />
+        <Route path="/TeacherReports" element={<ProtectedLayout><TeacherReports /></ProtectedLayout>} />
+        <Route path="/LanguageLearning" element={<ProtectedLayout><LanguageLearning /></ProtectedLayout>} />
+        <Route path="/LanguageLearning/grades" element={<ProtectedLayout><GradeSelection /></ProtectedLayout>} />
+        <Route path="/LanguageLearning/:gradeId" element={<ProtectedLayout><LearningOptions /></ProtectedLayout>} />
+        <Route path="/LanguageLearning/:gradeId/:optionId" element={<ProtectedLayout><LearningItems /></ProtectedLayout>} />
+        <Route path="/game-hub" element={<ProtectedLayout><GameHub /></ProtectedLayout>} />
+        <Route path="/english-hub" element={<ProtectedLayout><EnglishGameHub /></ProtectedLayout>} />
         <Route path="/play-game/:gameId" element={<PlayGame />} />
         <Route path="/play-english/:gameId" element={<PlayEnglish />} />
         
         {/* Create Route */}
-        <Route path="/Create" element={<CreateRouter />} />
+        <Route path="/Create" element={<ProtectedRoute><CreateRouter /></ProtectedRoute>} />
         
         {/* Play & Edit Routes */}
         <Route path="/Play" element={<PlayRouter />} />
-        <Route path="/Edit" element={<EditRouter />} />
+        <Route path="/Edit" element={<ProtectedRoute><EditRouter /></ProtectedRoute>} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

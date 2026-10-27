@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Plus } from "lucide-react";
@@ -15,7 +15,7 @@ export default function SavedActivities() {
     queryKey: ['activities'],
     queryFn: async () => {
       try {
-        const result = await base44.entities.Activity.list();
+        const result = await localData.entities.Activity.list();
         return Array.isArray(result) ? result : [];
       } catch (error) {
         console.error('Error fetching activities:', error);

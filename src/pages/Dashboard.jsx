@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { localData } from "@/api/localDataClient";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,14 +16,14 @@ export default function Dashboard() {
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => localData.auth.me(),
   });
 
   const { data: activities, isLoading } = useQuery({
     queryKey: ['activities', user?.email],
     queryFn: async () => {
       try {
-        const data = await base44.entities.Activity.list();
+        const data = await localData.entities.Activity.list();
         const filtered = user?.email
           ? data.filter(a => a.created_by === user.email)
           : data;
@@ -40,7 +40,7 @@ export default function Dashboard() {
   const { data: results } = useQuery({
     queryKey: ['results', user?.email],
     queryFn: async () => {
-      const all = await base44.entities.GameResult.list('-created_date', 100);
+      const all = await localData.entities.GameResult.list('-created_date', 100);
       return user?.email ? all.filter(r => r.created_by === user.email) : all;
     },
     enabled: !!user,
