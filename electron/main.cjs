@@ -20,7 +20,9 @@ function createWindow() {
   });
 
   Menu.setApplicationMenu(null);
-  mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  // Resolve the packaged renderer from Electron's app path. Using __dirname
+  // with a parent segment can resolve incorrectly inside app.asar on Windows.
+  mainWindow.loadFile(path.join(app.getAppPath(), 'dist', 'index.html'));
 
   // Open external links in the default browser instead of the app window
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {

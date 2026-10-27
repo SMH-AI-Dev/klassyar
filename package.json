@@ -1,7 +1,7 @@
 {
   "name": "klassyar",
   "private": true,
-  "version": "1.6.2",
+  "version": "1.6.3",
   "homepage": "https://SMH-AI-Dev.github.io/klassyar",
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "deploy": "gh-pages -d dist --dotfiles",
     "preview": "vite preview",
     "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
-    "electron:build": "npm run build && electron-builder",
+    "electron:build": "vite build --base=./ && npm run postbuild && electron-builder",
     "build:android": "vite build --base=/"
   },
   "dependencies": {
