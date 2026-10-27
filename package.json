@@ -1,7 +1,7 @@
 {
   "name": "klassyar",
   "private": true,
-  "version": "1.6.6",
+  "version": "1.6.7",
   "homepage": "https://SMH-AI-Dev.github.io/klassyar",
   "type": "module",
   "scripts": {
