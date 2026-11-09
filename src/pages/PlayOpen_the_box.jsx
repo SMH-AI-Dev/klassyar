@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Check, X, Trophy, RotateCw, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayOpen_the_box() {
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ export default function PlayOpen_the_box() {
     const pct = Math.round((score / items.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-teal-50 via-green-50 to-emerald-50">
+        <ActivityResultReporter activity={activity} score={score} total={items.length} />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-teal-50 to-green-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">

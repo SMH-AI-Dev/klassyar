@@ -1,4 +1,11 @@
-﻿const gameLibrary = [
+import {
+  createExpandedMathQuestions,
+  createProceduralGames,
+  expandExistingPersianGame,
+} from "./gameContentGenerator.js";
+import selectionPrompt from "./selectionPrompt.js";
+
+const gameLibrary = [
   {
     id: "math-add-basic",
     title: "جمع اعداد پایه",
@@ -887,7 +894,9 @@ function toMultipleChoice(game) {
     const shift = index % options.length;
     const rotated = [...options.slice(shift), ...options.slice(0, shift)];
     return {
-      question: item.question || item.hint || item.text || 'پاسخ درست را انتخاب کن',
+      question: game.engine === "type"
+        ? selectionPrompt(item)
+        : item.question || item.hint || item.text || 'پاسخ درست را انتخاب کن',
       options: rotated,
       correctIndex: rotated.indexOf(answer),
     };
@@ -895,4 +904,19 @@ function toMultipleChoice(game) {
   return { ...game, engine: 'quiz', questions };
 }
 
-export default gameLibrary.map(toMultipleChoice);
+const expandedExistingGames = gameLibrary.map(toMultipleChoice).map((game) => {
+  const generatedQuestions = createExpandedMathQuestions(game.id);
+  if (!generatedQuestions) return expandExistingPersianGame(game);
+  const questions = [...(game.questions || []), ...generatedQuestions];
+  const seen = new Set();
+  return expandExistingPersianGame({
+    ...game,
+    questions: questions.filter((question) => {
+      if (seen.has(question.question)) return false;
+      seen.add(question.question);
+      return true;
+    }),
+  });
+});
+
+export default [...expandedExistingGames, ...createProceduralGames()];

@@ -1,28 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { ArrowRight, Check, X, Trophy, Lightbulb, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FloatingEmojis from "@/components/shared/FloatingEmojis";
 import { useGameData } from "@/hooks/useGameData";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
+
+const shuffle = (items) => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 export default function PlayCrossword() {
   const navigate = useNavigate();
   const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
+  const [roundItems, setRoundItems] = useState([]);
+  const [options, setOptions] = useState([]);
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [answer, setAnswer] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [isComplete, setIsComplete] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [showHint, setShowHint] = useState(false);
 
+  useEffect(() => {
+    if (activity?.content?.items) setRoundItems(shuffle(activity.content.items));
+  }, [activity]);
+
+  useEffect(() => {
+    const currentItem = roundItems[qIdx];
+    if (currentItem) {
+      const distractors = [...new Set(roundItems.map((entry) => entry.word))]
+        .filter((word) => word && word !== currentItem.word)
+        .slice(0, 3);
+      setOptions(shuffle([...distractors, currentItem.word]));
+    }
+  }, [qIdx, roundItems]);
+
   const checkAnswer = () => {
-    if (!answer.trim()) return;
-    const item = activity.content.items[qIdx];
-    const correct = answer.trim().toLowerCase() === item.word.toLowerCase();
+    if (!selectedAnswer || isCorrect !== null) return;
+    const item = roundItems[qIdx];
+    const correct = selectedAnswer.trim().toLowerCase() === item.word.toLowerCase();
     setIsCorrect(correct);
     if (correct) setScore(score + 1);
     const a = attempts + 1;
@@ -30,13 +55,14 @@ export default function PlayCrossword() {
     if (!correct && a >= 2) setShowHint(true);
     setTimeout(() => {
       if (qIdx < activity.content.items.length - 1) {
-        setQIdx(qIdx + 1); setAnswer(""); setIsCorrect(null); setAttempts(0); setShowHint(false);
+        setQIdx(qIdx + 1); setSelectedAnswer(null); setIsCorrect(null); setAttempts(0); setShowHint(false);
       } else setIsComplete(true);
     }, 1500);
   };
 
   const restart = () => {
-    setQIdx(0); setScore(0); setAnswer(""); setIsCorrect(null);
+    setRoundItems(shuffle(activity.content.items));
+    setQIdx(0); setScore(0); setSelectedAnswer(null); setIsCorrect(null);
     setIsComplete(false); setAttempts(0); setShowHint(false);
   };
 
@@ -46,7 +72,7 @@ export default function PlayCrossword() {
     </div>
   );
 
-  if (!activity || !activity.content?.items?.length) return (
+  if (!activity || !activity.content?.items?.length || !roundItems.length) return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="clay-element bg-white/80 border-0 p-8 text-center">
         <p className="text-xl text-gray-600 mb-4">فعالیت یافت نشد</p>
@@ -58,9 +84,10 @@ export default function PlayCrossword() {
   );
 
   if (isComplete) {
-    const pct = Math.round((score / activity.content.items.length) * 100);
+    const pct = Math.round((score / roundItems.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-stone-50">
+        <ActivityResultReporter activity={activity} score={score} total={roundItems.length} />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-slate-50 to-gray-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">
@@ -69,7 +96,7 @@ export default function PlayCrossword() {
               </motion.div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">کلمات پیدا شدند! 🎉</h2>
               <div className="bg-white/80 rounded-2xl p-6 mb-6 clay-element">
-                <p className="text-5xl font-bold text-slate-600">{score}/{activity.content.items.length}</p>
+                <p className="text-5xl font-bold text-slate-600">{score}/{roundItems.length}</p>
                 <p className="text-2xl font-bold text-slate-500 mt-2">{pct}%</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -83,7 +110,7 @@ export default function PlayCrossword() {
     );
   }
 
-  const item = activity.content.items[qIdx];
+  const item = roundItems[qIdx];
   const progress = qIdx + (isCorrect !== null ? 1 : 0);
 
   return (
@@ -100,13 +127,13 @@ export default function PlayCrossword() {
           )}
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800">{activity.title} 🧩</h1>
-            <p className="text-gray-600">کلمه {Math.min(qIdx + 1, activity.content.items.length)} از {activity.content.items.length}</p>
+            <p className="text-gray-600">کلمه {Math.min(qIdx + 1, roundItems.length)} از {roundItems.length}</p>
           </div>
           <div className="bg-white clay-element rounded-xl px-4 py-2 text-xl font-bold text-slate-600">{score}/{progress}</div>
         </motion.div>
         <div className="mb-6">
           <div className="h-3 bg-gray-200 rounded-full overflow-hidden clay-element">
-            <motion.div initial={{ width: 0 }} animate={{ width: `${(progress / activity.content.items.length) * 100}%` }} className="h-full bg-gradient-to-r from-slate-400 to-gray-500" />
+            <motion.div initial={{ width: 0 }} animate={{ width: `${(progress / roundItems.length) * 100}%` }} className="h-full bg-gradient-to-r from-slate-400 to-gray-500" />
           </div>
         </div>
         <AnimatePresence mode="wait">
@@ -127,10 +154,20 @@ export default function PlayCrossword() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <div className="max-w-md mx-auto mb-6">
-                  <Input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && checkAnswer()} disabled={isCorrect !== null}
-                    dir="ltr" placeholder="پاسخ..." className="text-center text-2xl p-6 rounded-xl clay-element border-2 border-slate-200 focus:border-slate-400" />
+                <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto mb-6">
+                  {options.map((option) => (
+                    <button
+                      type="button"
+                      key={option}
+                      disabled={isCorrect !== null}
+                      onClick={() => setSelectedAnswer(option)}
+                      className={`p-4 rounded-xl border-2 text-lg font-bold transition-all clay-element ${
+                        selectedAnswer === option ? "bg-slate-200 border-slate-500" : "bg-white border-slate-200 hover:border-slate-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
                 <AnimatePresence>
                   {isCorrect !== null && (
@@ -142,7 +179,7 @@ export default function PlayCrossword() {
                   )}
                 </AnimatePresence>
                 <div className="flex justify-center">
-                  <Button onClick={checkAnswer} disabled={!answer.trim() || isCorrect !== null}
+                  <Button onClick={checkAnswer} disabled={!selectedAnswer || isCorrect !== null}
                     className="bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl clay-element px-8 py-6 text-lg">
                     <Check className="w-5 h-5 ml-2" />بررسی
                   </Button>

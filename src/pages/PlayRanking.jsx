@@ -6,6 +6,7 @@ import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Trophy, GripVertical, ArrowUp, ArrowDown, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayRanking() {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ export default function PlayRanking() {
     const percentage = Math.round((score / activity.content.items.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={score} total={activity.content.items.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

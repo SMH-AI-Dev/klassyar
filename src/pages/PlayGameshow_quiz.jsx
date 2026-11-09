@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Trophy, Save, Check, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 const colors = [
   { bg: "from-orange-400 to-red-500", hover: "hover:from-orange-500 hover:to-red-600", label: "A" },
@@ -45,6 +46,7 @@ export default function PlayGameshow_quiz() {
     const pct = Math.round((score / activity.content.items.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-orange-50 via-red-50 to-rose-50">
+        <ActivityResultReporter activity={activity} score={score} total={activity.content.items.length} />
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-orange-50 to-red-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">

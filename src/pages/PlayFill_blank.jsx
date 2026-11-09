@@ -2,29 +2,52 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, X, Trophy, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
+
+const shuffle = (items) => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 export default function PlayFill_blank() {
   const navigate = useNavigate();
   const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
+  const [roundQuestions, setRoundQuestions] = useState([]);
+  const [options, setOptions] = useState([]);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    if (!activity?.content?.questions) return;
+    if (activity?.content?.questions) setRoundQuestions(shuffle(activity.content.questions));
+  }, [activity]);
+
+  useEffect(() => {
+    const question = roundQuestions[currentQuestionIndex];
+    if (!question) return;
+    const distractors = [...new Set(roundQuestions.map((entry) => entry.answer).filter(Boolean))]
+      .filter((answer) => answer !== question.answer)
+      .slice(0, 3);
+    setOptions(shuffle([...distractors, question.answer]));
+    setSelectedAnswer(null);
+  }, [currentQuestionIndex, roundQuestions]);
+
+  useEffect(() => {
     if (isCorrect !== null) {
       const timer = setTimeout(() => {
-        if (currentQuestionIndex < activity.content.questions.length - 1) {
+        if (currentQuestionIndex < roundQuestions.length - 1) {
           setCurrentQuestionIndex(currentQuestionIndex + 1);
-          setUserAnswer("");
           setIsCorrect(null);
         } else {
           setIsComplete(true);
@@ -32,13 +55,13 @@ export default function PlayFill_blank() {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [isCorrect, currentQuestionIndex, activity]);
+  }, [isCorrect, currentQuestionIndex, roundQuestions.length]);
 
   const checkAnswer = () => {
-    if (!userAnswer.trim()) return;
+    if (!selectedAnswer || isCorrect !== null) return;
     
-    const currentQuestion = activity.content.questions[currentQuestionIndex];
-    const correct = userAnswer.trim().toLowerCase() === currentQuestion.answer.toLowerCase();
+    const currentQuestion = roundQuestions[currentQuestionIndex];
+    const correct = selectedAnswer.trim().toLowerCase() === currentQuestion.answer.toLowerCase();
     
     setIsCorrect(correct);
     if (correct) {
@@ -47,9 +70,10 @@ export default function PlayFill_blank() {
   };
 
   const restartQuiz = () => {
+    setRoundQuestions(shuffle(activity.content.questions));
     setCurrentQuestionIndex(0);
     setScore(0);
-    setUserAnswer("");
+    setSelectedAnswer(null);
     setIsCorrect(null);
     setIsComplete(false);
   };
@@ -62,7 +86,7 @@ export default function PlayFill_blank() {
     );
   }
 
-  if (!activity || !activity.content?.questions?.length) {
+  if (!activity || !activity.content?.questions?.length || !roundQuestions.length) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
@@ -77,9 +101,10 @@ export default function PlayFill_blank() {
   }
 
   if (isComplete) {
-    const percentage = Math.round((score / activity.content.questions.length) * 100);
+    const percentage = Math.round((score / roundQuestions.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={score} total={roundQuestions.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -102,7 +127,7 @@ export default function PlayFill_blank() {
               <div className="bg-white/80 rounded-2xl p-6 mb-6 clay-element">
                 <p className="text-gray-600 mb-2">امتیاز شما:</p>
                 <p className="text-5xl font-bold text-amber-600">
-                  {score}/{activity.content.questions.length}
+                  {score}/{roundQuestions.length}
                 </p>
                 <p className="text-2xl font-bold text-amber-500 mt-2">{percentage}%</p>
               </div>
@@ -130,7 +155,7 @@ export default function PlayFill_blank() {
     );
   }
 
-  const currentQuestion = activity.content.questions[currentQuestionIndex];
+  const currentQuestion = roundQuestions[currentQuestionIndex];
   const parts = currentQuestion.question.split('___');
 
   return (
@@ -168,7 +193,7 @@ export default function PlayFill_blank() {
             <div className="bg-white clay-element rounded-xl px-4 py-2">
               <p className="text-sm text-gray-600">سوال</p>
               <p className="text-xl font-bold text-gray-800">
-                {currentQuestionIndex + 1}/{activity.content.questions.length}
+                {currentQuestionIndex + 1}/{roundQuestions.length}
               </p>
             </div>
             {isDemo && (
@@ -185,7 +210,7 @@ export default function PlayFill_blank() {
           <div className="h-3 bg-gray-200 rounded-full overflow-hidden clay-element">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${((currentQuestionIndex + 1) / activity.content.questions.length) * 100}%` }}
+              animate={{ width: `${((currentQuestionIndex + 1) / roundQuestions.length) * 100}%` }}
               className="h-full bg-gradient-to-r from-amber-400 to-orange-400"
               transition={{ duration: 0.5 }}
             />
@@ -218,17 +243,20 @@ export default function PlayFill_blank() {
                   </div>
                 </div>
 
-                {/* Input */}
-                <div className="max-w-md mx-auto mb-8">
-                  <Input
-                    type="text"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
-                    disabled={isCorrect !== null}
-                    placeholder="پاسخ خود را وارد کنید..."
-                    className="text-center text-2xl p-6 rounded-xl clay-element border-2 border-amber-200 focus:border-amber-400"
-                  />
+                <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto mb-8">
+                  {options.map((option) => (
+                    <button
+                      type="button"
+                      key={option}
+                      disabled={isCorrect !== null}
+                      onClick={() => setSelectedAnswer(option)}
+                      className={`p-4 rounded-xl border-2 text-lg font-bold transition-all clay-element ${
+                        selectedAnswer === option ? "bg-amber-200 border-amber-500" : "bg-white border-amber-200 hover:border-amber-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
 
                 {/* Feedback */}
@@ -258,7 +286,7 @@ export default function PlayFill_blank() {
                 <div className="flex justify-center">
                   <Button
                     onClick={checkAnswer}
-                    disabled={!userAnswer.trim() || isCorrect !== null}
+                    disabled={!selectedAnswer || isCorrect !== null}
                     className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl clay-element px-8 py-6 text-lg"
                   >
                     <Check className="w-5 h-5 ml-2" />

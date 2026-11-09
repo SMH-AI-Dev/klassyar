@@ -1,29 +1,62 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, RotateCcw, Timer } from "lucide-react";
+import { RotateCcw, Timer } from "lucide-react";
 import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
-export default function FillBlankEngine({ game }) {
+function shuffle(items) {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+export default function FillBlankEngine({ game, onProgress, onComplete, onRestart }) {
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [input, setInput] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [finished, setFinished] = useState(false);
   const [timer, setTimer] = useState(20);
+  const [answers, setAnswers] = useState([]);
+  const [options, setOptions] = useState([]);
+  const reported = useRef(false);
 
   useEffect(() => {
-    if (feedback || finished) return;
+    onProgress?.({ index: qIdx, answers });
+  }, [qIdx, answers, onProgress]);
+
+  useEffect(() => {
+    if (finished && !reported.current) {
+      reported.current = true;
+      onComplete?.({ score, total: game.questions.length });
+    }
+  }, [finished, score, game.questions.length, onComplete]);
+
+  useEffect(() => {
+    const correctAnswer = game.questions[qIdx]?.answer;
+    const distractors = [...new Set(game.questions.map((question) => question.answer).filter(Boolean))]
+      .filter((answer) => answer !== correctAnswer)
+      .slice(0, 3);
+    setOptions(shuffle([...distractors, correctAnswer].filter(Boolean)));
+  }, [qIdx, game]);
+
+  useEffect(() => {
+    if (feedback !== null || finished) return;
     if (timer <= 0) { submitAnswer(""); return; }
     const t = setInterval(() => setTimer(p => p - 1), 1000);
     return () => clearInterval(t);
   }, [timer, feedback, finished, qIdx]);
 
-  const submitAnswer = (val) => {
-    const text = val ?? input;
+  const submitAnswer = (text) => {
+    if (feedback !== null) return;
     const blanks = game.questions[qIdx].answer;
     const isCorrect = text.trim().toLowerCase() === blanks.trim().toLowerCase();
     if (isCorrect) setScore(s => s + 1);
+    setSelectedAnswer(text);
+    setAnswers((prev) => [...prev, { q: qIdx, selected: text, correct: isCorrect }]);
     setFeedback(isCorrect);
   };
 
@@ -39,7 +72,7 @@ export default function FillBlankEngine({ game }) {
   };
 
   const nextQuestion = () => {
-    setInput("");
+    setSelectedAnswer(null);
     setFeedback(null);
     setTimer(20);
     if (qIdx + 1 >= game.questions.length) {
@@ -50,12 +83,18 @@ export default function FillBlankEngine({ game }) {
   };
 
   const restart = () => {
+    if (onRestart) {
+      onRestart();
+      return;
+    }
     setQIdx(0);
     setScore(0);
-    setInput("");
+    setSelectedAnswer(null);
     setFeedback(null);
     setFinished(false);
     setTimer(20);
+    setAnswers([]);
+    reported.current = false;
   };
 
   if (finished) {
@@ -96,35 +135,32 @@ export default function FillBlankEngine({ game }) {
           <p dir="auto" className="text-lg font-bold text-gray-800 text-right leading-relaxed">{renderQuestion(q.text)}</p>
           {q.fa && <p dir="rtl" className="text-sm text-gray-500 mt-1 text-right">{q.fa}</p>}
         </div>
-        <div className="relative">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") submitAnswer(input); }}
-            disabled={feedback !== null}
-            placeholder="کلمه مناسب را بنویسید..."
-            className={`w-full p-4 rounded-2xl text-right text-lg border-2 transition-all clay-element outline-none ${
-              feedback === true ? "border-green-500 bg-green-50" :
-              feedback === false ? "border-red-500 bg-red-50" :
-              "border-transparent bg-white/95 focus:border-purple-400"
-            }`}
-            dir="rtl"
-          />
-          {feedback === true && <div className="absolute left-4 top-1/2 -translate-y-1/2"><CheckCircle2 className="w-6 h-6 text-green-500" /></div>}
-          {feedback === false && <div className="absolute left-4 top-1/2 -translate-y-1/2"><XCircle className="w-6 h-6 text-red-500" /></div>}
+        <div className="grid grid-cols-2 gap-3">
+          {options.map((answer) => {
+              const isCorrectAnswer = answer === q.answer;
+              const isSelected = selectedAnswer === answer;
+              let buttonClass = "bg-white/95 text-gray-800 border-transparent hover:border-purple-300";
+              if (feedback !== null) {
+                if (isCorrectAnswer) buttonClass = "bg-green-100 text-green-800 border-green-500";
+                else if (isSelected) buttonClass = "bg-red-100 text-red-800 border-red-500";
+              }
+              return (
+                <button
+                  type="button"
+                  key={answer}
+                  onClick={() => submitAnswer(answer)}
+                  disabled={feedback !== null}
+                  className={`p-4 rounded-2xl text-lg font-bold border-2 transition-all clay-element ${buttonClass}`}
+                >
+                  {answer}
+                </button>
+              );
+          })}
         </div>
         {feedback === false && (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-white text-sm">
             پاسخ درست: {q.answer}
           </motion.p>
-        )}
-        {feedback === null && (
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-4">
-            <Button onClick={() => submitAnswer(input)} disabled={!input.trim()} className="w-full h-14 bg-white text-purple-700 rounded-2xl text-lg font-bold clay-element">
-              بررسی
-            </Button>
-          </motion.div>
         )}
         <AnimatePresence>
           {feedback !== null && (

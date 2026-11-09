@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, RotateCcw, Timer } from "lucide-react";
 import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
-export default function QuizEngine({ game }) {
+export default function QuizEngine({ game, onProgress, onComplete, onRestart }) {
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -12,6 +12,18 @@ export default function QuizEngine({ game }) {
   const [timer, setTimer] = useState(15);
   const [finished, setFinished] = useState(false);
   const [answers, setAnswers] = useState([]);
+  const reported = useRef(false);
+
+  useEffect(() => {
+    onProgress?.({ index: qIdx, answers });
+  }, [qIdx, answers, onProgress]);
+
+  useEffect(() => {
+    if (finished && !reported.current) {
+      reported.current = true;
+      onComplete?.({ score, total: game.questions.length });
+    }
+  }, [finished, score, game.questions.length, onComplete]);
 
   const bgColors = ["from-purple-600 to-indigo-700", "from-pink-500 to-rose-600", "from-blue-600 to-cyan-600", "from-teal-500 to-green-600", "from-orange-500 to-red-600"];
   const bgIdx = qIdx % bgColors.length;
@@ -47,6 +59,10 @@ export default function QuizEngine({ game }) {
   };
 
   const restart = () => {
+    if (onRestart) {
+      onRestart();
+      return;
+    }
     setQIdx(0);
     setScore(0);
     setSelected(null);
@@ -54,6 +70,7 @@ export default function QuizEngine({ game }) {
     setTimer(15);
     setFinished(false);
     setAnswers([]);
+    reported.current = false;
   };
 
   if (finished) {

@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, X, Trophy, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayTrue_false() {
   const navigate = useNavigate();
@@ -76,6 +77,7 @@ export default function PlayTrue_false() {
     const percentage = Math.round((score / activity.content.questions.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={score} total={activity.content.questions.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

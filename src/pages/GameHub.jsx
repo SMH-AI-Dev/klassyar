@@ -31,7 +31,7 @@ export default function GameHub() {
         <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 text-center">
           🎮 بازی‌های درسی
         </motion.h1>
-        <p className="text-gray-500 text-center mb-8">۵۰ بازی متنوع برای یادگیری و سرگرمی</p>
+        <p className="text-gray-500 text-center mb-8">۳۵۰ بازی متنوع برای یادگیری و سرگرمی</p>
 
         <div className="relative max-w-md mx-auto mb-6">
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

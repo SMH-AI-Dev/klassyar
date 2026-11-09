@@ -1,11 +1,14 @@
-const SW_PATH = "/sw.js";
+const BASE_PATH = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const SW_PATH = `${BASE_PATH}sw.js`;
 
 export function registerSW() {
   if (!("serviceWorker" in navigator)) return;
 
   window.addEventListener("load", async () => {
     try {
-      const reg = await navigator.serviceWorker.register(SW_PATH, { scope: "/" });
+      const reg = await navigator.serviceWorker.register(SW_PATH, { scope: BASE_PATH });
       console.log("SW registered:", reg.scope);
 
       reg.addEventListener("updatefound", () => {

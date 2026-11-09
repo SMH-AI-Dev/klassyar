@@ -6,6 +6,7 @@ import { ArrowRight, Trophy, RotateCw, Check, GripVertical, Save } from "lucide-
 import { motion, AnimatePresence } from "framer-motion";
 import FloatingEmojis from "@/components/shared/FloatingEmojis";
 import { useGameData } from "@/hooks/useGameData";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayTimeline() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export default function PlayTimeline() {
     const pct = Math.round((score / shuffled.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-fuchsia-50 via-pink-50 to-rose-50">
+        <ActivityResultReporter activity={activity} score={score} total={shuffled.length} />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-fuchsia-50 to-pink-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">

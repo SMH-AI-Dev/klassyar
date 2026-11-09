@@ -16,10 +16,15 @@ export default function Navbar() {
     { name: 'بازی‌ها', path: '/game-hub', icon: Gamepad2 },
     { name: 'آموزش انگلیسی', path: '/LanguageLearning', icon: BookOpen },
     { name: 'بازی‌های انگلیسی', path: '/english-hub', icon: Globe },
-    { name: 'کلاس‌های من', path: '/MyClasses', icon: Users },
+    { name: user?.role === 'student' ? 'کلاس من' : 'کلاس‌های من', path: '/MyClasses', icon: Users },
     { name: 'امکانات', path: '/Features', icon: Lightbulb },
     { name: 'درباره', path: '/About', icon: Heart },
   ];
+  if (user?.role === 'teacher') {
+    navItems.splice(6, 0, { name: 'گزارش‌ها', path: '/TeacherReports', icon: Users });
+  } else if (user?.role === 'student') {
+    navItems.splice(6, 0, { name: 'تکلیف‌های من', path: '/StudentAssignments', icon: Users });
+  }
 
   const isActive = (path) => location.pathname === path;
 

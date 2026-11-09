@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameData } from "@/hooks/useGameData";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -103,6 +104,7 @@ export default function PlayHangman() {
   if (finished) {
     return (
       <div className="min-h-screen p-8 bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={score} total={items.length} />
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full">
           <Card className="clay-element bg-white border-0 p-12 text-center">
             <Trophy className="w-24 h-24 text-yellow-500 mx-auto mb-6" />

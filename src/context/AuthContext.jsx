@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { classroom } from "@/lib/classroom";
 
 const USERS_KEY = "klassyar_users";
 const CURRENT_KEY = "klassyar_user";
@@ -51,7 +52,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setUser(getStoredUser());
+    const stored = getStoredUser();
+    if (stored?.role === "student") classroom.setLocalStudentAccount(stored);
+    setUser(stored);
     setLoading(false);
   }, []);
 
@@ -77,18 +80,26 @@ export function AuthProvider({ children }) {
       name: stored.name,
       username: username.toLowerCase(),
       createdAt: stored.createdAt,
+      role: stored.role || null,
+      firstName: stored.firstName || "",
+      lastName: stored.lastName || "",
+      nationalId: stored.nationalId || "",
     };
     saveUser(userData);
+    if (userData.role === "student") classroom.setLocalStudentAccount(userData);
     setUser(userData);
     return userData;
   };
 
-  const register = async (username, password) => {
+  const register = async (username, password, profile = {}) => {
     if (!username || username.length < 2) {
       throw new Error("نام کاربری باید حداقل ۲ کاراکتر باشد");
     }
     if (!password || password.length < 3) {
       throw new Error("رمز عبور باید حداقل ۳ کاراکتر باشد");
+    }
+    if (!["teacher", "student"].includes(profile.role) || !profile.firstName?.trim() || !profile.lastName?.trim()) {
+      throw new Error("نقش و نام و نام خانوادگی الزامی است");
     }
 
     const users = getAllUsers();
@@ -100,8 +111,12 @@ export function AuthProvider({ children }) {
 
     const userData = {
       id: generateId(),
-      name: username,
+      name: `${profile.firstName.trim()} ${profile.lastName.trim()}`,
       username: key,
+      role: profile.role,
+      firstName: profile.firstName.trim(),
+      lastName: profile.lastName.trim(),
+      nationalId: profile.nationalId?.trim() || "",
       passwordHash: await hashPassword(password),
       createdAt: new Date().toISOString(),
     };
@@ -109,10 +124,40 @@ export function AuthProvider({ children }) {
     users[key] = userData;
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
 
-    const loginData = { id: userData.id, name: userData.name, username: userData.username, createdAt: userData.createdAt };
+    const loginData = {
+      id: userData.id, name: userData.name, username: userData.username,
+      role: userData.role, firstName: userData.firstName, lastName: userData.lastName,
+      nationalId: userData.nationalId, createdAt: userData.createdAt,
+    };
     saveUser(loginData);
+    if (loginData.role === "student") classroom.setLocalStudentAccount(loginData);
     setUser(loginData);
     return loginData;
+  };
+
+  const updateProfile = async (profile) => {
+    if (!user?.username || !["teacher", "student"].includes(profile.role) ||
+        !profile.firstName?.trim() || !profile.lastName?.trim()) {
+      throw new Error("نقش و نام و نام خانوادگی الزامی است");
+    }
+    const users = getAllUsers();
+    const stored = users[user.username];
+    if (!stored) throw new Error("حساب محلی پیدا نشد");
+    stored.role = profile.role;
+    stored.firstName = profile.firstName.trim();
+    stored.lastName = profile.lastName.trim();
+    stored.nationalId = profile.nationalId?.trim() || "";
+    stored.name = `${stored.firstName} ${stored.lastName}`;
+    users[user.username] = stored;
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    const updated = {
+      ...user, name: stored.name, role: stored.role, firstName: stored.firstName,
+      lastName: stored.lastName, nationalId: stored.nationalId,
+    };
+    saveUser(updated);
+    if (updated.role === "student") classroom.setLocalStudentAccount(updated);
+    setUser(updated);
+    return updated;
   };
 
   const logout = () => {
@@ -123,7 +168,7 @@ export function AuthProvider({ children }) {
   const isLoggedIn = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, isLoggedIn }}>
+    <AuthContext.Provider value={{ user, loading, login, register, updateProfile, logout, isLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );

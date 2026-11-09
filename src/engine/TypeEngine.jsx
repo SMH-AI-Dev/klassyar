@@ -1,20 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, RotateCcw, Timer, Lightbulb } from "lucide-react";
+import { RotateCcw, Timer } from "lucide-react";
 import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
-export default function TypeEngine({ game }) {
+function shuffleArray(array) {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+export default function TypeEngine({ game, onProgress, onComplete, onRestart }) {
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [input, setInput] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [finished, setFinished] = useState(false);
-  const [timer, setTimer] = useState(30);
-  const [answered, setAnswered] = useState([]);
+  const [timer, setTimer] = useState(20);
+  const [options, setOptions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const reported = useRef(false);
 
   useEffect(() => {
-    if (feedback || finished) return;
+    onProgress?.({ index: qIdx, answers });
+  }, [qIdx, answers, onProgress]);
+
+  useEffect(() => {
+    if (finished && !reported.current) {
+      reported.current = true;
+      onComplete?.({ score, total: game.questions.length });
+    }
+  }, [finished, score, game.questions.length, onComplete]);
+
+  useEffect(() => {
+    if (feedback !== null || finished) return;
     if (timer <= 0) {
       submitAnswer("");
       return;
@@ -23,24 +45,30 @@ export default function TypeEngine({ game }) {
     return () => clearInterval(t);
   }, [timer, feedback, finished, qIdx]);
 
-  const submitAnswer = (val) => {
-    const text = val ?? input;
-    const isCorrect = text.trim().toLowerCase() === game.questions[qIdx].answer.trim().toLowerCase();
-    if (isCorrect) setScore(s => s + 1);
-    setFeedback(isCorrect);
-    setAnswered(a => [...a, { q: qIdx, answer: text, correct: isCorrect }]);
-  };
+  useEffect(() => {
+    const q = game.questions[qIdx];
+    if (!q) return;
+    const correctAnswer = q.answer;
+    const allAnswers = [...new Set(game.questions.map(quest => quest.answer).filter(Boolean))];
+    const wrongAnswers = allAnswers.filter(a => a !== correctAnswer);
+    const shuffledWrong = shuffleArray(wrongAnswers).slice(0, 3);
+    const newOptions = shuffleArray([correctAnswer, ...shuffledWrong]);
+    setOptions(newOptions);
+    setSelectedAnswer(null);
+    setFeedback(null);
+    setTimer(20);
+  }, [qIdx, game]);
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      submitAnswer(input);
-    }
+  const submitAnswer = (answer) => {
+    const q = game.questions[qIdx];
+    if (feedback !== null) return;
+    const isCorrect = answer === q.answer;
+    if (isCorrect) setScore(s => s + 1);
+    setAnswers((prev) => [...prev, { q: qIdx, selected: answer, correct: isCorrect }]);
+    setFeedback(isCorrect);
   };
 
   const nextQuestion = () => {
-    setInput("");
-    setFeedback(null);
-    setTimer(30);
     if (qIdx + 1 >= game.questions.length) {
       setFinished(true);
     } else {
@@ -49,13 +77,18 @@ export default function TypeEngine({ game }) {
   };
 
   const restart = () => {
+    if (onRestart) {
+      onRestart();
+      return;
+    }
     setQIdx(0);
     setScore(0);
-    setInput("");
+    setSelectedAnswer(null);
     setFeedback(null);
     setFinished(false);
-    setTimer(30);
-    setAnswered([]);
+    setTimer(20);
+    setAnswers([]);
+    reported.current = false;
   };
 
   if (finished) {
@@ -87,56 +120,44 @@ export default function TypeEngine({ game }) {
         <div className="mb-4 flex items-center gap-3">
           <Timer className="w-5 h-5 text-white/80" />
           <div className="flex-1 bg-white/20 rounded-full h-2">
-            <motion.div initial={{ width: "100%" }} animate={{ width: `${(timer / 30) * 100}%` }} className="h-2 bg-white rounded-full" />
+            <motion.div initial={{ width: "100%" }} animate={{ width: `${(timer / 20) * 100}%` }} className="h-2 bg-white rounded-full" />
           </div>
           <span className="text-white font-bold">{timer}s</span>
         </div>
         <div className="text-white/60 text-sm mb-4">سوال {qIdx + 1} از {game.questions.length}</div>
         <div className="bg-white/95 rounded-3xl p-6 mb-4 clay-element">
-          <div className="flex items-center gap-3 mb-4">
-            <Lightbulb className="w-6 h-6 text-yellow-500" />
-            <p dir="auto" className="text-xl font-bold text-gray-800">{q.hint}</p>
-          </div>
-          {q.fa && <p dir="rtl" className="text-sm text-gray-500 mt-1 text-right">{q.fa}</p>}
+          <p dir="auto" className="text-xl font-bold text-gray-800 text-center">{q.hint}</p>
         </div>
-        <div className="relative">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={feedback !== null}
-            placeholder="پاسخ خود را بنویسید..."
-            className={`w-full p-4 rounded-2xl text-right text-lg border-2 transition-all clay-element outline-none ${
-              feedback === true ? "border-green-500 bg-green-50" :
-              feedback === false ? "border-red-500 bg-red-50" :
-              "border-transparent bg-white/95 focus:border-blue-400"
-            }`}
-            dir="rtl"
-          />
-          {feedback === true && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
-            </div>
-          )}
-          {feedback === false && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <XCircle className="w-6 h-6 text-red-500" />
-            </div>
-          )}
+        <div className="grid grid-cols-2 gap-3">
+          {options.map((option, idx) => {
+            const isSelected = selectedAnswer === option;
+            const isCorrectAnswer = option === q.answer;
+            let btnClass = "bg-white text-gray-800 border-2 border-transparent hover:border-blue-300";
+            if (feedback !== null) {
+              if (isCorrectAnswer) btnClass = "bg-green-100 text-green-800 border-2 border-green-500";
+              else if (isSelected && !isCorrectAnswer) btnClass = "bg-red-100 text-red-800 border-2 border-red-500";
+              else btnClass = "bg-gray-100 text-gray-400 border-2 border-transparent";
+            } else if (isSelected) {
+              btnClass = "bg-blue-100 text-blue-800 border-2 border-blue-500";
+            }
+            return (
+              <motion.button
+                key={idx}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  if (feedback !== null) return;
+                  setSelectedAnswer(option);
+                  submitAnswer(option);
+                }}
+                disabled={feedback !== null}
+                className={`p-4 rounded-2xl text-lg font-bold transition-all clay-element ${btnClass}`}
+              >
+                {option}
+              </motion.button>
+            );
+          })}
         </div>
-        {feedback === false && (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-white text-sm">
-            پاسخ درست: {q.answer}
-          </motion.p>
-        )}
-        {feedback === null && (
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-4">
-            <Button onClick={() => submitAnswer(input)} disabled={!input.trim()} className="w-full h-14 bg-white text-blue-700 rounded-2xl text-lg font-bold clay-element">
-              بررسی پاسخ
-            </Button>
-          </motion.div>
-        )}
         <AnimatePresence>
           {feedback !== null && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-4">

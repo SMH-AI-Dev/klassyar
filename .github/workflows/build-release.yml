@@ -30,10 +30,30 @@ jobs:
         run: npm run build:android
       - name: Sync Capacitor
         run: npx cap sync android
+      - name: Prepare Android signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.KLASSYAR_ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/klassyar-release.keystore"
+          fi
       - name: Build APKs
         working-directory: android
+        env:
+          KLASSYAR_ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/klassyar-release.keystore
+          KLASSYAR_ANDROID_STORE_PASSWORD: ${{ secrets.KLASSYAR_ANDROID_STORE_PASSWORD }}
+          KLASSYAR_ANDROID_KEY_ALIAS: ${{ secrets.KLASSYAR_ANDROID_KEY_ALIAS }}
+          KLASSYAR_ANDROID_KEY_PASSWORD: ${{ secrets.KLASSYAR_ANDROID_KEY_PASSWORD }}
         run: |
-          gradle assembleDebug assembleRelease --no-daemon
+          gradle assembleDebug --no-daemon
+          if [ -f "$KLASSYAR_ANDROID_KEYSTORE_FILE" ] && [ -n "$KLASSYAR_ANDROID_STORE_PASSWORD" ] && [ -n "$KLASSYAR_ANDROID_KEY_ALIAS" ] && [ -n "$KLASSYAR_ANDROID_KEY_PASSWORD" ]; then
+            gradle assembleRelease --no-daemon
+          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "Android signing secrets are required for tagged releases."
+            exit 1
+          else
+            echo "Skipping unsigned Android release APK; configure signing secrets to build one."
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk

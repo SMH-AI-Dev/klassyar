@@ -13,6 +13,7 @@ import About from './pages/About';
 import MyClasses from './pages/MyClasses';
 import Login from './pages/Login';
 import TeacherReports from './pages/TeacherReports';
+import StudentAssignments from './pages/StudentAssignments';
 import LanguageLearning from './pages/LanguageLearning';
 import GradeSelection from './pages/GradeSelection';
 import LearningOptions from './pages/LearningOptions';
@@ -21,6 +22,10 @@ import GameHub from './pages/GameHub';
 import EnglishGameHub from './pages/EnglishGameHub';
 import PlayGame from './pages/PlayGame';
 import PlayEnglish from './pages/PlayEnglish';
+
+const routerBasename = import.meta.env.BASE_URL.startsWith('/')
+  ? import.meta.env.BASE_URL
+  : undefined;
 
 // Create Pages
 import CreateFlashcard from './pages/CreateFlashcard';
@@ -136,6 +141,16 @@ function ProtectedLayout({ children }) {
   return <ProtectedRoute><Layout>{children}</Layout></ProtectedRoute>;
 }
 
+function TeacherOnly({ children }) {
+  const { user } = useAuth();
+  return user?.role === "teacher" ? children : <Navigate to="/MyClasses" replace />;
+}
+
+function StudentOnly({ children }) {
+  const { user } = useAuth();
+  return user?.role === "student" ? children : <Navigate to="/MyClasses" replace />;
+}
+
 function AppContent() {
   const { addToast } = useToast();
   
@@ -144,7 +159,7 @@ function AppContent() {
   }, [addToast]);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <Routes>
         {/* Public routes (no Layout) */}
         <Route path="/Login" element={<Login />} />
@@ -159,7 +174,8 @@ function AppContent() {
         <Route path="/Features" element={<ProtectedLayout><Features /></ProtectedLayout>} />
         <Route path="/About" element={<ProtectedLayout><About /></ProtectedLayout>} />
         <Route path="/MyClasses" element={<ProtectedLayout><MyClasses /></ProtectedLayout>} />
-        <Route path="/TeacherReports" element={<ProtectedLayout><TeacherReports /></ProtectedLayout>} />
+        <Route path="/TeacherReports" element={<ProtectedLayout><TeacherOnly><TeacherReports /></TeacherOnly></ProtectedLayout>} />
+        <Route path="/StudentAssignments" element={<ProtectedLayout><StudentOnly><StudentAssignments /></StudentOnly></ProtectedLayout>} />
         <Route path="/LanguageLearning" element={<ProtectedLayout><LanguageLearning /></ProtectedLayout>} />
         <Route path="/LanguageLearning/grades" element={<ProtectedLayout><GradeSelection /></ProtectedLayout>} />
         <Route path="/LanguageLearning/:gradeId" element={<ProtectedLayout><LearningOptions /></ProtectedLayout>} />

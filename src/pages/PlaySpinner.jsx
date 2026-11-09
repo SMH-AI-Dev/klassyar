@@ -6,6 +6,7 @@ import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, RotateCw, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlaySpinner() {
   const navigate = useNavigate();
@@ -252,6 +253,9 @@ export default function PlaySpinner() {
               </div>
 
               {/* Selected Result */}
+              {selectedItem && (
+                <ActivityResultReporter activity={activity} type="spinner" score={1} total={1} />
+              )}
               <AnimatePresence>
                 {selectedItem && (
                   <motion.div

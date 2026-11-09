@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Trophy, RotateCw, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayMatching() {
   const navigate = useNavigate();
@@ -98,6 +99,7 @@ export default function PlayMatching() {
   if (isComplete) {
     return (
       <div className="min-h-screen p-8 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={matched.length} total={activity.content.pairs.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}

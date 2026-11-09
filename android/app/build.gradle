@@ -13,8 +13,8 @@ android {
         applicationId "com.klassyar.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.6.0"
+        versionCode 3
+        versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -22,16 +22,20 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    def ksFile = file('../klassyar.keystore')
+    def keystorePath = System.getenv('KLASSYAR_ANDROID_KEYSTORE_FILE')
+    def ksFile = keystorePath ? file(keystorePath) : null
+    def androidStorePassword = System.getenv('KLASSYAR_ANDROID_STORE_PASSWORD')
+    def androidKeyAlias = System.getenv('KLASSYAR_ANDROID_KEY_ALIAS')
+    def androidKeyPassword = System.getenv('KLASSYAR_ANDROID_KEY_PASSWORD')
+    def hasReleaseSigning = ksFile != null && ksFile.exists() &&
+        androidStorePassword && androidKeyAlias && androidKeyPassword
     signingConfigs {
         release {
-            // Signed only when the keystore is present locally (keystore is
-            // intentionally not committed to the public repository).
-            if (ksFile.exists()) {
+            if (hasReleaseSigning) {
                 storeFile ksFile
-                storePassword 'klassyar2026key'
-                keyAlias 'klassyar'
-                keyPassword 'klassyar2026key'
+                storePassword androidStorePassword
+                keyAlias androidKeyAlias
+                keyPassword androidKeyPassword
             }
         }
     }
@@ -39,7 +43,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig ksFile.exists() ? signingConfigs.release : null
+            signingConfig hasReleaseSigning ? signingConfigs.release : null
         }
     }
 }

@@ -8,9 +8,9 @@ import AnswerInput from "@/components/shared/AnswerInput";
 
 export default function CreateType() {
   const navigate = useNavigate();
-  const [questions, setQuestions] = useState([{ hint: "", answer: "" }]);
+  const [questions, setQuestions] = useState([{ hint: "", answer: "", distractors: ["", "", ""] }]);
 
-  const addQuestion = () => setQuestions([...questions, { hint: "", answer: "" }]);
+  const addQuestion = () => setQuestions([...questions, { hint: "", answer: "", distractors: ["", "", ""] }]);
 
   const removeQuestion = (i) => {
     if (questions.length === 1) return;
@@ -24,11 +24,34 @@ export default function CreateType() {
   };
 
   const save = () => {
+    const incomplete = questions.some((question) => (
+      !question.hint.trim()
+      || !question.answer.trim()
+      || question.distractors.some((option) => !option.trim())
+    ));
+    if (incomplete) {
+      alert("لطفاً متن هر سوال، پاسخ درست و سه گزینه نادرست را کامل کنید");
+      return;
+    }
+
+    const hasDuplicateOptions = questions.some((question) => {
+      const options = [question.answer, ...question.distractors].map((option) => option.trim().toLocaleLowerCase());
+      return new Set(options).size !== options.length;
+    });
+    if (hasDuplicateOptions) {
+      alert("گزینه‌های هر سوال باید با یکدیگر متفاوت باشند");
+      return;
+    }
+
     const data = {
-      title: "فعالیت تشریحی",
-      description: "پاسخ تشریحی توسط دانش‌آموزان",
+      title: "تمرین انتخاب پاسخ",
+      description: "دانش‌آموز پاسخ درست را از میان گزینه‌ها انتخاب می‌کند",
       type: "type",
-      questions: questions.filter(q => q.hint && q.answer),
+      questions: questions.map((question) => ({
+        hint: question.hint.trim(),
+        answer: question.answer.trim(),
+        options: [question.answer.trim(), ...question.distractors.map((option) => option.trim())],
+      })),
     };
     localStorage.setItem("pendingActivity", JSON.stringify(data));
     navigate("/Dashboard");
@@ -41,7 +64,10 @@ export default function CreateType() {
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full clay-element flex items-center justify-center bg-white">
             <ArrowRight className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-800">پرسش تشریحی ✍️</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">ساخت تمرین انتخابی 🗳️</h1>
+            <p className="text-sm text-gray-500">دانش‌آموز پاسخ را با کلیک انتخاب می‌کند و نیازی به تایپ ندارد.</p>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -69,6 +95,19 @@ export default function CreateType() {
                     onChange={v => update(i, "answer", v)}
                     placeholder="مثال: تهران"
                   />
+                  {q.distractors.map((option, optionIndex) => (
+                    <AnswerInput
+                      key={optionIndex}
+                      label={`گزینه نادرست ${optionIndex + 1}`}
+                      value={option}
+                      onChange={value => {
+                        const distractors = [...q.distractors];
+                        distractors[optionIndex] = value;
+                        update(i, "distractors", distractors);
+                      }}
+                      placeholder={`گزینه ${optionIndex + 1}`}
+                    />
+                  ))}
                 </CardContent>
               </Card>
             </motion.div>

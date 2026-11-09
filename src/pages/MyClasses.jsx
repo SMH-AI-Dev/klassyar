@@ -1,585 +1,296 @@
-import React, { useState } from "react";
-import { localData } from "@/api/localDataClient";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { BarChart3, Download, FileUp, Plus, UserPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Users, Copy, Check, UserPlus, Trash2, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "@/lib/sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
+import gameLibrary from "@/lib/gameLibrary";
+import {
+  classroom, decryptReport, downloadJson, encryptReport, readJsonFile, reportRatingLabels,
+} from "@/lib/classroom";
+
+const empty = (userId) => classroom.state(userId);
+
+function Feedback({ message, error }) {
+  if (!message) return null;
+  return <div role={error ? "alert" : "status"} className={`rounded-xl p-3 text-center ${error ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-800"}`}>{message}</div>;
+}
+
+function StudentClasses({ user }) {
+  const [profile, setProfile] = useState(classroom.student());
+  const [password, setPassword] = useState("");
+  const [reportId, setReportId] = useState("");
+  const [pendingInvitations, setPendingInvitations] = useState([]);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+  const inviteFile = useRef();
+  const returnFile = useRef();
+  const returnedReports = classroom.returnedReports().filter((item) =>
+    (item.sourceStudentId || item.student?.id) === profile?.student?.id &&
+    (!profile?.classroom?.id || item.classroom?.id === profile.classroom.id));
+  const visibleReport = returnedReports.find((item) => item.responseId === reportId) || returnedReports.at(-1);
+  const showError = (reason) => { setMessage(reason); setError(true); };
+  const showMessage = (text) => { setMessage(text); setError(false); };
+  const activate = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const invitation = await readJsonFile(file);
+      if (invitation?.format === "klassyar-invitation-bundle" && invitation.version === 1 &&
+          Array.isArray(invitation.invitations) && invitation.invitations.length > 0) {
+        setPendingInvitations(invitation.invitations);
+        showMessage("پروفایل خود را از فایل دسته‌ای انتخاب کنید.");
+      } else {
+        setProfile(classroom.activate(invitation, user));
+        showMessage("دعوت‌نامه وارد شد؛ نتیجهٔ بازی‌ها روی همین دستگاه ذخیره می‌شود.");
+      }
+    } catch (reason) { showError(reason.message); }
+    event.target.value = "";
+  };
+  const chooseInvitation = (invitation) => {
+    try {
+      setProfile(classroom.activate(invitation, user));
+      setPendingInvitations([]);
+      showMessage("پروفایل دانش‌آموز فعال شد.");
+    } catch (reason) { showError(reason.message); }
+  };
+  const exportResults = async () => {
+    try {
+      if (!profile) throw new Error("ابتدا دعوت‌نامهٔ کلاس را وارد کنید");
+      const report = classroom.report();
+      const encrypted = await encryptReport(report, password);
+      downloadJson(encrypted, `klassyar-report-${profile.student.accessCode || profile.student.id}.json`);
+      setProfile(classroom.archiveStudentCycle(report));
+      setPassword("");
+      showMessage("گزارش رمزگذاری‌شده دانلود شد. این دوره بایگانی و چرخهٔ تازه‌ای آغاز شد؛ فعالیت‌های پیشین فقط پس از دریافت کارنامهٔ معلم نمایش داده می‌شوند.");
+    } catch (reason) { showError(reason.message); }
+  };
+  const importTeacherReport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const returned = await decryptReport(await readJsonFile(file), password);
+      const imported = classroom.importTeacherReport(returned);
+      setReportId(imported.responseId);
+      showMessage("کارنامهٔ رمزگذاری‌شدهٔ معلم دریافت شد.");
+    } catch (reason) { showError(reason.message); }
+    event.target.value = "";
+  };
+  return <main className="min-h-screen bg-gradient-to-br from-sky-50 via-violet-50 to-pink-50 p-4 sm:p-8" dir="rtl">
+    <div className="max-w-4xl mx-auto space-y-5">
+      <header className="text-center"><Users className="w-12 h-12 mx-auto text-violet-600 mb-2" /><h1 className="text-3xl font-black text-slate-800">فضای دانش‌آموز</h1><p className="text-slate-600 mt-2">پروفایل دانش‌آموزی · اطلاعات و فعالیت‌ها فقط در فضای ذخیره‌سازی محلی این دستگاه ثبت می‌شوند.</p></header>
+      <Feedback message={message} error={error} />
+      {!profile ? <Card className="border-0 shadow-lg"><CardHeader><CardTitle>ورود به کلاس</CardTitle></CardHeader><CardContent className="space-y-3"><p>برای اتصال پروفایل مدرسه، فایل دعوت‌نامه‌ای را که معلم برایتان فرستاده وارد کنید.</p><input ref={inviteFile} type="file" accept=".json,application/json" className="hidden" onChange={activate} /><Button onClick={() => inviteFile.current?.click()}><FileUp className="w-4 h-4 ml-2" />انتخاب دعوت‌نامه</Button>{pendingInvitations.length > 0 && <div className="space-y-2"><p className="font-semibold">پروفایل مورد استفاده را انتخاب کنید:</p>{pendingInvitations.map((invitation) => <Button key={invitation.student?.id} variant="outline" className="w-full justify-start" onClick={() => chooseInvitation(invitation)}>{invitation.student?.name || `${invitation.student?.firstName || ""} ${invitation.student?.lastName || ""}`} · {invitation.classroom?.name}</Button>)}</div>}</CardContent></Card>
+        : <>
+          <Card className="border-0 shadow-lg"><CardContent className="p-5"><h2 className="text-xl font-bold">{profile.student.name}</h2><p className="text-slate-600">{profile.classroom?.name || "پروفایل محلی، هنوز منتسب به کلاس نیست"}{profile.teacher?.name ? ` · معلم: ${profile.teacher.name}` : ""}</p><p className="text-xs text-amber-700 mt-3">ذخیرهٔ محلی از دسترسی مالک دستگاه یا ابزارهای همان دستگاه محافظت نمی‌کند؛ هیچ داده‌ای به سرور ارسال نمی‌شود.</p></CardContent></Card>
+          <Card className="border-0 shadow-lg"><CardHeader><CardTitle>عملکرد فعلی و تبادل گزارش</CardTitle></CardHeader><CardContent className="space-y-3"><p>جزئیات عملکرد فقط پس از دریافت کارنامهٔ معلم نمایش داده می‌شود.</p><Input type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="رمز گزارش مورد توافق با معلم" /><div className="flex flex-wrap gap-2"><Button onClick={exportResults}><Download className="w-4 h-4 ml-2" />ارسال عملکرد فعلی به معلم</Button><input ref={returnFile} type="file" accept=".json,application/json" className="hidden" onChange={importTeacherReport} /><Button variant="outline" onClick={() => returnFile.current?.click()}><FileUp className="w-4 h-4 ml-2" />دریافت کارنامهٔ معلم</Button></div></CardContent></Card>
+          {returnedReports.length > 0 && <Card className="border-0 shadow-lg"><CardHeader><CardTitle>کارنامه‌های دریافت‌شده</CardTitle></CardHeader><CardContent className="space-y-4"><select aria-label="تاریخچهٔ کارنامه‌ها" className="rounded-lg border p-2" value={visibleReport?.responseId || ""} onChange={(event) => setReportId(event.target.value)}>{returnedReports.map((item) => <option key={item.responseId} value={item.responseId}>{item.cycle.name} · {new Date(item.receivedAt).toLocaleDateString("fa-IR")}</option>)}</select>{visibleReport && <motion.div key={visibleReport.responseId} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl bg-gradient-to-br from-violet-50 to-sky-50 p-5 space-y-3"><div className="flex flex-wrap justify-between gap-2"><strong>{visibleReport.cycle.name} · {visibleReport.subject || "گزارش پیشرفت"}</strong><span>معلم: {visibleReport.teacher.name}</span></div><div className="text-sm">ارزیابی: {reportRatingLabels[visibleReport.evaluation.rating]}{visibleReport.evaluation.comment && ` · ${visibleReport.evaluation.comment}`}</div><div className="font-bold">میانگین فعالیت‌های بازی: {visibleReport.average}٪</div>{visibleReport.results.map((result, index) => <div key={`${visibleReport.responseId}-${index}`} className="grid grid-cols-[1fr_auto] gap-3 items-center"><span>{result.gameTitle}</span><span>{result.percent}٪</span><div className="col-span-2 h-2 rounded-full bg-white overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${result.percent}%` }} transition={{ duration: 0.6, delay: index * 0.06 }} className="h-full bg-violet-500" /></div></div>)}{visibleReport.assignmentAnswers.map((assignment, index) => <div key={`${visibleReport.responseId}-answer-${index}`} className="border-t pt-2"><strong>{assignment.title}</strong>{assignment.answers.map((answer, answerIndex) => <p key={answerIndex} className="text-sm">{assignment.questions[answerIndex]?.prompt}: {answer}</p>)}</div>)}</motion.div>}</CardContent></Card>}
+        </>}
+    </div>
+  </main>;
+}
 
 export default function MyClasses() {
-  const [step, setStep] = useState("main");
-  const [teacherName, setTeacherName] = useState("");
-  const [studentData, setStudentData] = useState({ 
-    firstName: "", 
-    lastName: "", 
-    phone: "", 
-    email: "" 
-  });
-  const [newClass, setNewClass] = useState({ name: "", description: "" });
-  const [copiedCode, setCopiedCode] = useState(null);
-  const [showAddStudent, setShowAddStudent] = useState(null);
-  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  if (user?.role === "student") return <StudentClasses user={user} />;
+  return <TeacherClasses user={user} />;
+}
 
-  const { data: user } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => localData.auth.me(),
-  });
+function TeacherClasses({ user }) {
+  const [state, setState] = useState(() => empty(user?.id));
+  const [className, setClassName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [grade, setGrade] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [fatherName, setFatherName] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [cycleId, setCycleId] = useState("");
+  const [cycleName, setCycleName] = useState("");
+  const [studentIds, setStudentIds] = useState([]);
+  const [assignmentTitle, setAssignmentTitle] = useState("");
+  const [gameId, setGameId] = useState("");
+  const [questionPrompt, setQuestionPrompt] = useState("");
+  const [questionOptions, setQuestionOptions] = useState(["", "", "", ""]);
+  const [correctIndex, setCorrectIndex] = useState(0);
+  const [questionFeedback, setQuestionFeedback] = useState("");
+  const [selectedProfiles, setSelectedProfiles] = useState([]);
+  const [selectedReportStudents, setSelectedReportStudents] = useState([]);
+  const [returnPassword, setReturnPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [reportPassword, setReportPassword] = useState("");
+  const [importClassId, setImportClassId] = useState("");
+  const [importStudentId, setImportStudentId] = useState("__new__");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+  const inviteFile = useRef();
+  const reportFile = useRef();
+  const showError = (reason) => { setMessage(reason); setError(true); };
+  const showMessage = (text) => { setMessage(text); setError(false); };
+  useEffect(() => {
+    if (!state.teacher && user?.firstName && user?.lastName) {
+      try {
+        setState(classroom.setTeacherProfile(user, {
+          firstName: user.firstName, lastName: user.lastName, nationalId: user.nationalId,
+        }));
+      } catch (reason) { showError(reason.message); }
+    }
+  }, [state.teacher, user]);
+  const refresh = (nextSelected = selected) => {
+    const next = empty(user?.id);
+    setState(next);
+    if (nextSelected) setSelected(nextSelected);
+  };
+  const currentClass = state.classes.find((item) => item.id === selected) || state.classes[0];
+  const activeCycle = currentClass?.cycles.find((item) => item.id === cycleId) ||
+    currentClass?.cycles.find((item) => item.status === "active") || currentClass?.cycles[0];
+  const selectedGame = gameLibrary.find((game) => game.id === gameId);
+  const reportsByStudent = useMemo(() => (currentClass?.students || []).map((student) => {
+    const entries = currentClass.reports.filter((report) =>
+      report.studentId === student.id && (!activeCycle || report.cycleId === activeCycle.id));
+    const average = entries.length ? Math.round(entries.reduce((sum, item) => sum + item.percent, 0) / entries.length) : 0;
+    return { student, entries, average };
+  }), [currentClass, activeCycle]);
 
-  const { data: classes, isLoading } = useQuery({
-    queryKey: ['myClasses'],
-    queryFn: async () => {
-      const me = await localData.auth.me();
-      return localData.entities.Class.filter({ teacher_id: me.id });
-    },
-    initialData: [],
-  });
-
-  const createClassMutation = useMutation({
-    mutationFn: async (classData) => {
-      const me = await localData.auth.me();
-      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      return localData.entities.Class.create({
-        ...classData,
-        teacher_id: me.id,
-        teacher_name: teacherName,
-        code,
-        color: 'sky'
+  const saveTeacher = (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    try { setState(classroom.setTeacherProfile(user, { firstName: form.get("firstName"), lastName: form.get("lastName"), nationalId: form.get("nationalId") })); showMessage("پروفایل معلم ذخیره شد."); }
+    catch (reason) { showError(reason.message); }
+  };
+  const createClass = () => {
+    try {
+      const record = classroom.createClass(className, user?.id);
+      classroom.updateClass(record.id, { name: className, subject, grade }, user?.id);
+      setClassName(""); setSubject(""); setGrade(""); refresh(record.id); showMessage("کلاس ساخته شد.");
+    } catch (reason) { showError(reason.message); }
+  };
+  const saveClassDetails = (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    try {
+      classroom.updateClass(currentClass.id, {
+        name: form.get("className"), subject: form.get("subject"), grade: form.get("grade"),
+      }, user?.id);
+      refresh(currentClass.id);
+      showMessage("نام کلاس، درس و پایه ذخیره شد.");
+    } catch (reason) { showError(reason.message); }
+  };
+  const addStudent = () => {
+    try {
+      if (!currentClass) throw new Error("ابتدا یک کلاس بسازید و انتخاب کنید");
+      const created = classroom.addStudent(currentClass.id, { firstName, lastName, fatherName, nationalId }, user?.id);
+      const invite = classroom.invitation(created.class, created.student, state.teacher);
+      downloadJson(invite, `klassyar-invite-${created.student.accessCode}.json`);
+      setFirstName(""); setLastName(""); setFatherName(""); setNationalId(""); refresh(currentClass.id);
+      showMessage("پروفایل کلاس ساخته شد و دعوت‌نامهٔ نسخه‌دار دانلود شد؛ آن را برای دانش‌آموز بفرستید.");
+    } catch (reason) { showError(reason.message); }
+  };
+  const sendProfile = (student) => {
+    try {
+      downloadJson(classroom.invitation(currentClass, student, state.teacher), `klassyar-invite-${student.accessCode}.json`);
+      showMessage(`فایل پروفایل ${student.name} آمادهٔ ارسال است.`);
+    } catch (reason) { showError(reason.message); }
+  };
+  const sendSelectedProfiles = () => {
+    const students = currentClass.students.filter((student) => selectedProfiles.includes(student.id));
+    if (!students.length) { showError("ابتدا دانش‌آموزان را با کادر انتخاب مشخص کنید"); return; }
+    try {
+      const bundle = {
+        format: "klassyar-invitation-bundle", version: 1,
+        classroom: { id: currentClass.id, name: currentClass.name },
+        invitations: students.map((student) => classroom.invitation(currentClass, student, state.teacher)),
+      };
+      downloadJson(bundle, `klassyar-profiles-${currentClass.id}.json`);
+      showMessage(`فایل دسته‌ای پروفایل برای ${students.length} دانش‌آموز دانلود شد.`);
+    } catch (reason) { showError(reason.message); }
+  };
+  const exportReturnReports = async (studentIds) => {
+    try {
+      if (!currentClass || !activeCycle) throw new Error("کلاس و دورهٔ گزارش را انتخاب کنید");
+      if (!studentIds.length) throw new Error("حداقل یک دانش‌آموز را انتخاب کنید");
+      const exports = await classroom.createTeacherReturnFiles(
+        currentClass.id, studentIds, activeCycle.id, user?.id, returnPassword,
+      );
+      exports.forEach(({ report, file }) =>
+        downloadJson(file, `klassyar-return-${report.student.id}-${activeCycle.id}.json`));
+      showMessage(`فایل کارنامهٔ رمزگذاری‌شده برای ${exports.length} دانش‌آموز ساخته شد.`);
+    } catch (reason) { showError(reason.message); }
+  };
+  const importReport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const envelope = await readJsonFile(file);
+      const report = await decryptReport(envelope, reportPassword);
+      const result = classroom.importReport(report, user?.id, {
+        classId: importClassId || currentClass?.id,
+        studentId: importStudentId,
       });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myClasses'] });
-      setNewClass({ name: "", description: "" });
-      setTeacherName("");
-      setStudentData({ firstName: "", lastName: "", phone: "", email: "" });
-      setStep("main");
-      toast.success("کلاس با موفقیت ایجاد شد");
-    },
-    onError: (error) => {
-      toast.error("خطا در ایجاد کلاس");
-    }
-  });
-
-  const addStudentMutation = useMutation({
-    mutationFn: async ({ classId, firstName, lastName, phone, email }) => {
-      const classItem = classes.find(c => c.id === classId);
-      const students = classItem.students || [];
-      
-      if ((email || phone) && students.some(s => s.phone === phone || s.email === email)) {
-        throw new Error("این دانش‌آموز قبلاً اضافه شده است");
-      }
-
-      const newStudents = [...students, {
-        firstName,
-        lastName,
-        phone,
-        email,
-        joined_date: new Date().toISOString()
-      }];
-
-      return localData.entities.Class.update(classId, { students: newStudents });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myClasses'] });
-      setShowAddStudent(null);
-      setStudentData({ firstName: "", lastName: "", phone: "", email: "" });
-      toast.success("دانش‌آموز اضافه شد");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    }
-  });
-
-  const deleteStudentMutation = useMutation({
-    mutationFn: async ({ classId, studentIndex }) => {
-      const classItem = classes.find(c => c.id === classId);
-      const students = classItem.students.filter((_, i) => i !== studentIndex);
-      return localData.entities.Class.update(classId, { students });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myClasses'] });
-      toast.success("دانش‌آموز حذف شد");
-    },
-  });
-
-  const deleteClassMutation = useMutation({
-    mutationFn: async (classId) => {
-      return localData.entities.Class.delete(classId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myClasses'] });
-      toast.success("کلاس حذف شد");
-    },
-  });
-
-  const handleContinueToClassForm = () => {
-    if (studentData.firstName && studentData.lastName && (studentData.phone || studentData.email)) {
-      setStep("class-form");
-    }
+      refresh(result.class.id);
+      showMessage(`${result.imported} فعالیت و ${result.answersImported} پاسخ تکلیف تازه برای ${report.student.name || `${report.student.firstName} ${report.student.lastName}`} وارد شد.`);
+    } catch (reason) { showError(reason.message); }
+    event.target.value = "";
+  };
+  const addCycle = () => {
+    try { const cycle = classroom.addCycle(currentClass.id, cycleName, user?.id); setCycleName(""); setCycleId(cycle.id); refresh(currentClass.id); showMessage("دورهٔ تازه آغاز شد؛ دورهٔ قبلی در تاریخچه باقی ماند."); }
+    catch (reason) { showError(reason.message); }
+  };
+  const addAssignment = () => {
+    try {
+      const questions = questionPrompt.trim() ? [{
+        prompt: questionPrompt.trim(), options: questionOptions.map((option) => option.trim()),
+        correctIndex: Number(correctIndex), feedback: questionFeedback.trim(),
+      }] : [];
+      classroom.addAssignment(currentClass.id, {
+        title: assignmentTitle, gameId, gameTitle: selectedGame?.title || "",
+        studentIds, questions,
+      }, user?.id);
+      setAssignmentTitle(""); setQuestionPrompt(""); setQuestionOptions(["", "", "", ""]);
+      setCorrectIndex(0); setQuestionFeedback(""); setStudentIds([]); setGameId("");
+      refresh(currentClass.id); showMessage("تکلیف بازی/سوال چندگزینه‌ای به دانش‌آموزان انتخاب‌شده تخصیص یافت.");
+    } catch (reason) { showError(reason.message); }
+  };
+  const updateEvaluation = (student, rating, comment) => {
+    try { classroom.evaluate(currentClass.id, student.id, activeCycle.id, rating, comment, user?.id); refresh(currentClass.id); }
+    catch (reason) { showError(reason.message); }
   };
 
-  const handleCreateClass = () => {
-    if (newClass.name) {
-      createClassMutation.mutate({
-        ...newClass,
-        students: [{
-          firstName: studentData.firstName,
-          lastName: studentData.lastName,
-          phone: studentData.phone,
-          email: studentData.email,
-          joined_date: new Date().toISOString()
-        }]
-      });
-    }
-  };
-
-  const handleAddStudent = (classId) => {
-    if (!studentData.firstName || !studentData.lastName || (!studentData.phone && !studentData.email)) {
-      toast.warning('نام، نام خانوادگی و حداقل شماره یا ایمیل دانش‌آموز لازم است.');
-      return;
-    }
-
-    addStudentMutation.mutate({
-      classId,
-      firstName: studentData.firstName,
-      lastName: studentData.lastName,
-      phone: studentData.phone,
-      email: studentData.email
-    });
-  };
-
-  const copyCode = (code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
-  };
-
-  if (step === "main") {
-    return (
-      <div className="min-h-screen p-4 md:p-6 lg:p-8 bg-gradient-to-br from-purple-50 to-pink-50">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">کلاس‌های من</h1>
-            <p className="text-gray-600 text-lg">مدیریت کلاس‌ها و دانش‌آموزان</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <Card 
-                onClick={() => setStep("teacher-name")}
-                onKeyDown={(e) => e.key === 'Enter' && setStep("teacher-name")}
-                tabIndex={0}
-                className="clay-element bg-gradient-to-br from-purple-100 to-pink-100 border-2 border-purple-300 cursor-pointer h-full hover:shadow-lg transition-all"
-              >
-                <CardContent className="p-8 flex flex-col items-center justify-center text-center h-full">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center mb-4">
-                    <Plus className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">کلاس جدید</h3>
-                  <p className="text-gray-600">یک کلاس جدید ایجاد کنید</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {classes.map((classItem, index) => (
-              <motion.div
-                key={classItem.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <Card className="clay-element bg-white border-0 h-full shadow-md hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <CardTitle className="text-2xl text-gray-800">
-                          {classItem.name}
-                        </CardTitle>
-                        <p className="text-gray-600 text-sm mt-1">
-                          👨‍🏫 {classItem.teacher_name || "بدون نام"}
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => deleteClassMutation.mutate(classItem.id)}
-                        className="hover:bg-red-100"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {classItem.description && (
-                      <p className="text-gray-600">{classItem.description}</p>
-                    )}
-                    
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600 mb-2">کد کلاس:</p>
-                      <div className="flex items-center gap-2">
-                        <code className="bg-white px-3 py-2 rounded border border-gray-300 font-mono font-bold text-purple-600">
-                          {classItem.code}
-                        </code>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => copyCode(classItem.code)}
-                        >
-                          {copiedCode === classItem.code ? (
-                            <Check className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <Copy className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-2">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-bold text-gray-800 flex items-center gap-2">
-                          <Users className="w-4 h-4" />
-                          دانش‌آموزان ({classItem.students?.length || 0})
-                        </h4>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setShowAddStudent(classItem.id)}
-                        >
-                          <UserPlus className="w-4 h-4 ml-2" />
-                          افزودن
-                        </Button>
-                      </div>
-
-                      {classItem.students && classItem.students.length > 0 ? (
-                        <div className="space-y-2 max-h-64 overflow-y-auto">
-                          {classItem.students.map((student, sIdx) => (
-                            <motion.div
-                              key={sIdx}
-                              layout
-                              className="bg-gray-50 p-3 rounded-lg flex justify-between items-start hover:bg-gray-100 transition-colors"
-                            >
-                              <div className="flex-1">
-                                <p className="font-medium text-gray-800">
-                                  {student.firstName} {student.lastName}
-                                </p>
-                                {student.phone && (
-                                  <p className="text-sm text-gray-600">📱 {student.phone}</p>
-                                )}
-                                {student.email && (
-                                  <p className="text-sm text-gray-600">📧 {student.email}</p>
-                                )}
-                              </div>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => deleteStudentMutation.mutate({
-                                  classId: classItem.id,
-                                  studentIndex: sIdx
-                                })}
-                                className="hover:bg-red-100"
-                              >
-                                <Trash2 className="w-4 h-4 text-red-500" />
-                              </Button>
-                            </motion.div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 text-sm py-2">هنوز دانش‌آموزی اضافه نشده</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+  return <main className="min-h-screen bg-gradient-to-br from-sky-50 via-violet-50 to-pink-50 p-4 sm:p-8" dir="rtl">
+    <div className="max-w-6xl mx-auto space-y-5">
+      <header className="text-center"><Users className="w-12 h-12 mx-auto text-violet-600 mb-2" /><h1 className="text-3xl font-black text-slate-800">کلاس‌های من</h1><p className="text-slate-600 mt-2">مدیریت آفلاین کلاس‌ها، پروفایل‌ها، تکلیف‌ها و گزارش عملکرد</p></header>
+      <Feedback message={message} error={error} />
+      <div className="grid lg:grid-cols-3 gap-5">
+        <Card className="border-0 shadow-lg"><CardHeader><CardTitle>پروفایل معلم</CardTitle></CardHeader><CardContent><form onSubmit={saveTeacher} className="space-y-3"><Input name="firstName" required defaultValue={state.teacher?.firstName || user?.firstName || ""} placeholder="نام" /><Input name="lastName" required defaultValue={state.teacher?.lastName || user?.lastName || ""} placeholder="نام خانوادگی" /><Input name="nationalId" defaultValue={state.teacher?.nationalId || user?.nationalId || ""} placeholder="کد ملی (اختیاری)" /><Button type="submit" className="w-full">ذخیرهٔ پروفایل</Button></form><p className="text-xs text-slate-500 mt-3">اطلاعات فقط در همین دستگاه نگهداری می‌شود و در برابر مالک دستگاه محرمانه نیست.</p></CardContent></Card>
+        <Card className="border-0 shadow-lg"><CardHeader><CardTitle>ایجاد کلاس</CardTitle></CardHeader><CardContent className="space-y-2"><Input value={className} onChange={(event) => setClassName(event.target.value)} placeholder="نام کلاس، مثلاً پنجم الف" /><div className="flex gap-2"><Input value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="درس" /><Input value={grade} onChange={(event) => setGrade(event.target.value)} placeholder="پایه" /></div><Button onClick={createClass}><Plus className="w-4 h-4 ml-1" />ایجاد</Button></CardContent></Card>
+        <Card className="border-0 shadow-lg"><CardHeader><CardTitle>دریافت گزارش رمزگذاری‌شده</CardTitle></CardHeader><CardContent className="space-y-2"><Input type="password" autoComplete="current-password" value={reportPassword} onChange={(event) => setReportPassword(event.target.value)} placeholder="رمز گزارش دانش‌آموز" /><p className="text-xs text-slate-500">گزارش دعوت‌نامه‌ای با شناسهٔ کلاس/دانش‌آموز تطبیق داده می‌شود. برای گزارش حساب مستقل، کلاس و پروفایل موجود یا ساخت پروفایل تازه را مشخص کنید.</p><div className="grid gap-2"><select aria-label="کلاس مقصد گزارش دانش‌آموز مستقل" className="rounded-xl border p-2" value={importClassId || currentClass?.id || ""} onChange={(event) => { setImportClassId(event.target.value); setImportStudentId("__new__"); }}><option value="">انتخاب کلاس مقصد</option>{state.classes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select><select aria-label="دانش‌آموز مقصد گزارش مستقل" className="rounded-xl border p-2" value={importStudentId} onChange={(event) => setImportStudentId(event.target.value)}><option value="__new__">ساخت پروفایل دانش‌آموز تازه</option>{(state.classes.find((item) => item.id === (importClassId || currentClass?.id))?.students || []).map((student) => <option key={student.id} value={student.id}>{student.name}</option>)}</select></div><input ref={reportFile} type="file" accept=".json,application/json" className="hidden" onChange={importReport} /><Button className="w-full" variant="outline" onClick={() => reportFile.current?.click()}><FileUp className="w-4 h-4 ml-1" />انتخاب گزارش و وارد کردن</Button></CardContent></Card>
+      </div>
+      <section className="grid lg:grid-cols-[270px_1fr] gap-5">
+        <Card className="border-0 shadow-lg"><CardHeader><CardTitle>کلاس‌ها</CardTitle></CardHeader><CardContent className="space-y-2">{state.classes.length ? state.classes.map((item) => <button key={item.id} onClick={() => { setSelected(item.id); setCycleId(""); setSelectedProfiles([]); setSelectedReportStudents([]); }} className={`w-full rounded-xl p-3 text-right ${currentClass?.id === item.id ? "bg-violet-600 text-white" : "bg-slate-100"}`}>{item.name}<span className="block text-xs opacity-70">{item.students.length} دانش‌آموز · {item.cycles.length} دوره</span></button>) : <p className="text-slate-500 text-sm">هنوز کلاسی ندارید.</p>}</CardContent></Card>
+        <div className="space-y-5">
+          {currentClass && <>
+            <Card className="border-0 shadow-lg"><CardHeader><CardTitle>{currentClass.name} · فهرست دانش‌آموزان</CardTitle></CardHeader><CardContent className="space-y-3">
+              <form onSubmit={saveClassDetails} className="grid sm:grid-cols-4 gap-2 rounded-xl bg-slate-50 p-3"><Input name="className" required defaultValue={currentClass.name} aria-label="نام کلاس" placeholder="نام کلاس" /><Input name="subject" defaultValue={currentClass.subject || ""} aria-label="درس" placeholder="درس" /><Input name="grade" defaultValue={currentClass.grade || ""} aria-label="پایه" placeholder="پایه" /><Button type="submit" variant="outline">ذخیرهٔ مشخصات کلاس</Button></form>
+              <div className="grid sm:grid-cols-4 gap-2"><Input value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="نام دانش‌آموز" /><Input value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="نام خانوادگی" /><Input value={fatherName} onChange={(event) => setFatherName(event.target.value)} placeholder="نام پدر" /><Input value={nationalId} onChange={(event) => setNationalId(event.target.value)} placeholder="کد ملی (اختیاری)" /></div>
+              <Button onClick={addStudent}><UserPlus className="w-4 h-4 ml-1" />افزودن و دانلود دعوت‌نامه</Button>
+              <div className="flex flex-wrap items-center gap-3"><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={currentClass.students.length > 0 && selectedProfiles.length === currentClass.students.length} onChange={(event) => setSelectedProfiles(event.target.checked ? currentClass.students.map((student) => student.id) : [])} />انتخاب همهٔ پروفایل‌ها</label><Button variant="outline" size="sm" onClick={sendSelectedProfiles}>دانلود دسته‌ای پروفایل‌ها</Button></div>
+              <div className="flex flex-wrap items-center gap-2 rounded-xl bg-violet-50 p-3"><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={currentClass.students.length > 0 && selectedReportStudents.length === currentClass.students.length} onChange={(event) => setSelectedReportStudents(event.target.checked ? currentClass.students.map((student) => student.id) : [])} />انتخاب همه برای کارنامه</label><Input type="password" autoComplete="new-password" value={returnPassword} onChange={(event) => setReturnPassword(event.target.value)} placeholder="رمز مشترک کارنامه‌ها (حداقل ۸ نویسه)" /><Button size="sm" onClick={() => exportReturnReports(selectedReportStudents)}>ساخت کارنامه برای انتخاب‌شده‌ها</Button></div>
+              <div className="overflow-x-auto"><table className="w-full min-w-[1150px] text-right text-sm"><thead><tr className="border-b text-slate-500"><th className="p-2">پروفایل</th><th className="p-2">گزارش</th><th className="p-2">کد ملی</th><th className="p-2">نام</th><th className="p-2">نام خانوادگی</th><th className="p-2">نام پدر</th><th className="p-2">کلاس</th><th className="p-2">معلم</th><th className="p-2">درس</th><th className="p-2">پایه</th><th className="p-2">ارسال پروفایل</th><th className="p-2">کارنامه</th></tr></thead><tbody>{currentClass.students.map((student) => <tr key={student.id} className="border-b"><td className="p-2"><input aria-label={`انتخاب پروفایل ${student.name}`} type="checkbox" checked={selectedProfiles.includes(student.id)} onChange={(event) => setSelectedProfiles((ids) => event.target.checked ? [...ids, student.id] : ids.filter((id) => id !== student.id))} /></td><td className="p-2"><input aria-label={`انتخاب کارنامه ${student.name}`} type="checkbox" checked={selectedReportStudents.includes(student.id)} onChange={(event) => setSelectedReportStudents((ids) => event.target.checked ? [...ids, student.id] : ids.filter((id) => id !== student.id))} /></td><td className="p-2">{student.nationalId || "—"}</td><td className="p-2">{student.firstName}</td><td className="p-2">{student.lastName}</td><td className="p-2">{student.fatherName || "—"}</td><td className="p-2">{currentClass.name}</td><td className="p-2">{state.teacher?.name || "—"}</td><td className="p-2">{currentClass.subject || "—"}</td><td className="p-2">{currentClass.grade || "—"}</td><td className="p-2"><Button variant="outline" size="sm" onClick={() => sendProfile(student)}>ارسال پروفایل</Button></td><td className="p-2"><Button variant="outline" size="sm" onClick={() => exportReturnReports([student.id])}>ساخت کارنامه</Button></td></tr>)}</tbody></table></div>
+            </CardContent></Card>
+            <Card className="border-0 shadow-lg"><CardHeader><CardTitle className="flex items-center gap-2"><BarChart3 className="w-5 h-5" />گزارش عملکرد و ارزیابی</CardTitle></CardHeader><CardContent className="space-y-3"><div className="flex flex-wrap gap-2 items-center"><select aria-label="دورهٔ گزارش" className="rounded-xl border p-2" value={activeCycle?.id || ""} onChange={(event) => setCycleId(event.target.value)}>{currentClass.cycles.map((cycle) => <option value={cycle.id} key={cycle.id}>{cycle.name} {cycle.status === "active" ? "(فعال)" : "(پایان‌یافته)"}</option>)}</select><Input value={cycleName} onChange={(event) => setCycleName(event.target.value)} placeholder="نام دورهٔ جدید" /><Button variant="outline" onClick={addCycle}>شروع دوره</Button></div>
+              {reportsByStudent.length ? reportsByStudent.map(({ student, entries, average }) => {
+                const evaluation = currentClass.evaluations[`${activeCycle?.id}:${student.id}`] || {};
+                return <div key={student.id} className="rounded-2xl bg-slate-50 p-4"><div className="flex justify-between"><strong>{student.name}</strong><strong>{average}٪ · {entries.length} فعالیت</strong></div><div className="h-2 bg-slate-200 rounded-full mt-2 overflow-hidden"><div className="h-full bg-violet-500" style={{ width: `${average}%` }} /></div>{entries.length > 0 && <p className="text-xs text-slate-600 mt-2">آخرین بازی: {entries.at(-1).gameTitle} · {entries.at(-1).percent}٪</p>}<div className="grid sm:grid-cols-2 gap-2 mt-3"><select className="rounded-lg border p-2" aria-label={`ارزیابی ${student.name}`} value={evaluation.rating || ""} onChange={(event) => updateEvaluation(student, event.target.value, evaluation.comment || "")}><option value="">انتخاب سطح ارزیابی</option>{Object.entries(reportRatingLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select><Input key={`${student.id}-${evaluation.updatedAt || ""}`} defaultValue={evaluation.comment || ""} placeholder="یادداشت معلم دربارهٔ این دوره" onBlur={(event) => { if (evaluation.rating) updateEvaluation(student, evaluation.rating, event.target.value); }} /></div></div>;
+              }) : <p className="text-slate-500">هنوز دانش‌آموزی ثبت نشده است.</p>}
+              <Link to="/TeacherReports" className="inline-block text-violet-700 underline">گزارش‌ها و تاریخچهٔ کامل دوره‌ها</Link>
+            </CardContent></Card>
+            <Card className="border-0 shadow-lg"><CardHeader><CardTitle>تکلیف هدفمند و سوال چندگزینه‌ای</CardTitle></CardHeader><CardContent className="space-y-3"><Input value={assignmentTitle} onChange={(event) => setAssignmentTitle(event.target.value)} placeholder="عنوان تکلیف" /><select className="w-full rounded-xl border p-2" value={gameId} onChange={(event) => setGameId(event.target.value)}><option value="">بدون بازی (سوال سفارشی)</option>{gameLibrary.map((game) => <option key={game.id} value={game.id}>{game.title}</option>)}</select><Input value={questionPrompt} onChange={(event) => setQuestionPrompt(event.target.value)} placeholder="متن سوال سفارشی (اختیاری)" /><div className="grid sm:grid-cols-2 gap-2">{questionOptions.map((option, index) => <div key={index} className="flex items-center gap-2"><input aria-label={`گزینه ${index + 1} پاسخ درست`} type="radio" name="correct-option" checked={Number(correctIndex) === index} onChange={() => setCorrectIndex(index)} /><Input value={option} onChange={(event) => setQuestionOptions((options) => options.map((value, optionIndex) => optionIndex === index ? event.target.value : value))} placeholder={`گزینهٔ ${index + 1}`} /></div>)}</div><p className="text-xs text-slate-500">دکمهٔ کنار گزینه، پاسخ درست را تعیین می‌کند؛ دانش‌آموز گزینه را انتخاب می‌کند و بازخورد را می‌بیند.</p><Input value={questionFeedback} onChange={(event) => setQuestionFeedback(event.target.value)} placeholder="بازخورد پاسخ (مثلاً نکتهٔ آموزشی)" /><div className="flex flex-wrap gap-3">{currentClass.students.map((student) => <label key={student.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={studentIds.includes(student.id)} onChange={(event) => setStudentIds((ids) => event.target.checked ? [...ids, student.id] : ids.filter((id) => id !== student.id))} />{student.name}</label>)}</div><Button onClick={addAssignment} disabled={!currentClass.students.length}>تخصیص تکلیف به افراد انتخاب‌شده</Button><ul className="list-disc pr-5 text-sm text-slate-600">{currentClass.assignments.map((item) => <li key={item.id}>{item.title} · {item.studentIds.length} دانش‌آموز</li>)}</ul></CardContent></Card>
+          </>}
         </div>
-
-        <AnimatePresence>
-          {showAddStudent && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-              onClick={() => setShowAddStudent(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-2xl p-6 max-w-md w-full clay-element"
-              >
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">دانش‌آموز جدید</h3>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setShowAddStudent(null)}
-                  >
-                    <X className="w-5 h-5" />
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <Label>نام *</Label>
-                    <Input
-                      placeholder="نام دانش‌آموز"
-                      value={studentData.firstName}
-                      onChange={(e) => setStudentData({ ...studentData, firstName: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>نام خانوادگی *</Label>
-                    <Input
-                      placeholder="نام خانوادگی"
-                      value={studentData.lastName}
-                      onChange={(e) => setStudentData({ ...studentData, lastName: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>شماره تماس</Label>
-                    <Input
-                      placeholder="شماره تماس"
-                      value={studentData.phone}
-                      onChange={(e) => setStudentData({ ...studentData, phone: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>ایمیل</Label>
-                    <Input
-                      placeholder="ایمیل"
-                      type="email"
-                      value={studentData.email}
-                      onChange={(e) => setStudentData({ ...studentData, email: e.target.value })}
-                    />
-                  </div>
-
-                  <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded">
-                    💡 شماره تماس یا ایمیل اجباری است
-                  </p>
-
-                  <Button
-                    onClick={() => handleAddStudent(showAddStudent)}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                  >
-                    افزودن دانش‌آموز
-                  </Button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
-  }
-
-  if (step === "teacher-name") {
-    return (
-      <div className="min-h-screen p-4 md:p-6 lg:p-8 flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md"
-        >
-          <Card className="clay-element bg-white border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-3xl text-gray-800 text-center">نام معلم</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label className="text-lg font-semibold">نام کامل معلم:</Label>
-                <Input
-                  placeholder="نام و نام خانوادگی"
-                  value={teacherName}
-                  onChange={(e) => setTeacherName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && teacherName && setStep("student-info")}
-                  className="mt-2 text-lg py-3"
-                  autoFocus
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => setStep("main")}
-                  variant="outline"
-                  className="flex-1"
-                  onKeyDown={(e) => e.key === 'Enter' && setStep("main")}
-                >
-                  بازگشت
-                </Button>
-                <Button
-                  onClick={() => teacherName && setStep("student-info")}
-                  disabled={!teacherName}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                  onKeyDown={(e) => e.key === 'Enter' && teacherName && setStep("student-info")}
-                >
-                  ادامه
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (step === "student-info") {
-    return (
-      <div className="min-h-screen p-4 md:p-6 lg:p-8 flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md"
-        >
-          <Card className="clay-element bg-white border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-3xl text-gray-800 text-center">اطلاعات دانش‌آموز</CardTitle>
-              <p className="text-gray-600 text-center mt-2 text-lg">👨‍🏫 {teacherName}</p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label className="text-lg font-semibold">نام دانش‌آموز:</Label>
-                <Input
-                  placeholder="نام دانش‌آموز"
-                  value={studentData.firstName}
-                  onChange={(e) => setStudentData({ ...studentData, firstName: e.target.value })}
-                  onKeyDown={(e) => e.key === 'Enter' && studentData.firstName && document.querySelector('input[placeholder*="نام خانوادگی"]')?.focus()}
-                  className="mt-2 text-lg py-3"
-                  autoFocus
-                />
-              </div>
-
-              <div>
-                <Label className="text-lg font-semibold">نام خانوادگی دانش‌آموز:</Label>
-                <Input
-                  placeholder="نام خانوادگی دانش‌آموز"
-                  value={studentData.lastName}
-                  onChange={(e) => setStudentData({ ...studentData, lastName: e.target.value })}
-                  onKeyDown={(e) => e.key === 'Enter' && studentData.lastName && document.querySelector('input[placeholder*="شماره تلفن"]')?.focus()}
-                  className="mt-2 text-lg py-3"
-                />
-              </div>
-
-              <div>
-                <Label className="text-lg font-semibold">شماره تلفن دانش‌آموز:</Label>
-                <Input
-                  placeholder="شماره تلفن دانش‌آموز"
-                  value={studentData.phone}
-                  onChange={(e) => setStudentData({ ...studentData, phone: e.target.value })}
-                  onKeyDown={(e) => e.key === 'Enter' && studentData.phone && document.querySelector('input[placeholder*="ایمیل"]')?.focus()}
-                  className="mt-2 text-lg py-3"
-                />
-              </div>
-
-              <div>
-                <Label className="text-lg font-semibold">ایمیل دانش‌آموز:</Label>
-                <Input
-                  placeholder="ایمیل دانش‌آموز"
-                  type="email"
-                  value={studentData.email}
-                  onChange={(e) => setStudentData({ ...studentData, email: e.target.value })}
-                  onKeyDown={(e) => e.key === 'Enter' && studentData.email && handleContinueToClassForm()}
-                  className="mt-2 text-lg py-3"
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => setStep("teacher-name")}
-                  variant="outline"
-                  className="flex-1"
-                  onKeyDown={(e) => e.key === 'Enter' && setStep("teacher-name")}
-                >
-                  بازگشت
-                </Button>
-                <Button
-                  onClick={handleContinueToClassForm}
-                  disabled={!studentData.firstName || !studentData.lastName || (!studentData.phone && !studentData.email)}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                  onKeyDown={(e) => e.key === 'Enter' && studentData.firstName && studentData.lastName && (studentData.phone || studentData.email) && handleContinueToClassForm()}
-                >
-                  ادامه
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (step === "class-form") {
-    return (
-      <div className="min-h-screen p-4 md:p-6 lg:p-8 flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md"
-        >
-          <Card className="clay-element bg-white border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-3xl text-gray-800 text-center">کلاس جدید</CardTitle>
-              <p className="text-gray-600 text-center mt-2 text-lg">👨‍🏫 {teacherName}</p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label className="text-lg font-semibold">نام کلاس:</Label>
-                <Input
-                  placeholder="مثال: ریاضیات دهم"
-                  value={newClass.name}
-                  onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
-                  className="mt-2 text-lg py-3"
-                  autoFocus
-                />
-              </div>
-
-              <div>
-                <Label className="text-lg font-semibold">توضیحات (اختیاری):</Label>
-                <Textarea
-                  placeholder="توضیحات کلاس"
-                  value={newClass.description}
-                  onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
-                  className="mt-2"
-                  rows={4}
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => setStep("teacher-name")}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  بازگشت
-                </Button>
-                <Button
-                  onClick={handleCreateClass}
-                  disabled={!newClass.name}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                >
-                  ایجاد کلاس
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
+      </section>
+    </div>
+  </main>;
 }

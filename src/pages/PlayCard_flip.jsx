@@ -6,6 +6,7 @@ import { ArrowRight, Trophy, RotateCw, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FloatingEmojis from "@/components/shared/FloatingEmojis";
 import { useGameData } from "@/hooks/useGameData";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayCard_flip() {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export default function PlayCard_flip() {
 
   if (isComplete) return (
     <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-red-50">
+      <ActivityResultReporter activity={activity} score={matched.size / 2} total={activity.content.items.length} />
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
         <Card className="clay-element bg-gradient-to-br from-rose-50 to-pink-50 border-0">
           <CardContent className="p-8 md:p-12 text-center">

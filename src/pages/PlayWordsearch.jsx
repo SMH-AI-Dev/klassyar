@@ -6,6 +6,7 @@ import { useGameData } from "@/hooks/useGameData";
 import { ArrowRight, Trophy, RotateCw, Save } from "lucide-react";
 import { motion } from "framer-motion";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayWordsearch() {
   const navigate = useNavigate();
@@ -113,6 +114,7 @@ export default function PlayWordsearch() {
   if (isComplete) {
     return (
       <div className="min-h-screen p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={foundWords.length} total={activity.content.words.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}

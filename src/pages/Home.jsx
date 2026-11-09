@@ -43,7 +43,7 @@ const gameTypes = [
   { name: "آزمون تصویری", emoji: "🖼️", type: "image_quiz", color: "from-cyan-400 to-blue-400" },
   { name: "نمودار برچسب‌دار", emoji: "🏷️", type: "labelled_diagram", color: "from-emerald-400 to-green-400" },
   { name: "کارت‌های تصادفی", emoji: "🎲", type: "random_cards", color: "from-amber-400 to-yellow-400" },
-  { name: "🎮 ۵۰ بازی آموزشی", emoji: "🎮", type: "game-hub", color: "from-emerald-400 to-teal-400", isHub: true },
+  { name: "🎮 ۳۵۰ بازی آموزشی", emoji: "🎮", type: "game-hub", color: "from-emerald-400 to-teal-400", isHub: true },
   { name: "🏴 ۵۰ بازی انگلیسی", emoji: "🏴", type: "english-hub", color: "from-blue-400 to-indigo-400", isHub: true },
 ];
 
@@ -51,7 +51,7 @@ const features = [
   {
     image: gamesImg,
     icon: Gamepad2, title: "بازی‌های متنوع",
-    description: "۱۳۰ بازی مختلف برای یادگیری جذاب",
+    description: "۴۳۰ بازی و فعالیت مختلف برای یادگیری جذاب",
     color: "from-purple-400 to-pink-400"
   },
   {
@@ -101,7 +101,7 @@ export default function Home() {
               </h1>
 
               <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                یادگیری را با ۱۳۰ بازی تعاملی و جذاب به یک تجربه شگفت‌انگیز تبدیل کنید
+                یادگیری را با ۴۳۰ بازی و فعالیت تعاملی و جذاب به یک تجربه شگفت‌انگیز تبدیل کنید
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -178,7 +178,7 @@ export default function Home() {
             >
               <h2 className="text-4xl font-bold text-gray-800 mb-4">
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  ۱۳۰ بازی متنوع
+                  ۴۳۰ بازی و فعالیت متنوع
                 </span>
               </h2>
               <p className="text-xl text-gray-600">

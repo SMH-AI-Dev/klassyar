@@ -2,37 +2,51 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, X, Trophy, RotateCw, Lightbulb, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
+
+const shuffle = (items) => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 export default function PlayUnjumble() {
   const navigate = useNavigate();
   const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
-
+  const [roundWords, setRoundWords] = useState([]);
+  const [letters, setLetters] = useState([]);
+  const [selectedLetters, setSelectedLetters] = useState([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(null);
   const [isComplete, setIsComplete] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
-  const shuffleWord = (word) => {
-    const arr = word.split('');
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+  useEffect(() => {
+    if (activity?.content?.words) setRoundWords(shuffle(activity.content.words));
+  }, [activity]);
+
+  useEffect(() => {
+    const word = roundWords[currentWordIndex]?.word;
+    if (word) {
+      setLetters(shuffle(word.split("").map((character, id) => ({ id, character }))));
+      setSelectedLetters([]);
     }
-    return arr.join('');
-  };
+  }, [currentWordIndex, roundWords]);
 
   const checkAnswer = () => {
-    if (!userAnswer.trim()) return;
+    if (!letters.length || selectedLetters.length !== letters.length || isCorrect !== null) return;
     
-    const currentWord = activity.content.words[currentWordIndex];
-    const correct = userAnswer.trim().toLowerCase() === currentWord.word.toLowerCase();
+    const currentWord = roundWords[currentWordIndex];
+    const answer = selectedLetters.map((id) => letters.find((letter) => letter.id === id)?.character || "").join("");
+    const correct = answer.trim().toLowerCase() === currentWord.word.toLowerCase();
     
     setIsCorrect(correct);
     if (correct) {
@@ -40,9 +54,8 @@ export default function PlayUnjumble() {
     }
 
     setTimeout(() => {
-      if (currentWordIndex < activity.content.words.length - 1) {
+      if (currentWordIndex < roundWords.length - 1) {
         setCurrentWordIndex(currentWordIndex + 1);
-        setUserAnswer("");
         setIsCorrect(null);
         setShowHint(false);
       } else {
@@ -52,9 +65,8 @@ export default function PlayUnjumble() {
   };
 
   const skipWord = () => {
-    if (currentWordIndex < activity.content.words.length - 1) {
+    if (currentWordIndex < roundWords.length - 1) {
       setCurrentWordIndex(currentWordIndex + 1);
-      setUserAnswer("");
       setIsCorrect(null);
       setShowHint(false);
     } else {
@@ -63,9 +75,10 @@ export default function PlayUnjumble() {
   };
 
   const restartGame = () => {
+    setRoundWords(shuffle(activity.content.words));
     setCurrentWordIndex(0);
     setScore(0);
-    setUserAnswer("");
+    setSelectedLetters([]);
     setIsCorrect(null);
     setIsComplete(false);
     setShowHint(false);
@@ -79,7 +92,7 @@ export default function PlayUnjumble() {
     );
   }
 
-  if (!activity || !activity.content?.words?.length) {
+  if (!activity || !activity.content?.words?.length || !roundWords.length) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
@@ -94,9 +107,10 @@ export default function PlayUnjumble() {
   }
 
   if (isComplete) {
-    const percentage = Math.round((score / activity.content.words.length) * 100);
+    const percentage = Math.round((score / roundWords.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={score} total={roundWords.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -119,7 +133,7 @@ export default function PlayUnjumble() {
               <div className="bg-white/80 rounded-2xl p-6 mb-6 clay-element">
                 <p className="text-gray-600 mb-2">امتیاز شما:</p>
                 <p className="text-5xl font-bold text-teal-600">
-                  {score}/{activity.content.words.length}
+                  {score}/{roundWords.length}
                 </p>
                 <p className="text-2xl font-bold text-teal-500 mt-2">{percentage}%</p>
               </div>
@@ -147,8 +161,7 @@ export default function PlayUnjumble() {
     );
   }
 
-  const currentWord = activity.content.words[currentWordIndex];
-  const jumbledWord = shuffleWord(currentWord.word);
+  const currentWord = roundWords[currentWordIndex];
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -185,7 +198,7 @@ export default function PlayUnjumble() {
             <div className="bg-white clay-element rounded-xl px-4 py-2">
               <p className="text-sm text-gray-600">کلمه</p>
               <p className="text-xl font-bold text-gray-800">
-                {currentWordIndex + 1}/{activity.content.words.length}
+                {currentWordIndex + 1}/{roundWords.length}
               </p>
             </div>
             {isDemo && (
@@ -202,7 +215,7 @@ export default function PlayUnjumble() {
           <div className="h-3 bg-gray-200 rounded-full overflow-hidden clay-element">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${((currentWordIndex + 1) / activity.content.words.length) * 100}%` }}
+              animate={{ width: `${((currentWordIndex + 1) / roundWords.length) * 100}%` }}
               className="h-full bg-gradient-to-r from-teal-400 to-green-400"
               transition={{ duration: 0.5 }}
             />
@@ -250,31 +263,25 @@ export default function PlayUnjumble() {
                 <div className="mb-8 text-center">
                   <p className="text-gray-600 mb-4 text-lg">حروف را مرتب کنید:</p>
                   <div className="flex justify-center gap-2 mb-8 flex-wrap">
-                    {jumbledWord.split('').map((letter, index) => (
-                      <motion.div
-                        key={index}
+                    {letters.map((letter, index) => {
+                      const chosen = selectedLetters.includes(letter.id);
+                      return <motion.button
+                        type="button"
+                        key={letter.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-teal-400 to-green-400 rounded-xl clay-element flex items-center justify-center text-white text-2xl md:text-3xl font-bold"
+                        disabled={isCorrect !== null}
+                        onClick={() => setSelectedLetters((prev) => chosen ? prev.filter((id) => id !== letter.id) : [...prev, letter.id])}
+                        className={`w-14 h-14 md:w-16 md:h-16 rounded-xl clay-element flex items-center justify-center text-white text-2xl md:text-3xl font-bold ${chosen ? "bg-teal-700 opacity-50" : "bg-gradient-to-br from-teal-400 to-green-400"}`}
                       >
-                        {letter}
-                      </motion.div>
-                    ))}
+                        {letter.character === " " ? "\u00A0" : letter.character}
+                      </motion.button>;
+                    })}
                   </div>
-                </div>
-
-                {/* Input */}
-                <div className="max-w-md mx-auto mb-8">
-                  <Input
-                    type="text"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
-                    disabled={isCorrect !== null}
-                    placeholder="پاسخ خود را وارد کنید..."
-                    className="text-center text-2xl p-6 rounded-xl clay-element border-2 border-teal-200 focus:border-teal-400"
-                  />
+                  <div className="min-h-12 flex justify-center gap-2 flex-wrap" aria-live="polite">
+                    {selectedLetters.map((id) => <span key={id} className="rounded-lg bg-white px-3 py-2 text-xl font-bold text-gray-800">{letters.find((letter) => letter.id === id)?.character}</span>)}
+                  </div>
                 </div>
 
                 {/* Feedback */}
@@ -304,7 +311,7 @@ export default function PlayUnjumble() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     onClick={checkAnswer}
-                    disabled={!userAnswer.trim() || isCorrect !== null}
+                    disabled={!letters.length || selectedLetters.length !== letters.length || isCorrect !== null}
                     className="bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 text-white rounded-xl clay-element px-8 py-6 text-lg"
                   >
                     <Check className="w-5 h-5 ml-2" />

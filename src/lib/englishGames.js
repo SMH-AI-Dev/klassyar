@@ -1,3 +1,5 @@
+import { expandEnglishGame } from "./gameContentGenerator.js";
+
 const englishGames = [
   {
     id: "eng-voc-colors",
@@ -847,4 +849,125 @@ const englishGames = [
   },
 ];
 
-export default englishGames;
+function expandPhoneGame(game) {
+  const names = [
+    "Alex", "Sam", "Taylor", "Jordan", "Morgan", "Riley", "Casey", "Avery", "Jamie", "Cameron",
+    "Drew", "Robin", "Quinn", "Lee", "Dana", "Chris", "Pat", "Skyler", "Reese", "Ari",
+  ];
+  const variants = [
+    [
+      (name) => `Hello, ___ I speak to ${name}?`,
+      (name) => `At the school office, ___ I speak to ${name}?`,
+      (name) => `On a polite call, ___ I speak to ${name}?`,
+      (name) => `Before asking for ${name}, say: ___ I speak to ${name}?`,
+    ],
+    [
+      (name) => `___ is ${name} speaking.`,
+      (name) => `When answering the phone, say: ___ is ${name} speaking.`,
+      (name) => `To introduce ${name} on a call: ___ is ${name} speaking.`,
+      (name) => `In a formal call, ___ is ${name} speaking.`,
+    ],
+    [
+      (name) => `Can I take a ___ for ${name}?`,
+      (name) => `If ${name} is away, can I take a ___?`,
+      (name) => `Please leave a ___ for ${name}.`,
+      (name) => `Could you write down a ___ for ${name}?`,
+    ],
+    [
+      (name) => `I'll call you ___ after class, ${name}.`,
+      (name) => `If you are busy, I'll call you ___, ${name}.`,
+      (name) => `I can't talk now; I'll call you ___, ${name}.`,
+      (name) => `Please wait for my return call: I'll call you ___, ${name}.`,
+    ],
+    [
+      (name) => `Please ___ on while I check ${name}.`,
+      (name) => `Could you ___ on for a moment, ${name}?`,
+      (name) => `The line is still connected; please ___ on, ${name}.`,
+      (name) => `While I find ${name}'s number, please ___ on.`,
+    ],
+  ];
+  const answers = ["may", "This", "message", "back", "hold"];
+  const questions = [];
+  for (let templateIndex = 0; templateIndex < variants.length; templateIndex += 1) {
+    for (let nameIndex = 0; nameIndex < names.length; nameIndex += 1) {
+      for (const phrase of variants[templateIndex]) {
+        questions.push({
+          text: phrase(names[nameIndex]),
+          answer: answers[templateIndex],
+          fa: game.questions[templateIndex]?.fa || "",
+        });
+      }
+    }
+  }
+  return { ...game, questions, questionBank: questions };
+}
+
+function expandSynonymGame(game) {
+  const groups = [];
+  const groupSize = 5;
+  for (const category of game.categories) {
+    const words = game.items.filter((item) => item.category === category.name);
+    const total = words.length ** groupSize;
+    const items = [];
+    for (let code = 0; code < total; code += 1) {
+      let remaining = code;
+      const sequence = [];
+      for (let position = 0; position < groupSize; position += 1) {
+        sequence.push(words[remaining % words.length].label);
+        remaining = Math.floor(remaining / words.length);
+      }
+      items.push({
+        id: `synonym-sequence-${category.name}-${code}`,
+        label: sequence.join(" → "),
+        category: category.name,
+      });
+    }
+    groups.push(items);
+  }
+  const items = [];
+  for (let index = 0; items.length < 400; index += 1) {
+    for (const group of groups) {
+      if (group[index]) items.push(group[index]);
+      if (items.length === 400) break;
+    }
+  }
+  return { ...game, items, questionBank: items };
+}
+
+function expandOppositesGame(game) {
+  const pairs = [
+    { id: "hot-cold", en: "hot ↔ cold", text: "گرم ↔ سرد", emoji: "🌡️" },
+    { id: "fast-slow", en: "fast ↔ slow", text: "سریع ↔ آهسته", emoji: "⚡" },
+    { id: "big-small", en: "big ↔ small", text: "بزرگ ↔ کوچک", emoji: "📏" },
+    { id: "day-night", en: "day ↔ night", text: "روز ↔ شب", emoji: "🌞" },
+    { id: "happy-sad", en: "happy ↔ sad", text: "خوشحال ↔ ناراحت", emoji: "😊" },
+    { id: "light-dark", en: "light ↔ dark", text: "روشن ↔ تاریک", emoji: "💡" },
+    { id: "rich-poor", en: "rich ↔ poor", text: "ثروتمند ↔ فقیر", emoji: "💰" },
+    { id: "old-young", en: "old ↔ young", text: "پیر ↔ جوان", emoji: "🧓" },
+  ];
+  const cards = [];
+  for (let first = 0; first < pairs.length; first += 1) {
+    for (let second = 0; second < pairs.length; second += 1) {
+      for (let third = 0; third < pairs.length; third += 1) {
+        const selected = [pairs[first], pairs[second], pairs[third]];
+        cards.push({
+          id: `opposite-set-${first}-${second}-${third}`,
+          en: selected.map((pair) => pair.en).join(" · "),
+          text: selected.map((pair) => pair.text).join(" · "),
+          emoji: selected.map((pair) => pair.emoji).join(" "),
+        });
+        if (cards.length === 400) {
+          return { ...game, cards, questionBank: cards, roundSize: 4 };
+        }
+      }
+    }
+  }
+  return game;
+}
+
+export default englishGames.map((game) => {
+  if (game.id === "eng-speak-phone") return expandPhoneGame(game);
+  if (game.id === "eng-voc-synonyms") return expandSynonymGame(game);
+  if (game.id === "eng-voc-opposites") return expandOppositesGame(game);
+  return expandEnglishGame(game);
+});

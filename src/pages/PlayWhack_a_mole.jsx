@@ -6,6 +6,7 @@ import { useGameData } from "@/hooks/useGameData";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Trophy, Save } from "lucide-react";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayWhack_a_mole() {
   const navigate = useNavigate();
@@ -91,6 +92,7 @@ export default function PlayWhack_a_mole() {
   if (isComplete) {
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={Math.min(score, 100)} total={100} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

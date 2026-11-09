@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Save, RotateCw, Trophy } from "lucide-react";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayFlip_tiles() {
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ export default function PlayFlip_tiles() {
   if (isComplete) {
     return (
       <div className="min-h-screen p-8 bg-gradient-to-br from-purple-50 via-violet-50 to-fuchsia-50 flex items-center justify-center">
+        <ActivityResultReporter activity={activity} score={matched.length / 2} total={tiles.length / 2} />
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full">
           <Card className="clay-element bg-white border-0 p-12 text-center">
             <Trophy className="w-24 h-24 text-yellow-500 mx-auto mb-6" />

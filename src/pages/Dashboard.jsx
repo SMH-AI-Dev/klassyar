@@ -133,7 +133,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 text-right">
                   <h3 className="text-lg font-bold text-gray-800">بازی‌های آموزشی</h3>
-                  <p className="text-sm text-gray-500">۵۰ بازی آموزشی تعاملی</p>
+                  <p className="text-sm text-gray-500">۳۵۰ بازی آموزشی تعاملی</p>
                 </div>
                 <span className="text-2xl">🎮</span>
               </CardContent>

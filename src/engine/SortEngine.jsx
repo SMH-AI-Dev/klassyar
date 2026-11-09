@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, CheckCircle2, XCircle } from "lucide-react";
 import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
-export default function SortEngine({ game }) {
+export default function SortEngine({ game, onProgress, onComplete, onRestart }) {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [placed, setPlaced] = useState({});
@@ -12,6 +12,7 @@ export default function SortEngine({ game }) {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
+  const reported = useRef(false);
 
   useEffect(() => {
     if (!game.categories || !game.items) return;
@@ -21,6 +22,17 @@ export default function SortEngine({ game }) {
     setItems(shuffled);
     setTotalItems(shuffled.length);
   }, [game]);
+
+  useEffect(() => {
+    onProgress?.({ index: Object.keys(placed).length, placed: { ...placed } });
+  }, [placed, onProgress]);
+
+  useEffect(() => {
+    if (finished && !reported.current) {
+      reported.current = true;
+      onComplete?.({ score, total: totalItems });
+    }
+  }, [finished, score, totalItems, onComplete]);
 
   const handleDrop = (itemId, catName) => {
     setPlaced(p => ({ ...p, [itemId]: catName }));
@@ -48,12 +60,18 @@ export default function SortEngine({ game }) {
   };
 
   const restart = () => {
+    if (onRestart) {
+      onRestart();
+      return;
+    }
     const shuffled = [...game.items].sort(() => Math.random() - 0.5);
     setItems(shuffled);
     setPlaced({});
     setFeedback(null);
     setScore(0);
     setFinished(false);
+    setTotalItems(shuffled.length);
+    reported.current = false;
   };
 
   if (finished) {

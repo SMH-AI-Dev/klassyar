@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, RotateCw, ChevronLeft, ChevronRight, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import RandomAnimations from "@/components/shared/RandomAnimations";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayFlashcard() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function PlayFlashcard() {
 
   const [currentCard, setCurrentCard] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [viewedCards, setViewedCards] = useState([]);
+  const [isComplete, setIsComplete] = useState(false);
 
   if (isLoading) {
     return (
@@ -23,7 +26,7 @@ export default function PlayFlashcard() {
     );
   }
 
-  if (!activity || !activity.content?.cards) {
+  if (!activity || !activity.content?.cards?.length) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="clay-element bg-white/80 border-0 p-8 text-center">
@@ -38,11 +41,23 @@ export default function PlayFlashcard() {
 
   const cards = activity.content.cards;
   const card = cards[currentCard];
+  const allCardsViewed = viewedCards.length === cards.length;
+
+  const flipCard = () => {
+    if (!isFlipped) {
+      setViewedCards((viewed) => (
+        viewed.includes(currentCard) ? viewed : [...viewed, currentCard]
+      ));
+    }
+    setIsFlipped(!isFlipped);
+  };
 
   const handleNext = () => {
     if (currentCard < cards.length - 1) {
       setCurrentCard(currentCard + 1);
       setIsFlipped(false);
+    } else if (allCardsViewed) {
+      setIsComplete(true);
     }
   };
 
@@ -56,7 +71,30 @@ export default function PlayFlashcard() {
   const resetCards = () => {
     setCurrentCard(0);
     setIsFlipped(false);
+    setViewedCards([]);
+    setIsComplete(false);
   };
+
+  if (isComplete) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
+        <ActivityResultReporter activity={activity} score={cards.length} total={cards.length} />
+        <Card className="clay-element bg-white/90 border-0 p-8 text-center max-w-lg w-full">
+          <CardContent>
+            <p className="text-5xl mb-4">🎉</p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">مرور کارت‌ها تمام شد</h1>
+            <p className="text-gray-600 mb-6">{cards.length} کارت را مرور کردید.</p>
+            <div className="flex gap-3 justify-center">
+              <Button onClick={resetCards} className="rounded-xl">شروع دوباره</Button>
+              <Button onClick={() => navigate(isDemo ? "/" : "/Dashboard")} variant="outline" className="rounded-xl">
+                بازگشت
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
@@ -96,7 +134,7 @@ export default function PlayFlashcard() {
         <div className="perspective-1000 mb-8">
           <motion.div
             className="relative h-96 cursor-pointer"
-            onClick={() => setIsFlipped(!isFlipped)}
+            onClick={flipCard}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -142,10 +180,10 @@ export default function PlayFlashcard() {
           </Button>
           <Button
             onClick={handleNext}
-            disabled={currentCard === cards.length - 1}
+            disabled={!isFlipped || (currentCard === cards.length - 1 && !allCardsViewed)}
             className="flex-1 h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-2xl clay-element"
           >
-            کارت بعدی
+            {currentCard === cards.length - 1 ? "اتمام مرور" : "کارت بعدی"}
             <ChevronLeft className="w-5 h-5 mr-2" />
           </Button>
         </div>

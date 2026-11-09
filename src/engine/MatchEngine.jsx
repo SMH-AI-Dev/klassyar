@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Timer as TimerIcon } from "lucide-react";
@@ -13,7 +13,7 @@ function shuffle(arr) {
   return a;
 }
 
-export default function MatchEngine({ game }) {
+export default function MatchEngine({ game, onProgress, onComplete, onRestart }) {
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
@@ -21,6 +21,7 @@ export default function MatchEngine({ game }) {
   const [timer, setTimer] = useState(0);
   const [finished, setFinished] = useState(false);
   const [locked, setLocked] = useState(false);
+  const reported = useRef(false);
 
   useEffect(() => {
     const pairs = game.cards.flatMap(c => [c, c]);
@@ -38,6 +39,17 @@ export default function MatchEngine({ game }) {
       setFinished(true);
     }
   }, [matched, cards]);
+
+  useEffect(() => {
+    onProgress?.({ index: matched.length / 2, matchedPairs: matched.length / 2, moves, timer });
+  }, [matched, moves, timer, onProgress]);
+
+  useEffect(() => {
+    if (finished && !reported.current) {
+      reported.current = true;
+      onComplete?.({ score: game.cards.length, total: game.cards.length });
+    }
+  }, [finished, game.cards.length, onComplete]);
 
   const handleFlip = (idx) => {
     if (locked || flipped.includes(idx) || matched.includes(idx)) return;
@@ -63,6 +75,21 @@ export default function MatchEngine({ game }) {
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
+  const restart = () => {
+    if (onRestart) {
+      onRestart();
+      return;
+    }
+    setCards(shuffle(game.cards.flatMap(c => [c, c])));
+    setFlipped([]);
+    setMatched([]);
+    setMoves(0);
+    setTimer(0);
+    setFinished(false);
+    setLocked(false);
+    reported.current = false;
+  };
+
   if (finished) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-900 to-teal-900">
@@ -74,7 +101,7 @@ export default function MatchEngine({ game }) {
             <div className="bg-purple-50 rounded-2xl p-4"><p className="text-2xl font-bold text-purple-600">{moves}</p><p className="text-xs text-gray-500">حرکت</p></div>
             <div className="bg-green-50 rounded-2xl p-4"><p className="text-2xl font-bold text-green-600">{formatTime(timer)}</p><p className="text-xs text-gray-500">زمان</p></div>
           </div>
-          <Button onClick={() => window.location.reload()} className="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-2xl px-8 py-4 h-auto text-lg">
+          <Button onClick={restart} className="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-2xl px-8 py-4 h-auto text-lg">
             <RotateCcw className="w-5 h-5 ml-2" /> دوباره
           </Button>
         </motion.div>

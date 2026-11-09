@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Timer, Lightbulb, Shuffle } from "lucide-react";
 import bestSelfBadge from "@/assets/pic/best-self-badge.png";
 
-export default function ScrambleEngine({ game }) {
+export default function ScrambleEngine({ game, onProgress, onComplete, onRestart }) {
   const [wIdx, setWIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [tiles, setTiles] = useState([]);
@@ -14,6 +14,19 @@ export default function ScrambleEngine({ game }) {
   const [finished, setFinished] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [timer, setTimer] = useState(30);
+  const [answers, setAnswers] = useState([]);
+  const reported = useRef(false);
+
+  useEffect(() => {
+    onProgress?.({ index: wIdx, answers });
+  }, [wIdx, answers, onProgress]);
+
+  useEffect(() => {
+    if (finished && !reported.current) {
+      reported.current = true;
+      onComplete?.({ score, total: game.words.length });
+    }
+  }, [finished, score, game.words.length, onComplete]);
 
   useEffect(() => {
     if (!game.words || !game.words[wIdx]) return;
@@ -28,10 +41,11 @@ export default function ScrambleEngine({ game }) {
   }, [wIdx, game]);
 
   useEffect(() => {
-    if (feedback || finished) return;
+    if (feedback !== null || finished) return;
     if (timer <= 0) {
       setRevealed(true);
       setFeedback(false);
+      setAnswers((prev) => [...prev, { q: wIdx, correct: false, timedOut: true }]);
       return;
     }
     const t = setInterval(() => setTimer(p => p - 1), 1000);
@@ -49,6 +63,7 @@ export default function ScrambleEngine({ game }) {
       if (word.length === game.words[wIdx].answer.length) {
         const isCorrect = word === game.words[wIdx].answer;
         if (isCorrect) setScore(s => s + 1);
+        setAnswers((prev) => [...prev, { q: wIdx, selected: word, correct: isCorrect }]);
         setFeedback(isCorrect);
         setRevealed(true);
       }
@@ -69,9 +84,15 @@ export default function ScrambleEngine({ game }) {
   };
 
   const restart = () => {
+    if (onRestart) {
+      onRestart();
+      return;
+    }
     setWIdx(0);
     setScore(0);
     setFinished(false);
+    setAnswers([]);
+    reported.current = false;
   };
 
   if (finished) {

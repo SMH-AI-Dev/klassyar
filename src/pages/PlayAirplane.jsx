@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Trophy, Save, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayAirplane() {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export default function PlayAirplane() {
     const pct = Math.round((score / total) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50">
+        <ActivityResultReporter activity={activity} score={score} total={total} />
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-blue-50 to-cyan-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">

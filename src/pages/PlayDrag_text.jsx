@@ -6,6 +6,7 @@ import { ArrowRight, Check, X, Trophy, RotateCw, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FloatingEmojis from "@/components/shared/FloatingEmojis";
 import { useGameData } from "@/hooks/useGameData";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayDrag_text() {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ export default function PlayDrag_text() {
     const pct = Math.round((score / activity.content.items.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-cyan-50 via-blue-50 to-sky-50">
+        <ActivityResultReporter activity={activity} score={score} total={activity.content.items.length} />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-cyan-50 to-blue-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">

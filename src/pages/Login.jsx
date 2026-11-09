@@ -47,11 +47,16 @@ function ParticleField() {
 }
 
 export default function Login() {
-  const { user, loading, login, register } = useAuth();
+  const { user, loading, login, register, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
+  const [profileSetup, setProfileSetup] = useState(false);
+  const [role, setRole] = useState("teacher");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [nationalId, setNationalId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [quoteIdx, setQuoteIdx] = useState(0);
@@ -63,6 +68,22 @@ export default function Login() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (user && (!user.role || !user.firstName || !user.lastName)) {
+      setRole(user.role || "teacher");
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setNationalId(user.nationalId || "");
+      setProfileSetup(true);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.role && user?.firstName && user?.lastName) {
+      navigate("/Dashboard", { replace: true });
+    }
+  }, [user, navigate]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-900 to-pink-900">
@@ -71,24 +92,30 @@ export default function Login() {
     );
   }
 
-  if (user) {
-    navigate("/Dashboard", { replace: true });
-    return null;
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!username || !password) {
+    if (!profileSetup && (!username || !password)) {
       setError("لطفاً نام کاربری و رمز عبور را وارد کنید");
+      return;
+    }
+    if ((isRegister || profileSetup) && (!firstName.trim() || !lastName.trim())) {
+      setError("نام و نام خانوادگی الزامی است");
       return;
     }
     setSubmitting(true);
     try {
-      if (isRegister) {
-        await register(username, password);
+      if (profileSetup && user) {
+        await updateProfile({ role, firstName, lastName, nationalId });
+      } else if (isRegister) {
+        await register(username, password, { role, firstName, lastName, nationalId });
       } else {
-        await login(username, password);
+        const signedIn = await login(username, password);
+        if (!signedIn.role || !signedIn.firstName || !signedIn.lastName) {
+          setProfileSetup(true);
+          setSubmitting(false);
+          return;
+        }
       }
       navigate("/Dashboard", { replace: true });
     } catch (e) {
@@ -188,7 +215,7 @@ export default function Login() {
                   <BookOpen className="w-8 h-8 md:w-10 md:h-10 text-white" />
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500 bg-clip-text text-transparent">
-                  {isRegister ? "ثبت‌نام در کلاس یار" : "به کلاس یار خوش آمدید"}
+                  {profileSetup ? "تکمیل پروفایل" : isRegister ? "ثبت‌نام در کلاس یار" : "به کلاس یار خوش آمدید"}
                 </h1>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -196,7 +223,9 @@ export default function Login() {
                   transition={{ delay: 0.4 }}
                   className="text-gray-500 text-sm md:text-base mt-1 md:mt-2"
                 >
-                  {isRegister
+                  {profileSetup
+                    ? "برای ادامه، نقش و نام خود را مشخص کنید"
+                    : isRegister
                     ? "یک حساب کاربری بسازید و ماجراجویی را شروع کنید"
                     : "برای ادامه، وارد حساب کاربری خود شوید"}
                 </motion.p>
@@ -224,7 +253,20 @@ export default function Login() {
                 transition={{ delay: 0.3 }}
                 className="space-y-3 md:space-y-4"
               >
-                <div className="relative group">
+                {(isRegister || profileSetup) && (
+                  <>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input required value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="نام" className="h-12 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-right focus:outline-none focus:border-purple-400" />
+                      <input required value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="نام خانوادگی" className="h-12 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-right focus:outline-none focus:border-purple-400" />
+                    </div>
+                    <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full h-12 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-right">
+                      <option value="teacher">معلم</option>
+                      <option value="student">دانش‌آموز</option>
+                    </select>
+                    <input value={nationalId} onChange={(e) => setNationalId(e.target.value)} placeholder="کد ملی (اختیاری)" className="w-full h-12 px-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-right focus:outline-none focus:border-purple-400" />
+                  </>
+                )}
+                {!profileSetup && <div className="relative group">
                   <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
                   <input
                     type="text"
@@ -234,8 +276,8 @@ export default function Login() {
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full h-12 md:h-14 pr-12 pl-4 bg-gray-50 border-2 border-gray-200 rounded-xl md:rounded-2xl text-right focus:outline-none focus:border-purple-400 focus:bg-white transition-all text-sm md:text-base"
                   />
-                </div>
-                <div className="relative group">
+                </div>}
+                {!profileSetup && <div className="relative group">
                   <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
                   <input
                     type="password"
@@ -245,7 +287,7 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full h-12 md:h-14 pr-12 pl-4 bg-gray-50 border-2 border-gray-200 rounded-xl md:rounded-2xl text-right focus:outline-none focus:border-purple-400 focus:bg-white transition-all text-sm md:text-base"
                   />
-                </div>
+                </div>}
 
                 <motion.div
                   whileHover={{ scale: 1.02 }}
@@ -259,13 +301,13 @@ export default function Login() {
                     {submitting ? (
                       <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin ml-2" />
                     ) : null}
-                    {isRegister ? "ثبت‌نام" : "ورود به کلاس یار"}
+                    {profileSetup ? "ذخیرهٔ پروفایل" : isRegister ? "ثبت‌نام" : "ورود به کلاس یار"}
                   </Button>
                 </motion.div>
               </motion.form>
 
               {/* Toggle */}
-              <motion.p
+              {!profileSetup && <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -273,12 +315,12 @@ export default function Login() {
               >
                 {isRegister ? "قبلاً ثبت‌نام کرده‌اید؟" : "حساب کاربری ندارید؟"}{" "}
                 <button
-                  onClick={() => { setIsRegister(!isRegister); setError(""); }}
+                  onClick={() => { setIsRegister(!isRegister); setError(""); setFirstName(""); setLastName(""); setNationalId(""); }}
                   className="text-purple-600 font-bold hover:text-purple-800 transition-colors"
                 >
                   {isRegister ? "وارد شوید" : "ثبت‌نام کنید"}
                 </button>
-              </motion.p>
+              </motion.p>}
 
               {/* Features hint */}
               <motion.div
@@ -288,7 +330,7 @@ export default function Login() {
                 className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-100"
               >
                 <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-[10px] md:text-xs text-gray-400">
-                  <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> ۱۳۰ بازی آموزشی</span>
+                  <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> ۴۳۰ بازی و فعالیت آموزشی</span>
                   <span className="flex items-center gap-1"><Brain className="w-3 h-3" /> یادگیری هوشمند</span>
                   <span className="flex items-center gap-1"><Heart className="w-3 h-3" /> کاملاً رایگان</span>
                 </div>

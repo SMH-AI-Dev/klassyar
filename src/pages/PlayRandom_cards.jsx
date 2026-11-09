@@ -6,6 +6,7 @@ import { ArrowRight, Trophy, RotateCw, Sparkles, ThumbsUp, BookOpen, Save } from
 import { motion, AnimatePresence } from "framer-motion";
 import FloatingEmojis from "@/components/shared/FloatingEmojis";
 import { useGameData } from "@/hooks/useGameData";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayRandom_cards() {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ export default function PlayRandom_cards() {
 
   if (isComplete) return (
     <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+      <ActivityResultReporter activity={activity} score={known} total={activity.content.items.length} />
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
         <Card className="clay-element bg-gradient-to-br from-amber-50 to-yellow-50 border-0">
           <CardContent className="p-8 md:p-12 text-center">

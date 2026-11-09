@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, RotateCw, Save } from "lucide-react";
 import { useGameData } from "@/hooks/useGameData";
+import { useNavigate } from "react-router-dom";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 /* ===== 5 تم سه‌بعدی لوکس ===== */
 const themes = [
@@ -156,6 +158,7 @@ function SparkleField() {
 
 /* ===== کامپوننت اصلی ===== */
 export default function PlayRandom_wheel() {
+  const navigate = useNavigate();
   const { activity, isLoading, isDemo, saveActivity, saving } = useGameData();
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -491,6 +494,9 @@ export default function PlayRandom_wheel() {
               </div>
 
               {/* ===== نتیجه زیر فلش ===== */}
+              {showResult && selectedItem && (
+                <ActivityResultReporter activity={activity} type="random-wheel" score={1} total={1} />
+              )}
               <AnimatePresence>
                 {showResult && selectedItem && (
                   <motion.div

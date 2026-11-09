@@ -1,20 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
+import selectionPrompt from "@/lib/selectionPrompt";
+
+const shuffle = (items) => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+function readData(searchParams) {
+  try {
+    const raw = searchParams.get("data");
+    return raw ? JSON.parse(decodeURIComponent(raw)) : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function PlayType() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const data = searchParams.get("data") ? JSON.parse(decodeURIComponent(searchParams.get("data"))) : null;
+  const data = useMemo(() => readData(searchParams), [searchParams]);
+  const [questions, setQuestions] = useState(() => shuffle(data?.questions || []));
   const [current, setCurrent] = useState(0);
-  const [answer, setAnswer] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [options, setOptions] = useState([]);
   const [result, setResult] = useState(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
-  if (!data || !data.questions) {
+  useEffect(() => {
+    setQuestions(shuffle(data?.questions || []));
+    setCurrent(0);
+    setSelected(null);
+    setResult(null);
+    setScore({ correct: 0, total: 0 });
+  }, [data]);
+
+  const q = questions[current];
+  useEffect(() => {
+    if (!q) return;
+    const authoredOptions = Array.isArray(q.options) ? q.options : [];
+    const answerPool = authoredOptions.length >= 2
+      ? authoredOptions
+      : questions.map((question) => question.answer);
+    const choices = [...new Set([...answerPool, q.answer].map((answer) => String(answer || "").trim()).filter(Boolean))];
+    const distractors = choices.filter((answer) => answer !== q.answer).slice(0, 3);
+    if (!distractors.length) distractors.push(q.answer === "گزینهٔ نادرست" ? "پاسخ دیگر" : "گزینهٔ نادرست");
+    setOptions(shuffle([...distractors, q.answer]));
+    setSelected(null);
+  }, [q, questions]);
+
+  if (!data || !Array.isArray(data.questions) || !data.questions.length) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">
         <Card className="clay-element p-8 text-center">
@@ -25,32 +69,30 @@ export default function PlayType() {
     );
   }
 
-  const q = data.questions[current];
   if (!q) {
     return (
       <div className="min-h-screen p-4 bg-gradient-to-br from-cyan-50 to-blue-50 flex items-center justify-center">
+        <ActivityResultReporter activity={data} type="type" score={score.correct} total={score.total} />
         <Card className="clay-element p-8 text-center max-w-md">
           <div className="text-5xl mb-4">🎉</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">پایان!</h2>
           <p className="text-lg text-gray-600 mb-4">امتیاز: {score.correct} از {score.total}</p>
-          <Button onClick={() => navigate("/Dashboard")} className="rounded-2xl clay-element">
-            بازگشت به داشبورد
-          </Button>
+          <Button onClick={() => navigate("/Dashboard")} className="rounded-2xl clay-element">بازگشت به داشبورد</Button>
         </Card>
       </div>
     );
   }
 
   const check = () => {
-    const isCorrect = answer.trim().toLowerCase() === q.answer.trim().toLowerCase();
+    if (!selected || result !== null) return;
+    const isCorrect = selected.trim().toLowerCase() === q.answer.trim().toLowerCase();
     setResult(isCorrect);
-    setScore(prev => ({ correct: prev.correct + (isCorrect ? 1 : 0), total: prev.total + 1 }));
+    setScore((previous) => ({ correct: previous.correct + (isCorrect ? 1 : 0), total: previous.total + 1 }));
   };
-
   const next = () => {
-    setAnswer("");
+    setSelected(null);
     setResult(null);
-    setCurrent(prev => prev + 1);
+    setCurrent((previous) => previous + 1);
   };
 
   return (
@@ -60,38 +102,44 @@ export default function PlayType() {
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full clay-element flex items-center justify-center bg-white">
             <ArrowRight className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-800">پاسخ تشریحی ✍️</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">تمرین انتخاب پاسخ 🗳️</h1>
+            <p className="text-sm text-gray-500">پاسخ درست را با کلیک انتخاب کن؛ نیازی به نوشتن نیست.</p>
+          </div>
         </div>
 
         <motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
           <Card className="clay-element border-0 bg-white/90 mb-4">
             <CardContent className="p-8 text-center">
-              <div className="text-sm text-gray-400 mb-2">سوال {current + 1} از {data.questions.length}</div>
-              <p className="text-xl font-bold text-gray-800 mb-6">{q.hint}</p>
-              {!result ? (
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    value={answer}
-                    onChange={e => setAnswer(e.target.value)}
-                    placeholder="پاسخ خود را بنویسید..."
-                    className="w-full p-3 rounded-2xl bg-gray-50 border-2 border-gray-200 outline-none focus:border-cyan-400 transition-all text-right"
-                    dir="rtl"
-                    onKeyDown={e => e.key === "Enter" && answer.trim() && check()}
-                  />
-                  <Button onClick={check} disabled={!answer.trim()} className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-2xl clay-element">
-                    بررسی پاسخ
-                  </Button>
-                </div>
+              <div className="text-sm text-gray-400 mb-2">سوال {current + 1} از {questions.length}</div>
+              <p className="text-xl font-bold text-gray-800 mb-6">{selectionPrompt(q)}</p>
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {options.map((option) => (
+                  <button
+                    type="button"
+                    key={option}
+                    disabled={result !== null}
+                    onClick={() => setSelected(option)}
+                    className={`p-4 rounded-xl border-2 text-lg font-bold transition-all clay-element ${
+                      selected === option ? "bg-cyan-100 border-cyan-500 text-cyan-900" : "bg-white border-gray-200 text-gray-800 hover:border-cyan-300"
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+              {result === null ? (
+                <Button onClick={check} disabled={!selected} className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-2xl clay-element">
+                  بررسی پاسخ
+                </Button>
               ) : (
                 <div className="space-y-4">
                   <div className={`text-6xl ${result ? "text-green-500" : "text-red-500"}`}>
                     {result ? <CheckCircle className="w-16 h-16 mx-auto" /> : <XCircle className="w-16 h-16 mx-auto" />}
                   </div>
-                  <p className="text-lg font-bold">{result ? "✅ پاسخ درست!" : "❌ پاسخ نادرست"}</p>
-                  {!result && <p className="text-gray-500">پاسخ درست: {q.answer}</p>}
+                  <p className="text-lg font-bold">{result ? "✅ پاسخ درست!" : `❌ پاسخ درست: ${q.answer}`}</p>
                   <Button onClick={next} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl clay-element">
-                    {current < data.questions.length - 1 ? "سوال بعدی" : "مشاهده نتیجه"}
+                    {current < questions.length - 1 ? "سوال بعدی" : "مشاهده نتیجه"}
                   </Button>
                 </div>
               )}

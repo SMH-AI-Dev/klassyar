@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Check, X, Trophy, RotateCw, Save, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ActivityResultReporter from "@/lib/ActivityResultReporter";
 
 export default function PlayHotspot() {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ export default function PlayHotspot() {
     const pct = Math.round((score / items.length) * 100);
     return (
       <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50">
+        <ActivityResultReporter activity={activity} score={score} total={items.length} />
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
           <Card className="clay-element bg-gradient-to-br from-yellow-50 to-amber-50 border-0">
             <CardContent className="p-8 md:p-12 text-center">
