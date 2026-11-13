@@ -432,17 +432,32 @@ klassyar/
 
 <br>
 
-<div style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8);border-radius:20px;padding:30px 40px;display:inline-block;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,.08)">
+<div style="max-width:680px;margin:0 auto;text-align:left">
 
-<span style="font-size:1.8rem">👤</span> **مهندس سید مهدی حسینی**
-<br><br>
-<span style="font-size:1.3rem;color:#6b21a8">_Engineer Seyed Mehdi Hosaini_</span>
-<br><br>
-<span style="font-size:1.3rem">📧</span> **Email:** smh.4tecksoftware@gmail.com
-<br>
-<span style="font-size:1.3rem">📧</span> **Email:** klasyar.smh@gmail.com
-<br><br>
-<span style="font-size:1.3rem">📞</span> **Tel:** +989024912785
+<div style="margin:10px 0;padding:16px 20px;border:1px solid #c4b5fd;border-radius:14px;background:#f5f3ff;color:#4c1d95">
+  <strong style="font-size:1.2rem">👤 Seyed Mehdi Hosseini</strong><br>
+  <span>Computer Software Engineer and AI specialist</span>
+</div>
+
+<div style="margin:10px 0;padding:14px 18px;border:1px solid #a7f3d0;border-radius:12px;background:#ecfdf5;color:#065f46">
+  ✉️ <strong>Email</strong><br>
+  <a href="mailto:dev.smh.ai@gmail.com">dev.smh.ai@gmail.com</a>
+</div>
+
+<div style="margin:10px 0;padding:14px 18px;border:1px solid #bae6fd;border-radius:12px;background:#f0f9ff;color:#075985">
+  📞 <strong>Telephone</strong><br>
+  <a href="tel:+989024912785">+98 902 491 2785</a>
+</div>
+
+<div style="margin:10px 0;padding:14px 18px;border:1px solid #fde68a;border-radius:12px;background:#fffbeb;color:#92400e">
+  🤗 <strong>Hugging Face</strong><br>
+  <a href="https://huggingface.co/SMH-DEV-AI/">huggingface.co/SMH-DEV-AI</a>
+</div>
+
+<div style="margin:10px 0;padding:14px 18px;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;color:#334155">
+  💻 <strong>GitHub</strong><br>
+  <a href="https://github.com/SMH-AI-Dev/">github.com/SMH-AI-Dev</a>
+</div>
 
 </div>
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Sparkles, Users, Trophy, Zap, BookOpen } from "lucide-react";
+import { Heart, Sparkles, Users, Trophy, Zap, BookOpen, Mail, Phone, Github, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
 
 // All about-page images, sorted by their 2-digit number (02.jpg .. 33.jpg).
@@ -15,12 +15,16 @@ const aboutImages = Object.keys(aboutImagesModule)
 
 const teamMembers = [
   {
-    name: "مهندس سید مهدی حسینی",
-    role: "معمار و طراح سیستم",
+    name: "Seyed Mehdi Hosseini",
+    role: "Computer Software Engineer and AI specialist",
     emoji: "👨‍💻",
-    email: "smh.4tecksoftware@gmail.com",
-    tel : "+989024912785",
-    description: "با تخصص و تجربه گسترده در طراحی و توسعه سیستم‌های آموزشی",
+    description: "طراح و توسعه‌دهندهٔ کلاسیار با تمرکز بر نرم‌افزار و هوش مصنوعی",
+    contacts: [
+      { label: "Email", value: "dev.smh.ai@gmail.com", href: "mailto:dev.smh.ai@gmail.com", icon: Mail, style: "border-emerald-200 bg-emerald-50 text-emerald-800" },
+      { label: "Telephone", value: "+98 902 491 2785", href: "tel:+989024912785", icon: Phone, style: "border-sky-200 bg-sky-50 text-sky-800" },
+      { label: "Hugging Face", value: "huggingface.co/SMH-DEV-AI", href: "https://huggingface.co/SMH-DEV-AI/", icon: BrainCircuit, style: "border-amber-200 bg-amber-50 text-amber-900", external: true },
+      { label: "GitHub", value: "github.com/SMH-AI-Dev", href: "https://github.com/SMH-AI-Dev/", icon: Github, style: "border-slate-300 bg-slate-100 text-slate-800", external: true },
+    ],
     color: "from-purple-400 to-pink-400"
   },
   {
@@ -83,7 +87,7 @@ export default function About() {
           <h2 className="text-3xl md:text-5xl font-bold text-purple-600 mb-4">🏫 کلاس، یار بود 📚</h2>
           <div className="text-lg md:text-2xl text-gray-600 max-w-3xl mx-auto px-4 space-y-3">
             <p>
-              🌟 <strong>پلتفرم گیمیفیکیشن آموزشی</strong> با <strong>۴۳۰ بازی و فعالیت تعاملی</strong> 🎯
+              🌟 <strong>پلتفرم گیمیفیکیشن آموزشی</strong> با <strong>۱۳۰ بازی و فعالیت تعاملی</strong> 🎯
             </p>
             <p>
               👩‍🏫 ساخته شده برای <strong>معلمان</strong> ، <strong>دانش‌آموزان</strong> و <strong>والدین</strong> 🤝
@@ -161,16 +165,27 @@ export default function About() {
                     <p className="text-gray-600 text-sm mb-4">
                       {member.description}
                     </p>
-                    {member.email && (
-                      <div className="space-y-2">
-                        <p className="text-purple-600 text-sm">
-                          📧 {member.email}
-                        </p>
-                        {member.tel && (
-                          <p className="text-green-600 text-sm">
-                            📱 {member.tel}
-                          </p>
-                        )}
+                    {member.contacts && (
+                      <div className="mt-5 grid gap-2 text-left">
+                        {member.contacts.map((contact, contactIndex) => (
+                          <motion.a
+                            key={contact.label}
+                            href={contact.href}
+                            target={contact.external ? "_blank" : undefined}
+                            rel={contact.external ? "noreferrer" : undefined}
+                            initial={{ opacity: 0, x: 14 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.55 + contactIndex * 0.08, duration: 0.35 }}
+                            whileHover={{ y: -2, scale: 1.01 }}
+                            className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 text-sm transition-shadow hover:shadow-md ${contact.style}`}
+                          >
+                            <contact.icon className="h-5 w-5 shrink-0" />
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-xs font-semibold opacity-70">{contact.label}</span>
+                              <span dir="ltr" className="block break-all text-left font-medium">{contact.value}</span>
+                            </span>
+                          </motion.a>
+                        ))}
                       </div>
                     )}
                   </CardContent>
@@ -288,7 +303,7 @@ export default function About() {
             </p>
           </div>
           <p className="text-sm md:text-base text-gray-500">
-            نسخه 1.4.0 | © 2026 کلاس یار | تمامی حقوق محفوظ است
+            نسخه 2.0.1 | © 2026 کلاس یار | تمامی حقوق محفوظ است
           </p>
         </motion.div>
       </div>
