@@ -62,7 +62,7 @@
 
 <div align="center">
 
-| 🎯 **۳۰ نوع بازی** | 👩‍🏫 **ابزارهای معلم** | 📱 **PWA & آفلاین** |
+| 🎯 **۱۳۰ بازی آموزشی و انگلیسی** | 👩‍🏫 **ابزارهای معلم** | 📱 **PWA & آفلاین** |
 |:---:|:---:|:---:|
 | 🇮🇷 **RTL کامل فارسی** | 📐 **واکنش‌گرا** | 🎨 **Clay Design** |
 
@@ -74,7 +74,7 @@
 
 <div style="flex:1;min-width:300px">
 
-### 🎯 **۳۰ نوع بازی آموزشی**
+### 🎯 **۱۳۰ بازی آموزشی و انگلیسی**
 
 از کارت‌های آموزشی و آزمون گرفته تا بازی‌های تعاملی مثل **موش‌کوب، چرخ شانس، جدول کلمات، هواپیما، مارپیچ، مسابقه تلویزیونی** و...
 
@@ -98,7 +98,7 @@
 
 | | |
 |---|---|
-| ✅ ساخت آسان فعالیت با چند کلیک | ✅ مدیریت کلاس و دعوت دانش‌آموزان |
+| ✅ ساخت فعالیت و سؤال اختصاصی برای بازی‌ها | ✅ مدیریت کلاس و دعوت دانش‌آموزان |
 | ✅ گزارش پیشرفت و آمار عملکرد | ✅ اشتراک‌گذاری با لینک و QR Code |
 | ✅ خروجی PDF و چاپ فعالیت‌ها | ✅ ویرایش و بازنشر فعالیت‌ها |
 
@@ -259,7 +259,7 @@ npm run preview    # Preview production build
 |:---:|:---:|
 | <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react"> | کتابخانه اصلی رابط کاربری |
 | <img src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite"> | ابزار بیلد و توسعه |
-| <img src="https://img.shields.io/badge/React_Router-6-CA4245?style=flat-square&logo=reactrouter"> | مسیریابی پیشرفته |
+| <img src="https://img.shields.io/badge/React_Router-7-CA4245?style=flat-square&logo=reactrouter"> | مسیریابی پیشرفته |
 | <img src="https://img.shields.io/badge/TanStack_Query-5-FF4154?style=flat-square&logo=reactquery"> | مدیریت state و درخواست‌ها |
 | <img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss"> | فریم‌ورک CSS |
 | <img src="https://img.shields.io/badge/Framer_Motion-10-0055FF?style=flat-square&logo=framer"> | انیمیشن‌های حرفه‌ای |
@@ -475,7 +475,7 @@ klassyar/
 
 <br>
 
-**نسخه 1.3.0** | © 2026 کلاس یار | تمامی حقوق محفوظ است
+**نسخه 2.0.1** | © 2026 کلاس یار | تمامی حقوق محفوظ است
 
 <br>
 
