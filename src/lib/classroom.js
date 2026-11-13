@@ -42,6 +42,7 @@ function normalizeState(state) {
         reports: Array.isArray(item.reports) ? item.reports : [],
         assignments: Array.isArray(item.assignments) ? item.assignments : [],
         assignmentAnswers: Array.isArray(item.assignmentAnswers) ? item.assignmentAnswers : [],
+        teacherQuestions: Array.isArray(item.teacherQuestions) ? item.teacherQuestions : [],
         cycles: cycles.length ? cycles : [{
           id: "legacy-cycle", name: "فعالیت‌های پیشین", startedAt: item.createdAt || now, endedAt: null, status: "active",
         }],
@@ -268,6 +269,7 @@ export const classroom = {
       id: makeId(), name: text(name), createdAt: now, students: [], reports: [],
       assignments: [], evaluations: {},
       assignmentAnswers: [],
+      teacherQuestions: [],
       cycles: [{ id: makeId(), name: "دورهٔ اول", startedAt: now, endedAt: null, status: "active" }],
     };
     state.classes.push(record);
@@ -670,6 +672,105 @@ export const classroom = {
     target.assignments.push(record);
     save(KEY, state);
     return record;
+  },
+  addTeacherQuestion(classId, teacherQuestion, userId) {
+    const state = currentState(userId);
+    const target = ensureClass(state, classId);
+    const gameId = text(teacherQuestion?.gameId);
+    const engine = teacherQuestion?.engine || "quiz";
+    const scope = teacherQuestion?.scope === "selected" ? "selected" : "all";
+    const question = teacherQuestion?.question ?? teacherQuestion;
+    if (!gameId) throw new Error("شناسهٔ بازی برای سؤال معلم الزامی است");
+    if (!text(teacherQuestion?.gameTitle) && !text(teacherQuestion?.title)) throw new Error("عنوان بازی سؤال معلم الزامی است");
+    if (scope === "selected" && (!Array.isArray(teacherQuestion?.studentIds) || !teacherQuestion.studentIds.length)) {
+      throw new Error("برای ارسال سؤال به دانش‌آموزان انتخاب‌شده، دست‌کم یک دانش‌آموز را انتخاب کنید");
+    }
+    if (scope === "selected" && !teacherQuestion.studentIds.every((id) => target.students.some((student) => student.id === id))) {
+      throw new Error("دانش‌آموز انتخاب‌شده به این کلاس تعلق ندارد");
+    }
+
+    const normalizedStudentIds = scope === "selected"
+      ? [...new Set(teacherQuestion.studentIds)]
+      : target.students.map((student) => student.id);
+
+    if (engine === "quiz") {
+      if (!question || typeof question.question !== "string" || !text(question.question) ||
+          !Array.isArray(question.options) || question.options.length < 2 ||
+          question.options.some((option) => typeof option !== "string" || !text(option)) ||
+          !Number.isInteger(question.correctIndex) || question.correctIndex < 0 ||
+          question.correctIndex >= question.options.length) {
+        throw new Error("سؤال چهارگزینه‌ای معلم باید متن سؤال، حداقل دو گزینه و پاسخ درست معتبر داشته باشد");
+      }
+    } else if (engine === "match" || engine === "memory") {
+      if (!question || !(text(question.text) || text(question.emoji) || question.id)) {
+        throw new Error("سؤال تطبیق معلم باید متن یا اموجی و شناسهٔ معتبر داشته باشد");
+      }
+    } else if (engine === "sort") {
+      if (!question || !text(question.label) || !text(question.category)) {
+        throw new Error("سؤال مرتب‌سازی معلم باید برچسب و دستهٔ معتبر داشته باشد");
+      }
+    } else if (engine === "scramble") {
+      if (!question || !text(question.answer) || (!text(question.hint) && !text(question.scrambled))) {
+        throw new Error("سؤال به‌هم‌ریختگی معلم باید پاسخ و حداقل راهنما یا حروفِ درهم‌ریخته داشته باشد");
+      }
+    } else if (engine === "type" || engine === "fillblank") {
+      if (!question || !text(question.answer) || (!text(question.hint) && !text(question.text) && !text(question.question))) {
+        throw new Error("سؤال تایپ/جای خالی معلم باید پاسخ و متن یا راهنما داشته باشد");
+      }
+    } else {
+      throw new Error("نوع بازی انتخاب‌شده برای سؤال معلم معتبر نیست");
+    }
+
+    const record = {
+      id: makeId(),
+      gameId,
+      gameTitle: text(teacherQuestion.gameTitle || teacherQuestion.title),
+      engine,
+      question: {
+        ...question,
+        ...(question.id ? {} : { id: makeId() }),
+      },
+      scope,
+      studentIds: normalizedStudentIds,
+      createdAt: new Date().toISOString(),
+      cycleId: target.cycles.find((cycle) => cycle.status === "active")?.id || null,
+    };
+    target.teacherQuestions.push(record);
+    save(KEY, state);
+    return record;
+  },
+  getTeacherQuestionsForGame(gameId, userId) {
+    const state = currentState(userId);
+    const studentProfile = parse(STUDENT_KEY, null);
+    const studentClassId = studentProfile?.classroom?.id || null;
+    const matches = [];
+    const addMatch = (classId) => {
+      const target = state.classes.find((item) => item.id === classId);
+      if (!target) return;
+      target.teacherQuestions.forEach((question) => {
+        if (question.gameId !== gameId) return;
+        if (question.scope === "selected") {
+          const allowed = Array.isArray(question.studentIds) ? question.studentIds : [];
+          if (!studentProfile?.student?.id || !allowed.includes(studentProfile.student.id)) return;
+        }
+        matches.push(question);
+      });
+    };
+    if (studentClassId) addMatch(studentClassId);
+    if (!matches.length) {
+      state.classes.forEach((item) => {
+        if (item.id === studentClassId) return;
+        item.teacherQuestions.forEach((question) => {
+          if (question.gameId !== gameId) return;
+          if (question.scope === "selected") {
+            const allowed = Array.isArray(question.studentIds) ? question.studentIds : [];
+            if (studentProfile?.student?.id && !allowed.includes(studentProfile.student.id)) return;
+          }
+          matches.push(question);
+        });
+      });
+    }
+    return [...new Map(matches.map((question) => [question.id, question])).values()];
   },
   addCycle(classId, name, userId) {
     const state = currentState(userId);

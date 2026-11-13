@@ -32,6 +32,18 @@
 
 </div>
 
+<div dir="rtl">
+
+## دانلود نسخه 2.0.1
+
+نسخه دسکتاپ و Android برای Windows، Linux، macOS و Android از صفحه انتشار GitHub در دسترس است. برای دریافت آخرین فایل‌ها، وارد صفحه زیر شوید و فایل متناسب با دستگاه خود را از بخش **Assets** انتخاب کنید:
+
+[دانلود آخرین نسخه KlassYar](https://github.com/SMH-AI-Dev/klassyar/releases/latest)
+
+نسخه وب نیز از [klassyar.ir](https://klassyar.ir) و [GitHub Pages](https://SMH-AI-Dev.github.io/klassyar) قابل استفاده است.
+
+</div>
+
 <br>
 
 ---

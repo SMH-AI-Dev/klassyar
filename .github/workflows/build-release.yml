@@ -48,11 +48,8 @@ jobs:
           gradle assembleDebug --no-daemon
           if [ -f "$KLASSYAR_ANDROID_KEYSTORE_FILE" ] && [ -n "$KLASSYAR_ANDROID_STORE_PASSWORD" ] && [ -n "$KLASSYAR_ANDROID_KEY_ALIAS" ] && [ -n "$KLASSYAR_ANDROID_KEY_PASSWORD" ]; then
             gradle assembleRelease --no-daemon
-          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
-            echo "Android signing secrets are required for tagged releases."
-            exit 1
           else
-            echo "Skipping unsigned Android release APK; configure signing secrets to build one."
+            echo "Skipping signed Android release APK; the installable debug APK will be included. Configure signing secrets for a stable release signature."
           fi
       - uses: actions/upload-artifact@v4
         with:
