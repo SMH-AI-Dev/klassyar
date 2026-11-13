@@ -156,12 +156,23 @@ export default function About() {
                     <div className={`w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br ${member.color} rounded-3xl mx-auto mb-4 flex items-center justify-center clay-element text-4xl md:text-5xl`}>
                       {member.emoji}
                     </div>
-                    <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
+                    <motion.h3
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ y: -2 }}
+                      className="mb-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-lg font-bold text-violet-900 md:text-xl"
+                    >
                       {member.name}
-                    </h3>
-                    <p className="text-purple-600 font-medium mb-3 text-sm md:text-base">
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 }}
+                      whileHover={{ y: -2 }}
+                      className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800 md:text-base"
+                    >
                       {member.role}
-                    </p>
+                    </motion.p>
                     <p className="text-gray-600 text-sm mb-4">
                       {member.description}
                     </p>

@@ -436,6 +436,10 @@ klassyar/
 
 <div style="margin:10px 0;padding:16px 20px;border:1px solid #c4b5fd;border-radius:14px;background:#f5f3ff;color:#4c1d95">
   <strong style="font-size:1.2rem">👤 Seyed Mehdi Hosseini</strong><br>
+</div>
+
+<div style="margin:10px 0;padding:14px 18px;border:1px solid #fbcfe8;border-radius:12px;background:#fdf2f8;color:#9d174d">
+  🧠 <strong>Professional title</strong><br>
   <span>Computer Software Engineer and AI specialist</span>
 </div>
 
