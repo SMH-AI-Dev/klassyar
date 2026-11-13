@@ -1,12 +1,14 @@
-const CACHE = 'klassyar-v2';
+const CACHE = 'klassyar-v3';
+const APP_PATH = new URL(self.registration.scope).pathname;
+const APP_BASE = APP_PATH.endsWith('/') ? APP_PATH : `${APP_PATH}/`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => {
       return cache.addAll([
-        '/',
-        '/manifest.json',
-        '/icon.svg',
+        APP_BASE,
+        `${APP_BASE}manifest.json`,
+        `${APP_BASE}icon.svg`,
       ]);
     })
   );
@@ -39,7 +41,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const isAsset = url.pathname.startsWith('/assets/');
+  const isAsset = url.pathname.startsWith(`${APP_BASE}assets/`);
   const isPage = request.mode === 'navigate';
 
   if (isAsset) {
@@ -77,7 +79,7 @@ async function networkFirst(request) {
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
-    const fallback = await caches.match('/');
+    const fallback = await caches.match(APP_BASE);
     if (fallback) return fallback;
     return new Response('Offline', { status: 503 });
   }
