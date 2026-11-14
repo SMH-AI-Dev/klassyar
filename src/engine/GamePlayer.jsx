@@ -8,6 +8,15 @@ import TypeEngine from "./TypeEngine";
 import SortEngine from "./SortEngine";
 import ScrambleEngine from "./ScrambleEngine";
 import FillBlankEngine from "./FillBlankEngine";
+import AnagramEngine from "./AnagramEngine";
+import HangmanEngine from "./HangmanEngine";
+import WheelEngine from "./WheelEngine";
+import WhackEngine from "./WhackEngine";
+import BalloonsEngine from "./BalloonsEngine";
+import TrueFalseEngine from "./TrueFalseEngine";
+import WordSearchEngine from "./WordSearchEngine";
+import OpenBoxEngine from "./OpenBoxEngine";
+import TypingEngine from "./TypingEngine";
 import { createQuestionRound, saveQuestionRoundProgress } from "@/lib/questionBank";
 import { classroom } from "@/lib/classroom";
 
@@ -35,6 +44,15 @@ export default function GamePlayer({ game }) {
     sort: SortEngine,
     scramble: ScrambleEngine,
     fillblank: FillBlankEngine,
+    anagram: AnagramEngine,
+    hangman: HangmanEngine,
+    wheel: WheelEngine,
+    whack: WhackEngine,
+    balloons: BalloonsEngine,
+    truefalse: TrueFalseEngine,
+    wordsearch: WordSearchEngine,
+    openbox: OpenBoxEngine,
+    typing: TypingEngine,
   };
 
   const Engine = engines[game.engine];
