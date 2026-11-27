@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Heart, Sparkles, Users, Trophy, Zap, BookOpen, Mail, Github,
+  Heart, Sparkles, Trophy, BookOpen, Mail, Github,
   BrainCircuit, Gamepad2, ShieldCheck, GraduationCap, Database,
-  Smartphone, Lightbulb, Target, Download
+  Smartphone, Lightbulb, Target
 } from "lucide-react";
 import { motion } from "framer-motion";
 
