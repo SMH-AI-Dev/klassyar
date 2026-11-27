@@ -28,6 +28,7 @@ jobs:
       - run: npm run build
       - run: npm run build:android
       - run: node scripts/ensure-android-cordova-gradle.mjs
+      - run: node scripts/set-android-version.mjs
       - name: Create disposable CI signing key
         run: |
           keytool -genkeypair -noprompt -v -storetype JKS \
