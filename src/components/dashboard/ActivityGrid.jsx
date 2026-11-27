@@ -24,7 +24,28 @@ const activityIcons = {
   true_false: "✔️",
   fill_blank: "📄",
   ranking: "🏆",
-  spinner: "🎰"
+  spinner: "🎰",
+  crossword: "🔠",
+  timeline: "📅",
+  card_flip: "🃏",
+  hotspot: "📍",
+  drag_text: "🧲",
+  balloon_pop: "🎈",
+  gameshow_quiz: "🏆",
+  maze_chase: "🧭",
+  airplane: "✈️",
+  open_the_box: "🎁",
+  missing_word: "✏️",
+  anagram: "🔤",
+  hangman: "🎯",
+  flip_tiles: "🟦",
+  image_quiz: "🖼️",
+  labelled_diagram: "🏷️",
+  labeled_diagram: "🏷️",
+  random_cards: "🎴",
+  match: "🧩",
+  type: "💡",
+  scramble: "🔀"
 };
 
 const activityNames = {
@@ -41,7 +62,28 @@ const activityNames = {
   true_false: "درست یا غلط",
   fill_blank: "جای خالی",
   ranking: "رتبه‌بندی",
-  spinner: "فلک شانس"
+  spinner: "فلک شانس",
+  crossword: "جدول کلمات",
+  timeline: "خط زمانی",
+  card_flip: "کارت برگردان",
+  hotspot: "نقاط تعاملی",
+  drag_text: "واژه‌های جابه‌جایی",
+  balloon_pop: "ترکاندن بادکنک",
+  gameshow_quiz: "مسابقه تلویزیونی",
+  maze_chase: "هزارتو",
+  airplane: "هواپیما",
+  open_the_box: "جعبه شگفتی",
+  missing_word: "کلمه گمشده",
+  anagram: "حروف درهم",
+  hangman: "دار بازی",
+  flip_tiles: "کاشی برگردان",
+  image_quiz: "آزمون تصویری",
+  labelled_diagram: "برچسب‌گذاری تصویر",
+  labeled_diagram: "برچسب‌گذاری تصویر",
+  random_cards: "کارت تصادفی",
+  match: "جفت‌یابی",
+  type: "پاسخ‌گزین",
+  scramble: "واژه درهم"
 };
 
 const themeColors = {
