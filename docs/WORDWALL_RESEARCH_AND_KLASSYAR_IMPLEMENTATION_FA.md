@@ -82,6 +82,48 @@ Wordwall کد منبع موتورهای خود، الگوریتم داخلی ت�
 | 33 | Maths generator | تولید سؤال محاسباتی با پارامترهای قابل تنظیم | عملگر، بازه اعداد، سطح و قواعد | مولد deterministic، evaluator محاسباتی، آزمون صحت جواب |
 | 34 | Word magnets | ساخت جمله با جابه‌جایی قطعات کلمه | جمله هدف و قطعات کلمه | موتور قطعات قابل جابه‌جایی، tokenizer و RTL |
 
+### تطبیق 34 قالب با صفحات فعلی مخزن کلاس‌یار
+
+این جدول وضعیت مسیرها را از روی importها و routeهای فعلی App.jsx بررسی می‌کند. «صفحه موجود» فقط به معنی وجود صفحه Create/Play در مخزن است؛ به معنی برابری کامل مکانیک، تنظیمات، گزارش و رفتار با Wordwall نیست.
+
+| قالب Wordwall | صفحه ساخت فعلی کلاس‌یار | صفحه اجرا فعلی | وضعیت اولیه |
+|---|---|---|---|
+| Quiz | CreateQuiz | PlayQuiz | موجود |
+| Match up | CreateMatching | PlayMatching | موجود؛ قالب Find the Match نیز می‌تواند adapter جدا بخواهد |
+| Flash cards | CreateFlashcard | PlayFlashcard | موجود |
+| Speaking cards | CreateRandom_cards | PlayRandom_cards | نزدیک؛ باید حالت گفت‌وگو/بدون امتیاز بررسی شود |
+| Spin the wheel | CreateRandom_wheel | PlayRandom_wheel | موجود |
+| Find the match | CreateMatching | PlayMatching | مشابه؛ نیازمند حالت حذف جفت از صفحه |
+| Complete the sentence | CreateMissing_word | PlayMissing_word | مشابه؛ اعتبارسنجی cloze لازم است |
+| Anagram | CreateAnagram | PlayAnagram | موجود |
+| Group sort | CreateGroup_sort | PlayGroup_sort | موجود |
+| Unjumble | CreateUnjumble | PlayUnjumble | موجود |
+| Open the box | CreateOpen_the_box | PlayOpen_the_box | موجود |
+| Matching pairs | CreateMemory_game | PlayMemory_game | موجود |
+| Gameshow quiz | CreateGameshow_quiz | PlayGameshow_quiz | موجود؛ گزینه‌های رقابتی باید تطبیق داده شوند |
+| Type the answer | CreateType | PlayType | موجود |
+| Flip tiles | CreateFlip_tiles | PlayFlip_tiles | موجود |
+| Wordsearch | CreateWordsearch | PlayWordsearch | موجود |
+| Spell the word | CreateScramble | PlayScramble | مشابه؛ باید پخش صوت/املا اضافه شود |
+| Hangman | CreateHangman | PlayHangman | موجود |
+| Labelled diagram | CreateLabelled_diagram | PlayLabelled_diagram | موجود |
+| Crossword | CreateCrossword | PlayCrossword | موجود |
+| Maze chase | CreateMaze_chase | PlayMaze_chase | موجود |
+| Flying fruit | — | — | نیازمند موتور مستقل بازی پرتاب/حرکت و برخورد |
+| True or false | CreateTrue_false | PlayTrue_false | موجود |
+| Pair or No Pair | — | — | نیازمند مدل داده زوج + برچسب رابطه |
+| Balloon pop | CreateBalloon_pop | PlayBalloon_pop | موجود |
+| Whack-a-mole | CreateWhack_a_mole | PlayWhack_a_mole | موجود |
+| Airplane | CreateAirplane | PlayAirplane | موجود |
+| Image quiz | CreateImage_quiz | PlayImage_quiz | موجود |
+| Rank order | CreateRanking | PlayRanking | موجود |
+| Speed sorting | CreateGroup_sort | PlayGroup_sort | مشابه؛ تایمر، امتیاز سرعت و سختی باید اضافه/بررسی شود |
+| Watch and memorize | — | — | نیازمند موتور مشاهده، پنهان‌سازی و یادآوری |
+| Win or lose quiz | CreateGameshow_quiz | PlayGameshow_quiz | مشابه؛ منطق ریسک/پاداش باید جدا پیاده شود |
+| Maths generator | — | — | نیازمند مولد پارامتریک و evaluator محاسباتی |
+
+قالب‌های اختصاصی موجود کلاس‌یار مانند Timeline، Spinner، Card Flip، Hotspot و Drag Text نیز باید حفظ شوند؛ توسعه قالب‌های Wordwall نباید این قالب‌ها را حذف یا جایگزین کند.
+
 ### قالب‌ها/نام‌های دیده‌شده در راهنماهای قدیمی‌تر
 
 این موارد در بعضی مقاله‌های راهنما یا نسخه‌های قدیمی‌تر دیده می‌شوند، اما در فهرست 34 قالب فعلی صفحه قیمت‌گذاری بالا به‌عنوان قالب مستقل فهرست نشده‌اند؛ وضعیت دسترسی آن‌ها باید در زمان پیاده‌سازی دوباره بررسی شود:
