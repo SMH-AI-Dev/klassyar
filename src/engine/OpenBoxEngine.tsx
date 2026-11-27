@@ -32,7 +32,7 @@ export default function OpenBoxEngine({ game, roundId, onProgress, onComplete, o
       const next = { ...opened, [active]: ok ? ("ok" as const) : ("bad" as const) };
       setOpened(next);
       setActive(null);
-      if (Object.keys(next).length >= game.items.length) setTimeout(() => onFinish({ score: s, total: game.items.length }), 1000);
+      if (Object.keys(next).length >= game.items.length) setTimeout(() => onComplete({ score: s, total: game.items.length }), 1000);
     }, 1200);
   }
 

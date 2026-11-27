@@ -21,7 +21,7 @@ export default function TypingEngine({ game, roundId, onProgress, onComplete, on
     const s = score + gain;
     setScore(s);
     setTimeout(() => {
-      if (idx + 1 >= game.items.length) onFinish({ score: s, total: game.items.length });
+      if (idx + 1 >= game.items.length) onComplete({ score: s, total: game.items.length });
       else {
         setIdx(idx + 1);
         setValue("");

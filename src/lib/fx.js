@@ -18,7 +18,8 @@ function getCtx() {
   if (typeof window === "undefined") return null;
   try {
     if (!ctx) {
-      const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
       ctx = new AC();
     }
     if (ctx.state === "suspended") void ctx.resume();

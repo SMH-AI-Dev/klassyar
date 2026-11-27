@@ -1,3 +1,4 @@
+import { getFallbackContentPool } from "./gameContentPools.js";
 /** Account-scoped, deduplicated multiple-choice question banks and cycle-safe rounds. */
 const ROUND_PREFIX = "klassyar_question_cycle:v2:";
 export const MINIMUM_BANK_SIZE = 400;
@@ -355,10 +356,131 @@ function normalizeQuestion(question) {
   };
 }
 
-export function createQuestionRound(game, reason = "open", userId = "guest") {
-  const bank = getQuestionBank(game);
-  const targetCount = roundSize(game, bank.length);
-  const fingerprint = hashValue(bank.map((question) => `${questionKey(question)}|${normalizeText(question.options?.[question.correctIndex])}`).join("||"));
+
+const CONTENT_FIELD_BY_ENGINE = {
+  quiz: "questions",
+  match: "cards",
+  memory: "cards",
+  sort: "items",
+  scramble: "words",
+  fillblank: "questions",
+  type: "questions",
+  typing: "items",
+  anagram: "items",
+  hangman: "items",
+  wheel: "items",
+  whack: "items",
+  balloons: "items",
+  truefalse: "items",
+  wordsearch: "items",
+  openbox: "items",
+};
+
+function contentField(game) {
+  return CONTENT_FIELD_BY_ENGINE[game?.engine] ||
+    ["questionBank", "questions", "words", "cards", "items"].find((field) => Array.isArray(game?.[field])) ||
+    "items";
+}
+
+function canonicalContent(value) {
+  if (typeof value === "string") return normalizeText(value);
+  if (Array.isArray(value)) return value.map(canonicalContent);
+  if (value && typeof value === "object") {
+    return Object.keys(value).filter((key) => key !== "id" && key !== "createdAt" && key !== "updatedAt" && key !== "sourceGameId")
+      .sort().reduce((result, key) => {
+        result[key] = canonicalContent(value[key]);
+        return result;
+      }, {});
+  }
+  return value;
+}
+
+function contentItemKey(item, engine) {
+  if (engine === "quiz") return questionKey(item);
+  if (["match", "memory"].includes(engine)) {
+    return `${normalizeText(item?.text ?? item?.label)}|${normalizeText(item?.en ?? item?.answer)}`;
+  }
+  if (engine === "sort") return `${normalizeText(item?.label)}|${normalizeText(item?.category)}`;
+  if (["scramble", "anagram", "hangman", "wordsearch"].includes(engine)) {
+    return normalizeText(item?.answer ?? item?.a);
+  }
+  if (engine === "type") return `${normalizeText(item?.hint ?? item?.question)}|${normalizeText(item?.answer ?? item?.a)}`;
+  if (engine === "fillblank") return `${normalizeText(item?.text ?? item?.question)}|${normalizeText(item?.answer ?? item?.a)}`;
+  return `${normalizeText(item?.q ?? item?.question ?? item?.hint ?? item?.text)}|${normalizeText(item?.a ?? item?.answer ?? item?.correctAnswer)}`;
+}
+
+function uniqueContentItems(items, engine) {
+  const seen = new Set();
+  return (Array.isArray(items) ? items : []).filter((item) => {
+    if (!item || typeof item !== "object") return false;
+    const key = contentItemKey(item, engine);
+    if (!key || key === "{}" || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/** Returns the original content records for a game without changing its interaction model. */
+function letterSignature(value) {
+  return Array.from(String(value ?? "").normalize("NFKC").replace(/[\s\u00ad\u200b\u200c\u200d]/g, "")).sort().join("");
+}
+
+function deterministicScramble(value) {
+  const characters = Array.from(String(value ?? "").replace(/\s/g, ""));
+  let seed = Number.parseInt(hashValue(normalizeText(value)), 36) || 1;
+  for (let index = characters.length - 1; index > 0; index -= 1) {
+    seed = (seed * 9301 + 49297) % 233280;
+    const target = seed % (index + 1);
+    [characters[index], characters[target]] = [characters[target], characters[index]];
+  }
+  if (characters.join("") === String(value) && characters.length > 1) {
+    characters.push(characters.shift());
+  }
+  return characters.join("");
+}
+
+function prepareNativeItem(game, item) {
+  if (game.engine !== "scramble") return item;
+  const answer = asText(item.answer ?? item.a);
+  const hint = asText(item.hint ?? item.q ?? item.question ?? answer);
+  const cleaned = asText(item.scrambled).replace(/[\s\u00ad\u200b\u200c\u200d]/g, "");
+  const scrambled = letterSignature(cleaned) === letterSignature(answer)
+    ? cleaned
+    : deterministicScramble(answer);
+  return { ...item, answer, hint, scrambled };
+}
+
+export function getGameContentBank(game) {
+  if (!game) return [];
+  if (game.engine === "quiz") return getQuestionBank(game);
+  const field = contentField(game);
+  const source = Array.isArray(game[field]) ? game[field] : sourceItems(game);
+  const prepared = source.map((item) => prepareNativeItem(game, item));
+  const primary = uniqueContentItems(prepared, game.engine);
+  if (primary.length >= MINIMUM_BANK_SIZE) return primary.slice(0, MINIMUM_BANK_SIZE);
+  const fallback = getFallbackContentPool(game).map((item) => prepareNativeItem(game, item));
+  return uniqueContentItems([...primary, ...fallback], game.engine).slice(0, MINIMUM_BANK_SIZE);
+}
+
+function gameRoundSize(game, bankLength) {
+  if (!bankLength) return 0;
+  if (Number.isInteger(game?.roundSize) && game.roundSize > 0) return Math.min(game.roundSize, bankLength);
+  if (game?.engine === "wordsearch") return Math.min(6, bankLength);
+  if (game?.engine === "openbox") return Math.min(9, bankLength);
+  if (["match", "memory", "sort"].includes(game?.engine)) return Math.min(8, bankLength);
+  return Math.min(7, bankLength);
+}
+
+/**
+ * Selects a randomized round from the native game bank and keeps the original
+ * engine and record schema intact. Consumption is isolated by account and game.
+ */
+export function createGameRound(game, reason = "open", userId = "guest") {
+  const engine = game?.engine || "quiz";
+  const field = contentField(game);
+  const bank = getGameContentBank(game);
+  const targetCount = gameRoundSize(game, bank.length);
+  const fingerprint = hashValue(bank.map((item) => contentItemKey(item, engine)).join("||"));
   const key = storageKey(userId, game.id);
   const previous = readSnapshot(key);
   let cycleNumber = previous?.bankFingerprint === fingerprint ? (previous.cycleNumber || 1) : 1;
@@ -367,7 +489,7 @@ export function createQuestionRound(game, reason = "open", userId = "guest") {
     ? previous.usedQuestionIds
     : [];
 
-  let remaining = bank.filter((question) => !usedQuestionIds.includes(questionId(question)));
+  let remaining = bank.filter((item) => !usedQuestionIds.includes(hashValue(contentItemKey(item, engine))));
   if (!remaining.length && bank.length) {
     cycleNumber += 1;
     usedQuestionIds = [];
@@ -375,20 +497,21 @@ export function createQuestionRound(game, reason = "open", userId = "guest") {
   }
 
   const selected = shuffle(remaining).slice(0, targetCount);
-  const selectedIds = selected.map(questionId);
-  const randomizedGame = {
-    ...game,
-    engine: "quiz",
-    questions: selected.map(normalizeQuestion),
-  };
-  roundNumber += 1;
+  const selectedIds = selected.map((item) => hashValue(contentItemKey(item, engine)));
+  let roundGame = { ...game, [field]: selected };
+  if (engine === "quiz") {
+    roundGame = { ...game, engine: "quiz", questions: selected.map(normalizeQuestion) };
+  }
 
+  roundNumber += 1;
   const snapshot = {
     id: randomId(),
     gameId: game.id,
     userId: asText(userId) || "guest",
     reason,
     createdAt: new Date().toISOString(),
+    engine,
+    contentField: field,
     questionCount: bank.length,
     targetQuestionCount: targetCount,
     actualQuestionCount: selected.length,
@@ -396,11 +519,15 @@ export function createQuestionRound(game, reason = "open", userId = "guest") {
     cycleNumber,
     bankFingerprint: fingerprint,
     usedQuestionIds: [...usedQuestionIds, ...selectedIds],
-    game: randomizedGame,
+    game: roundGame,
     progress: { index: 0, answers: [] },
   };
   writeSnapshot(key, snapshot);
   return snapshot;
+}
+
+export function createQuestionRound(game, reason = "open", userId = "guest") {
+  return createGameRound(game, reason, userId);
 }
 
 export function saveQuestionRoundProgress(gameId, progress, userId = "guest") {

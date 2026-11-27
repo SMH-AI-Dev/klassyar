@@ -1,5 +1,5 @@
 import React from "react";
-import { fa, shuffle } from "@/lib/text";
+import { fa } from "@/lib/text";
 
 /**
  * @typedef {Object} Item
@@ -17,7 +17,7 @@ import { fa, shuffle } from "@/lib/text";
 /**
  * @typedef {Object} GameProps
  * @property {Item[]} items - The array of items/questions
- * @property {function(GameResult): void} onFinish - Callback when game finishes
+ * @property {function(GameResult): void} onComplete - Callback when game finishes
  */
 
 export const OPTION_STYLES = [

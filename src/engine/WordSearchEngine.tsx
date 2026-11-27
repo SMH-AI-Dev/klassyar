@@ -90,7 +90,7 @@ export default function WordSearchEngine({ game, roundId, onProgress, onComplete
       if (nf.length === placed.length && !finished.current) {
         finished.current = true;
         sfx.win();
-        setTimeout(() => onFinish({ score: placed.length, total: placed.length }), 1000);
+        setTimeout(() => onComplete({ score: placed.length, total: placed.length }), 1000);
       }
     } else {
       sfx.wrong();
