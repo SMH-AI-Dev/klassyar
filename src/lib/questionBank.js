@@ -163,6 +163,16 @@ function buildFourOptions(base, answerPool, game) {
     distractors.push(value);
     if (distractors.length === 3) break;
   }
+  for (let index = 1; distractors.length < 3; index += 1) {
+    const fallback = /^(eng-|English)/i.test(asText(game?.id) + " " + asText(game?.category))
+      ? `Alternative ${index}`
+      : `گزینهٔ جایگزین ${persian(index)}`;
+    const key = normalizeText(fallback);
+    if (!seen.has(key)) {
+      seen.add(key);
+      distractors.push(fallback);
+    }
+  }
   return shuffle([answer, ...distractors]);
 }
 
@@ -213,7 +223,10 @@ function makeUniqueQuestionBank(baseQuestions, game) {
     unique.push(item);
     return true;
   };
-  initial.forEach(add);
+  for (const item of initial) {
+    if (unique.length >= MINIMUM_BANK_SIZE) break;
+    add(item);
+  }
 
   if (unique.length < MINIMUM_BANK_SIZE && baseQuestions.length) {
     for (let round = 0; unique.length < MINIMUM_BANK_SIZE && round < MINIMUM_BANK_SIZE; round += 1) {
