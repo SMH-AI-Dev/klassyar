@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "title": "فهرست قالب‌های تعاملی Wordwall و تطبیق کلاس‌یار",
+  "researchedAt": "2026-11-27",
+  "source": "https://wordwall.net/price-plans",
+  "note": "این فایل شامل قالب‌های تعاملی است، نه فهرست میلیون‌ها فعالیت عمومی کاربران. فعالیت‌های عمومی Wordwall نباید بدون مجوز scrape یا بازنشر شوند.",
+  "interactiveTemplateCount": 34,
+  "templates": [
+    {
+      "id": "quiz",
+      "name": "Quiz",
+      "mechanic": "سؤال، گزینه‌ها و پاسخ صحیح",
+      "klassyarCreatePage": "CreateQuiz",
+      "klassyarPlayPage": "PlayQuiz",
+      "coverageStatus": "موجود",
+      "prerequisites": "بانک سؤال، ۲ تا ۶ گزینه، پاسخ صحیح و اعتبارسنجی گزینه‌های یکتا"
+    },
+    {
+      "id": "match-up",
+      "name": "Match up",
+      "mechanic": "جفت‌کردن دو ستون",
+      "klassyarCreatePage": "CreateMatching",
+      "klassyarPlayPage": "PlayMatching",
+      "coverageStatus": "موجود",
+      "prerequisites": "جفت‌های پایدار، موتور تطبیق و تشخیص پاسخ"
+    },
+    {
+      "id": "flash-cards",
+      "name": "Flash cards",
+      "mechanic": "کارت دوطرفه",
+      "klassyarCreatePage": "CreateFlashcard",
+      "klassyarPlayPage": "PlayFlashcard",
+      "coverageStatus": "موجود",
+      "prerequisites": "front/back، رسانه اختیاری و حالت مرور"
+    },
+    {
+      "id": "speaking-cards",
+      "name": "Speaking cards",
+      "mechanic": "کارت موضوع گفت‌وگو",
+      "klassyarCreatePage": "CreateRandom_cards",
+      "klassyarPlayPage": "PlayRandom_cards",
+      "coverageStatus": "نزدیک",
+      "prerequisites": "دسته کارت، ترتیب تصادفی، حالت بدون امتیاز و امکان ثبت پاسخ شفاهی"
+    },
+    {
+      "id": "spin-the-wheel",
+      "name": "Spin the wheel",
+      "mechanic": "گردونه انتخاب تصادفی",
+      "klassyarCreatePage": "CreateRandom_wheel",
+      "klassyarPlayPage": "PlayRandom_wheel",
+      "coverageStatus": "موجود",
+      "prerequisites": "فهرست موارد، RNG بدون سوگیری و حذف/بازگردانی مورد"
+    },
+    {
+      "id": "find-the-match",
+      "name": "Find the match",
+      "mechanic": "پیداکردن جفت و حذف آن",
+      "klassyarCreatePage": "CreateMatching",
+      "klassyarPlayPage": "PlayMatching",
+      "coverageStatus": "مشابه",
+      "prerequisites": "جفت‌ها، حذف موارد پیدا‌شده و جلوگیری از انتخاب تکراری"
+    },
+    {
+      "id": "complete-sentence",
+      "name": "Complete the sentence",
+      "mechanic": "تکمیل جای خالی",
+      "klassyarCreatePage": "CreateMissing_word",
+      "klassyarPlayPage": "PlayMissing_word",
+      "coverageStatus": "مشابه",
+      "prerequisites": "جمله، محل خالی، پاسخ و پاسخ‌های جایگزین"
+    },
+    {
+      "id": "anagram",
+      "name": "Anagram",
+      "mechanic": "مرتب‌سازی حروف",
+      "klassyarCreatePage": "CreateAnagram",
+      "klassyarPlayPage": "PlayAnagram",
+      "coverageStatus": "موجود",
+      "prerequisites": "واژه، سرنخ، tokenizer یونیکد و نرمال‌سازی RTL"
+    },
+    {
+      "id": "group-sort",
+      "name": "Group sort",
+      "mechanic": "دسته‌بندی آیتم‌ها",
+      "klassyarCreatePage": "CreateGroup_sort",
+      "klassyarPlayPage": "PlayGroup_sort",
+      "coverageStatus": "موجود",
+      "prerequisites": "گروه‌ها، آیتم‌ها، شناسه دسته و Drag & Drop"
+    },
+    {
+      "id": "unjumble",
+      "name": "Unjumble",
+      "mechanic": "مرتب‌سازی واژه‌ها/جمله",
+      "klassyarCreatePage": "CreateUnjumble",
+      "klassyarPlayPage": "PlayUnjumble",
+      "coverageStatus": "موجود",
+      "prerequisites": "جمله هدف، قطعات کلمه و ترتیب معتبر"
+    },
+    {
+      "id": "open-the-box",
+      "name": "Open the box",
+      "mechanic": "بازکردن جعبه و آشکارسازی محتوا",
+      "klassyarCreatePage": "CreateOpen_the_box",
+      "klassyarPlayPage": "PlayOpen_the_box",
+      "coverageStatus": "موجود",
+      "prerequisites": "جعبه، محتوا، وضعیت باز/بسته و رسانه اختیاری"
+    },
+    {
+      "id": "matching-pairs",
+      "name": "Matching pairs",
+      "mechanic": "حافظه و یافتن دو کارت همسان",
+      "klassyarCreatePage": "CreateMemory_game",
+      "klassyarPlayPage": "PlayMemory_game",
+      "coverageStatus": "موجود",
+      "prerequisites": "جفت با شناسه مشترک، کارت‌های مخلوط و قفل انتخاب هم‌زمان"
+    },
+    {
+      "id": "gameshow-quiz",
+      "name": "Gameshow quiz",
+      "mechanic": "آزمون رقابتی و امتیازدهی",
+      "klassyarCreatePage": "CreateGameshow_quiz",
+      "klassyarPlayPage": "PlayGameshow_quiz",
+      "coverageStatus": "موجود با آداپتر",
+      "prerequisites": "سؤال، گزینه‌ها، index پاسخ صحیح، تایمر و قواعد امتیاز"
+    },
+    {
+      "id": "type-the-answer",
+      "name": "Type the answer",
+      "mechanic": "ورود پاسخ متنی",
+      "klassyarCreatePage": "CreateType",
+      "klassyarPlayPage": "PlayType",
+      "coverageStatus": "موجود",
+      "prerequisites": "سرنخ، جواب‌های مجاز، نرمال‌سازی و پشتیبانی صفحه‌کلید"
+    },
+    {
+      "id": "flip-tiles",
+      "name": "Flip tiles",
+      "mechanic": "برگرداندن کاشی",
+      "klassyarCreatePage": "CreateFlip_tiles",
+      "klassyarPlayPage": "PlayFlip_tiles",
+      "coverageStatus": "موجود",
+      "prerequisites": "کاشی، روی/پشت، وضعیت flip و انیمیشن"
+    },
+    {
+      "id": "wordsearch",
+      "name": "Wordsearch",
+      "mechanic": "یافتن واژه در جدول",
+      "klassyarCreatePage": "CreateWordsearch",
+      "klassyarPlayPage": "PlayWordsearch",
+      "coverageStatus": "موجود",
+      "prerequisites": "واژه‌ها، جدول، جایگذاری و کنترل برخورد"
+    },
+    {
+      "id": "spell-the-word",
+      "name": "Spell the word",
+      "mechanic": "املای واژه از روی سرنخ/صدا",
+      "klassyarCreatePage": "CreateScramble",
+      "klassyarPlayPage": "PlayScramble",
+      "coverageStatus": "مشابه",
+      "prerequisites": "واژه هدف، صوت/تصویر، حروف و اعتبارسنجی املا"
+    },
+    {
+      "id": "hangman",
+      "name": "Hangman",
+      "mechanic": "حدس حرف با جان محدود",
+      "klassyarCreatePage": "CreateHangman",
+      "klassyarPlayPage": "PlayHangman",
+      "coverageStatus": "موجود با آداپتر",
+      "prerequisites": "واژه، سرنخ، جان و نمایش مرحله‌ای"
+    },
+    {
+      "id": "labelled-diagram",
+      "name": "Labelled diagram",
+      "mechanic": "اتصال برچسب به نقاط تصویر",
+      "klassyarCreatePage": "CreateLabelled_diagram",
+      "klassyarPlayPage": "PlayLabelled_diagram",
+      "coverageStatus": "موجود",
+      "prerequisites": "تصویر، مختصات hotspot، برچسب و لایه responsive"
+    },
+    {
+      "id": "crossword",
+      "name": "Crossword",
+      "mechanic": "جدول کلمات متقاطع",
+      "klassyarCreatePage": "CreateCrossword",
+      "klassyarPlayPage": "PlayCrossword",
+      "coverageStatus": "موجود",
+      "prerequisites": "سرنخ، جواب، مختصات خانه‌ها و اعتبارسنجی تقاطع"
+    },
+    {
+      "id": "maze-chase",
+      "name": "Maze chase",
+      "mechanic": "حرکت در مسیر و انتخاب پاسخ",
+      "klassyarCreatePage": "CreateMaze_chase",
+      "klassyarPlayPage": "PlayMaze_chase",
+      "coverageStatus": "موجود",
+      "prerequisites": "نقشه، مسیر، سؤال، برخورد و state machine"
+    },
+    {
+      "id": "flying-fruit",
+      "name": "Flying fruit",
+      "mechanic": "حرکت و برخورد با میوه هدف",
+      "klassyarCreatePage": "—",
+      "klassyarPlayPage": "—",
+      "coverageStatus": "نیازمند توسعه",
+      "prerequisites": "sprite، حرکت، collision detection، هدف و گزینه‌های انحرافی"
+    },
+    {
+      "id": "true-or-false",
+      "name": "True or false",
+      "mechanic": "تشخیص درست/غلط",
+      "klassyarCreatePage": "CreateTrue_false",
+      "klassyarPlayPage": "PlayTrue_false",
+      "coverageStatus": "موجود با آداپتر",
+      "prerequisites": "گزاره، truth value، توضیح و تبدیل statements به questions"
+    },
+    {
+      "id": "pair-or-no-pair",
+      "name": "Pair or No Pair",
+      "mechanic": "تشخیص مرتبط یا نامرتبط بودن دو مورد",
+      "klassyarCreatePage": "—",
+      "klassyarPlayPage": "—",
+      "coverageStatus": "نیازمند توسعه",
+      "prerequisites": "دو آیتم، رابطه boolean، بازخورد و امتیاز"
+    },
+    {
+      "id": "balloon-pop",
+      "name": "Balloon pop",
+      "mechanic": "ترکاندن گزینه صحیح",
+      "klassyarCreatePage": "CreateBalloon_pop",
+      "klassyarPlayPage": "PlayBalloon_pop",
+      "coverageStatus": "موجود",
+      "prerequisites": "گزینه‌ها، sprite، حرکت، collision و امتیاز"
+    },
+    {
+      "id": "whack-a-mole",
+      "name": "Whack-a-mole",
+      "mechanic": "زدن هدف صحیح",
+      "klassyarCreatePage": "CreateWhack_a_mole",
+      "klassyarPlayPage": "PlayWhack_a_mole",
+      "coverageStatus": "موجود",
+      "prerequisites": "هدف، گزینه‌های غلط، زمان ظهور و scoring"
+    },
+    {
+      "id": "airplane",
+      "name": "Airplane",
+      "mechanic": "هدایت به سمت جواب",
+      "klassyarCreatePage": "CreateAirplane",
+      "klassyarPlayPage": "PlayAirplane",
+      "coverageStatus": "موجود",
+      "prerequisites": "سؤال، مقصدها، کنترل حرکت و collision"
+    },
+    {
+      "id": "image-quiz",
+      "name": "Image quiz",
+      "mechanic": "سؤال تصویری",
+      "klassyarCreatePage": "CreateImage_quiz",
+      "klassyarPlayPage": "PlayImage_quiz",
+      "coverageStatus": "موجود",
+      "prerequisites": "تصویر، سؤال، گزینه و پاسخ"
+    },
+    {
+      "id": "rank-order",
+      "name": "Rank order",
+      "mechanic": "مرتب‌سازی موارد",
+      "klassyarCreatePage": "CreateRanking",
+      "klassyarPlayPage": "PlayRanking",
+      "coverageStatus": "موجود",
+      "prerequisites": "فهرست، ترتیب مرجع، drag/drop و محاسبه ترتیب"
+    },
+    {
+      "id": "speed-sorting",
+      "name": "Speed sorting",
+      "mechanic": "دسته‌بندی زمان‌دار",
+      "klassyarCreatePage": "CreateGroup_sort",
+      "klassyarPlayPage": "PlayGroup_sort",
+      "coverageStatus": "مشابه",
+      "prerequisites": "موتور دسته‌بندی، timer، سرعت، scoring و difficulty"
+    },
+    {
+      "id": "watch-and-memorize",
+      "name": "Watch and memorize",
+      "mechanic": "مشاهده و یادآوری توالی",
+      "klassyarCreatePage": "—",
+      "klassyarPlayPage": "—",
+      "coverageStatus": "نیازمند توسعه",
+      "prerequisites": "مرحله نمایش، زمان مشاهده، پنهان‌سازی و بازسازی توالی"
+    },
+    {
+      "id": "win-or-lose-quiz",
+      "name": "Win or lose quiz",
+      "mechanic": "آزمون با ریسک/پاداش",
+      "klassyarCreatePage": "CreateGameshow_quiz",
+      "klassyarPlayPage": "PlayGameshow_quiz",
+      "coverageStatus": "مشابه",
+      "prerequisites": "state machine ریسک، پاداش، امتیاز و دور ویژه"
+    },
+    {
+      "id": "maths-generator",
+      "name": "Maths generator",
+      "mechanic": "تولید پارامتریک سؤال ریاضی",
+      "klassyarCreatePage": "—",
+      "klassyarPlayPage": "—",
+      "coverageStatus": "نیازمند توسعه",
+      "prerequisites": "عملگر، بازه، seed، evaluator محاسباتی و کنترل overflow"
+    },
+    {
+      "id": "word-magnets",
+      "name": "Word magnets",
+      "mechanic": "ساخت جمله با قطعات کلمه",
+      "klassyarCreatePage": "CreateDrag_text",
+      "klassyarPlayPage": "PlayDrag_text",
+      "coverageStatus": "مشابه",
+      "prerequisites": "tokenizer، قطعات draggable، ترتیب جمله و RTL"
+    }
+  ]
+}

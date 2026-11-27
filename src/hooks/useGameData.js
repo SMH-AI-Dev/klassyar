@@ -5,6 +5,7 @@ import { toast } from "@/lib/sonner";
 import { useState } from "react";
 import { demoSamples } from "@/lib/demoData";
 import { classroom } from "@/lib/classroom";
+import { normalizeActivityForPlay } from "@/lib/activityRuntime";
 
 const SHUFFLE_FIELDS_BY_TYPE = {
   quiz: ["questions"],
@@ -12,9 +13,9 @@ const SHUFFLE_FIELDS_BY_TYPE = {
   matching: ["pairs"],
   memory_game: ["pairs"],
   group_sort: ["items"],
-  wordsearch: ["items"],
+  wordsearch: ["words"],
   random_wheel: ["items"],
-  true_false: ["items"],
+  true_false: ["questions"],
   unjumble: ["items", "sentences"],
   whack_a_mole: ["items"],
   fill_blank: ["questions"],
@@ -23,16 +24,16 @@ const SHUFFLE_FIELDS_BY_TYPE = {
   card_flip: ["cards", "items"],
   drag_text: ["items"],
   balloon_pop: ["items"],
-  missing_word: ["questions"],
-  anagram: ["items"],
-  random_cards: ["items"],
+  missing_word: ["sentences"],
+  anagram: ["items", "words"],
+  random_cards: ["cards"],
   airplane: ["questions"],
-  gameshow_quiz: ["questions"],
-  hangman: ["items"],
+  gameshow_quiz: ["items", "questions"],
+  hangman: ["items", "words"],
   image_quiz: ["questions"],
   labelled_diagram: ["labels"],
   maze_chase: ["questions"],
-  open_the_box: ["items"],
+  open_the_box: ["boxes"],
   flip_tiles: ["tiles"],
   match: ["pairs"],
   type: ["questions"],
@@ -52,7 +53,8 @@ function seededShuffle(items, seedText) {
 
 function prepareAssignedActivity(snapshot, assignment, studentId, attemptNumber) {
   if (!snapshot) return null;
-  const prepared = { ...snapshot, content: { ...(snapshot.content || {}) } };
+  const normalized = normalizeActivityForPlay(snapshot);
+  const prepared = { ...normalized, content: { ...(normalized.content || {}) } };
   if (assignment?.shuffleItems === false) return prepared;
   const fields = SHUFFLE_FIELDS_BY_TYPE[prepared.type] || [];
   const field = fields.find((name) => Array.isArray(prepared.content[name]) && prepared.content[name].length > 1);
@@ -127,7 +129,7 @@ export function useGameData() {
   };
 
   return {
-    activity: isDemo ? demoActivity : assignmentId ? assignedActivity : activity,
+    activity: normalizeActivityForPlay(isDemo ? demoActivity : assignmentId ? assignedActivity : activity),
     isLoading: isDemo || assignmentId ? false : isLoading,
     isDemo,
     type,

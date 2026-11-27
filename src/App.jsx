@@ -109,6 +109,7 @@ import EditWhack_a_mole from './pages/EditWhack_a_mole';
 import EditFill_blank from './pages/EditFill_blank';
 import EditRanking from './pages/EditRanking';
 import EditSpinner from './pages/EditSpinner';
+import EditGenericActivity from './pages/EditGenericActivity';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -323,7 +324,7 @@ function EditRouter() {
     spinner: EditSpinner,
   };
 
-  const Component = editComponents[type] || EditQuiz;
+  const Component = editComponents[type] || EditGenericActivity;
   return <Component />;
 }
 
