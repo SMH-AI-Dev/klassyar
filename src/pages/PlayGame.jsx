@@ -116,5 +116,5 @@ export default function PlayGame() {
     );
   }
 
-  return <GamePlayer game={mergedGame} />;
+  return <GamePlayer game={mergedGame} userId={user?.id || "guest"} />;
 }
