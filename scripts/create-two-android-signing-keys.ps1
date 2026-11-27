@@ -17,8 +17,12 @@ function New-SmhAndroidKey {
     $keyStore = Join-Path $signingDirectory "$AppName-release.jks"
     $base64File = Join-Path $signingDirectory "$AppName-keystore-base64.txt"
 
+    if ((Test-Path $keyStore) -and (Test-Path $base64File)) {
+        Write-Host "An existing complete signing identity was found for $AppName; leaving it unchanged." -ForegroundColor Yellow
+        return
+    }
     if ((Test-Path $keyStore) -or (Test-Path $base64File)) {
-        throw "A key or Base64 file already exists for $AppName. Refusing to overwrite an existing signing identity."
+        throw "A partial key pair exists for $AppName. Inspect it manually before continuing; the script will not overwrite it."
     }
 
     Write-Host ""
@@ -26,6 +30,7 @@ function New-SmhAndroidKey {
     Write-Host "Use a strong password. When keytool asks for the key password, you may press Enter to reuse the keystore password."
     & $keytool.Source -genkeypair -v -keystore $keyStore -alias $Alias -storetype JKS -keyalg RSA -keysize 4096 -validity 10000
     if ($LASTEXITCODE -ne 0 -or -not (Test-Path $keyStore)) {
+        if (Test-Path $keyStore) { Remove-Item -Force $keyStore }
         throw "keytool failed while creating the $AppName key."
     }
 
