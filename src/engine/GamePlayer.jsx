@@ -12,9 +12,10 @@ export default function GamePlayer({ game, userId = "guest" }) {
   const activeGameId = useRef(`${userId}:${game.id}`);
 
   useEffect(() => {
-    if (activeGameId.current !== game.id) {
-      activeGameId.current = game.id;
-      setRound(createQuestionRound(game, "open"));
+    const activeScope = `${userId}:${game.id}`;
+    if (activeGameId.current !== activeScope) {
+      activeGameId.current = activeScope;
+      setRound(createQuestionRound(game, "open", userId));
     }
     const handlePageShow = (event) => {
       if (event.persisted) setRound(createQuestionRound(game, "return", userId));
