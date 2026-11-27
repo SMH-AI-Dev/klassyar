@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,18 +13,21 @@ import { motion } from "framer-motion";
 
 export default function CreateGameshow_quiz() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activityType = searchParams.get("type") || "gameshow_quiz";
   const queryClient = useQueryClient();
   const [activity, setActivity] = useState({
     title: "",
     description: "",
-    type: "gameshow_quiz",
+    type: activityType,
     theme: "orange",
     content: {
       questions: [{
         question: "",
         options: ["", "", "", ""],
         correctAnswer: 0
-      }]
+      }],
+      riskMode: activityType === "win_or_lose_quiz"
     }
   });
 
