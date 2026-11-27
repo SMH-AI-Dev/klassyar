@@ -32,6 +32,8 @@ jobs:
         run: npx cap sync android
       - name: Prepare optional Cordova Gradle include
         run: node scripts/ensure-android-cordova-gradle.mjs
+      - name: Set Android version from release tag
+        run: node scripts/set-android-version.mjs
       - name: Validate Android signing secrets
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.KLASSYAR_ANDROID_KEYSTORE_BASE64 }}
