@@ -1,5 +1,4 @@
 import gameLibrary from "./gameLibrary.js";
-import englishGames from "./englishGames.js";
 
 function normalize(value) {
   return String(value ?? "")
@@ -101,33 +100,23 @@ function collectWordRecords(games, language) {
 }
 
 const persianGames = gameLibrary.filter((game) => !/^eng-/i.test(game.id));
-const englishOnlyGames = [...englishGames, ...gameLibrary.filter((game) => /^eng-/i.test(game.id))];
 
 const PERSIAN_QUESTION_POOL = collectQuestionRecords(persianGames)
   .filter((item) => /[\u0600-\u06FF]/.test(item.q + item.a));
-const ENGLISH_QUESTION_POOL = collectQuestionRecords(englishOnlyGames)
-  .filter((item) => /[A-Za-z]/.test(item.q + item.a));
 const PERSIAN_WORD_POOL = collectWordRecords(persianGames, "fa");
-const ENGLISH_WORD_POOL = collectWordRecords(englishOnlyGames, "en");
 
 /**
- * Generic legacy mini-games have small starter sets. This supplies them with
- * original, deduplicated content records from the matching language catalogue.
- * It does not change their engine or convert their interaction into a quiz.
+ * Supplies legacy school mini-games with original Persian records.
+ * Each game keeps its own engine and interaction model.
  */
 export function getFallbackContentPool(game) {
-  const isEnglish = /^eng-/i.test(String(game?.id || ""));
-  const questionPool = isEnglish ? ENGLISH_QUESTION_POOL : PERSIAN_QUESTION_POOL;
-  const wordPool = isEnglish ? ENGLISH_WORD_POOL : PERSIAN_WORD_POOL;
-  if (["scramble", "anagram", "hangman", "wordsearch"].includes(game?.engine)) return wordPool;
-  return questionPool;
+  if (["scramble", "anagram", "hangman", "wordsearch"].includes(game?.engine)) return PERSIAN_WORD_POOL;
+  return PERSIAN_QUESTION_POOL;
 }
 
 export function getFallbackContentPoolStats() {
   return {
     faQuestions: PERSIAN_QUESTION_POOL.length,
-    enQuestions: ENGLISH_QUESTION_POOL.length,
     faWords: PERSIAN_WORD_POOL.length,
-    enWords: ENGLISH_WORD_POOL.length,
   };
 }
