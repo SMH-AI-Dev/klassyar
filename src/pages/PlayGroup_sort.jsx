@@ -17,6 +17,8 @@ export default function PlayGroup_sort() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [userAssignments, setUserAssignments] = useState({});
   const [isComplete, setIsComplete] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeExpired, setTimeExpired] = useState(false);
 
   useEffect(() => {
     if (activity?.content?.items) {
@@ -24,34 +26,45 @@ export default function PlayGroup_sort() {
     }
   }, [activity]);
 
+  useEffect(() => {
+    if (activity?.type !== "speed_sorting" || isComplete) return;
+    setTimeLeft(activity.content.timeLimit || 60);
+    const timer = setInterval(() => {
+      setTimeLeft((remaining) => {
+        if (remaining <= 1) {
+          clearInterval(timer);
+          setTimeExpired(true);
+          setIsComplete(true);
+          return 0;
+        }
+        return remaining - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [activity?.id, activity?.type, activity?.content?.timeLimit, isComplete]);
+
   const handleItemClick = (itemIndex) => {
     if (selectedGroup !== null && !userAssignments[itemIndex]) {
-      setUserAssignments({...userAssignments, [itemIndex]: selectedGroup});
-      
-      const allAssigned = Object.keys(userAssignments).length + 1 === items.length;
-      if (allAssigned) {
-        setTimeout(() => checkAnswers(), 500);
-      }
+      const nextAssignments = { ...userAssignments, [itemIndex]: selectedGroup };
+      setUserAssignments(nextAssignments);
+      const allAssigned = Object.keys(nextAssignments).length === items.length;
+      if (allAssigned) setTimeout(() => checkAnswers(nextAssignments), 300);
     }
   };
 
-  const checkAnswers = () => {
-    let correct = 0;
-    items.forEach((item, index) => {
-      if (userAssignments[index] === item.group) correct++;
-    });
-    
-    if (correct === items.length) {
-      setIsComplete(true);
-    }
+  const checkAnswers = (assignments = userAssignments) => {
+    const correct = items.filter((item, index) => assignments[index] === item.group).length;
+    if (correct === items.length || activity?.type === "speed_sorting") setIsComplete(true);
   };
+
+  const correctCount = items.filter((item, index) => userAssignments[index] === item.group).length;
 
   const resetGame = () => {
     if (activity?.content?.items) {
       setItems([...activity.content.items].sort(() => Math.random() - 0.5));
       setSelectedGroup(null);
       setUserAssignments({});
-      setIsComplete(false);
+      setIsComplete(false); setTimeExpired(false); setTimeLeft(activity?.content?.timeLimit || 60);
     }
   };
 
@@ -77,7 +90,7 @@ export default function PlayGroup_sort() {
   if (isComplete) {
     return (
       <div className="min-h-screen p-8 bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 flex items-center justify-center">
-        <ActivityResultReporter activity={activity} score={items.length} total={items.length} />
+        <ActivityResultReporter activity={activity} score={correctCount} total={items.length} />
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -85,8 +98,8 @@ export default function PlayGroup_sort() {
         >
           <Card className="clay-element bg-white border-0 p-12 text-center">
             <Trophy className="w-24 h-24 text-yellow-500 mx-auto mb-6" />
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">عالی! 🎉</h2>
-            <p className="text-xl text-gray-600 mb-8">همه موارد را درست دسته‌بندی کردید!</p>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">{correctCount === items.length ? "عالی! 🎉" : timeExpired ? "زمان تمام شد ⏱️" : "پایان بازی"}</h2>
+            <p className="text-xl text-gray-600 mb-8">{correctCount} از {items.length} مورد را درست دسته‌بندی کردید.</p>
             <div className="flex gap-3">
               <Button
                 onClick={resetGame}
