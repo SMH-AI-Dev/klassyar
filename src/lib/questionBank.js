@@ -441,12 +441,13 @@ function deterministicScramble(value) {
 
 function prepareNativeItem(game, item) {
   if (game.engine !== "scramble") return item;
-  const answer = asText(item.answer);
+  const answer = asText(item.answer ?? item.a);
+  const hint = asText(item.hint ?? item.q ?? item.question ?? answer);
   const cleaned = asText(item.scrambled).replace(/[\s\u00ad\u200b\u200c\u200d]/g, "");
   const scrambled = letterSignature(cleaned) === letterSignature(answer)
     ? cleaned
     : deterministicScramble(answer);
-  return { ...item, scrambled };
+  return { ...item, answer, hint, scrambled };
 }
 
 export function getGameContentBank(game) {
