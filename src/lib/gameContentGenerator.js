@@ -200,6 +200,29 @@ function withBank(game, bank) {
   };
 }
 
+function validEngineItem(engine, item) {
+  if (!item || typeof item !== "object") return false;
+  if (engine === "quiz") {
+    return Boolean(item.question && Array.isArray(item.options) && item.options.length >= 2 &&
+      Number.isInteger(item.correctIndex) && item.correctIndex >= 0 && item.correctIndex < item.options.length);
+  }
+  if (engine === "match" || engine === "memory") {
+    return Boolean(item.id && (item.text || item.label || item.en) && (item.en || item.answer || item.text));
+  }
+  if (engine === "sort") return Boolean(item.id && item.label && item.category);
+  if (engine === "scramble" || engine === "anagram" || engine === "hangman" || engine === "wordsearch") {
+    return Boolean(item.scrambled || item.answer || item.a);
+  }
+  if (engine === "type") return Boolean(item.hint && item.answer);
+  if (engine === "fillblank") return Boolean((item.text || item.question) && (item.answer || item.a));
+  return true;
+}
+
+function sortCategories(items) {
+  const names = [...new Set(items.map((item) => item.category).filter(Boolean))];
+  return names.map((name) => ({ name, items: [] }));
+}
+
 function sequenceCards(cards, target = MINIMUM_QUESTION_COUNT) {
   if (!cards.length) return [];
   const width = cards.length < 8 ? 4 : 3;
