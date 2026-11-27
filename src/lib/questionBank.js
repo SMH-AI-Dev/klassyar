@@ -45,6 +45,37 @@ function hashValue(value) {
   return (hash >>> 0).toString(36);
 }
 
+function numericQuestion(operator, left, right, answer) {
+  const values = [...new Set([answer, ...[-2, -1, 1, 2, 3, -3].map((offset) => Math.max(0, answer + offset))])];
+  const options = shuffle(values.slice(0, 4));
+  return {
+    question: `${persian(left)} ${operator} ${persian(right)} = ؟`,
+    options: options.map(persian),
+    correctIndex: options.indexOf(answer),
+  };
+}
+
+function generatedMathBank(id) {
+  const bank = [];
+  if (id === "math-add-basic") {
+    for (let a = 1; a <= 20; a += 1) for (let b = 1; b <= 20; b += 1) bank.push(numericQuestion("+", a, b, a + b));
+  }
+  if (id === "math-sub-basic") {
+    for (let a = 11; a <= 30; a += 1) for (let b = 1; b <= 20; b += 1) bank.push(numericQuestion("−", a, b, a - b));
+  }
+  if (id === "math-mult-easy") {
+    for (let a = 1; a <= 20; a += 1) for (let b = 1; b <= 20; b += 1) bank.push(numericQuestion("×", a, b, a * b));
+  }
+  if (id === "math-division") {
+    for (let divisor = 1; divisor <= 20; divisor += 1) {
+      for (let quotient = 1; quotient <= 20; quotient += 1) {
+        bank.push(numericQuestion("÷", divisor * quotient, divisor, quotient));
+      }
+    }
+  }
+  return bank;
+}
+
 function sourceItems(game) {
   const sources = [game?.questionBank, game?.questions, game?.words, game?.cards, game?.items];
   return sources.find((items) => Array.isArray(items) && items.length) || [];
