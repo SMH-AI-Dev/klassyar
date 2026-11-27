@@ -54,12 +54,26 @@ function normalizeActivityForPlay(activity) {
   if (!activity?.content || typeof activity.content !== "object") return activity;
   const content = { ...activity.content };
 
-  if (activity.type === "group_sort" && !Array.isArray(content.items)) {
-    content.items = (content.groups || []).flatMap((group) =>
-      (group.items || []).map((item) => typeof item === "string"
-        ? { text: item, group: group.name, icon: group.icon || "📁" }
-        : { ...item, text: item.text || item.label || item.item || "", group: group.name, icon: item.icon || group.icon || "📁" })
-    );
+  if (activity.type === "group_sort") {
+    const groups = content.groups || [];
+    if (!Array.isArray(content.items) || !content.items.length) {
+      const allItems = content.all_items?.length
+        ? content.all_items
+        : groups.flatMap((group) => group.items || []);
+      content.items = allItems.map((item) => {
+        const owner = groups.find((group) => (group.items || []).some((groupItem) =>
+          (typeof groupItem === "string" ? groupItem : groupItem.text || groupItem.label) ===
+          (typeof item === "string" ? item : item.text || item.label)
+        ));
+        return typeof item === "string"
+          ? { text: item, group: owner?.name || "", icon: owner?.icon || "📁" }
+          : { ...item, text: item.text || item.label || item.item || "", group: item.group || owner?.name || "", icon: item.icon || owner?.icon || "📁" };
+      }).filter((item) => item.text && item.group);
+    } else {
+      content.items = content.items.map((item) => typeof item === "string"
+        ? { text: item, group: groups.find((group) => (group.items || []).includes(item))?.name || "" }
+        : item);
+    }
   }
 
   if (activity.type === "gameshow_quiz" && !Array.isArray(content.items)) {
