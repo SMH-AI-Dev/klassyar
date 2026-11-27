@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import gameLibrary from "@/lib/gameLibrary";
+import { localData } from "@/api/localDataClient";
 import {
   classroom, decryptReport, downloadJson, encryptReport, readJsonFile, reportRatingLabels,
 } from "@/lib/classroom";
@@ -112,6 +113,13 @@ function TeacherClasses({ user }) {
   const [cycleName, setCycleName] = useState("");
   const [studentIds, setStudentIds] = useState([]);
   const [assignmentTitle, setAssignmentTitle] = useState("");
+  const [savedActivities, setSavedActivities] = useState([]);
+  const [selectedActivityId, setSelectedActivityId] = useState("");
+  const [assignmentDeadline, setAssignmentDeadline] = useState("");
+  const [assignmentMaxAttempts, setAssignmentMaxAttempts] = useState("1");
+  const [assignmentShowScore, setAssignmentShowScore] = useState(true);
+  const [assignmentShowAnswers, setAssignmentShowAnswers] = useState(false);
+  const [assignmentShuffleItems, setAssignmentShuffleItems] = useState(true);
   const [gameId, setGameId] = useState("");
   const [questionPrompt, setQuestionPrompt] = useState("");
   const [questionOptions, setQuestionOptions] = useState(["", "", "", ""]);
@@ -142,6 +150,13 @@ function TeacherClasses({ user }) {
   const reportFile = useRef();
   const showError = (reason) => { setMessage(reason); setError(true); };
   const showMessage = (text) => { setMessage(text); setError(false); };
+  useEffect(() => {
+    let active = true;
+    localData.entities.Activity.list()
+      .then((activities) => { if (active) setSavedActivities(Array.isArray(activities) ? activities : []); })
+      .catch(() => { if (active) setSavedActivities([]); });
+    return () => { active = false; };
+  }, [user?.id]);
   useEffect(() => {
     if (!state.teacher && user?.firstName && user?.lastName) {
       try {
@@ -251,19 +266,40 @@ function TeacherClasses({ user }) {
     try { const cycle = classroom.addCycle(currentClass.id, cycleName, user?.id); setCycleName(""); setCycleId(cycle.id); refresh(currentClass.id); showMessage("دورهٔ تازه آغاز شد؛ دورهٔ قبلی در تاریخچه باقی ماند."); }
     catch (reason) { showError(reason.message); }
   };
+  const selectedActivity = savedActivities.find((activity) => activity.id === selectedActivityId) || null;
   const addAssignment = () => {
     try {
       const questions = questionPrompt.trim() ? [{
         prompt: questionPrompt.trim(), options: questionOptions.map((option) => option.trim()),
         correctIndex: Number(correctIndex), feedback: questionFeedback.trim(),
       }] : [];
+      const activitySnapshot = selectedActivity ? {
+        id: selectedActivity.id,
+        title: selectedActivity.title,
+        type: selectedActivity.type,
+        description: selectedActivity.description || "",
+        content: selectedActivity.content,
+        theme: selectedActivity.theme || "lavender",
+        options: selectedActivity.options || {},
+      } : null;
       classroom.addAssignment(currentClass.id, {
-        title: assignmentTitle, gameId, gameTitle: selectedGame?.title || "",
-        studentIds, questions,
+        title: assignmentTitle.trim() || activitySnapshot?.title || selectedGame?.title || "تکلیف جدید",
+        gameId: activitySnapshot ? "" : gameId,
+        gameTitle: selectedGame?.title || activitySnapshot?.title || "",
+        activitySnapshot,
+        studentIds,
+        questions,
+        deadline: assignmentDeadline || null,
+        maxAttempts: Number(assignmentMaxAttempts),
+        showScore: assignmentShowScore,
+        showAnswers: assignmentShowAnswers,
+        shuffleItems: assignmentShuffleItems,
       }, user?.id);
       setAssignmentTitle(""); setQuestionPrompt(""); setQuestionOptions(["", "", "", ""]);
       setCorrectIndex(0); setQuestionFeedback(""); setStudentIds([]); setGameId("");
-      refresh(currentClass.id); showMessage("تکلیف بازی/سوال چندگزینه‌ای به دانش‌آموزان انتخاب‌شده تخصیص یافت.");
+      setSelectedActivityId(""); setAssignmentDeadline(""); setAssignmentMaxAttempts("1");
+      setAssignmentShowScore(true); setAssignmentShowAnswers(false); setAssignmentShuffleItems(true);
+      refresh(currentClass.id); showMessage("تکلیف به دانش‌آموزان انتخاب‌شده تخصیص یافت.");
     } catch (reason) { showError(reason.message); }
   };
   const teacherGame = teacherQuestionGameId ? gameLibrary.find((game) => game.id === teacherQuestionGameId) || null : null;
@@ -369,7 +405,7 @@ function TeacherClasses({ user }) {
               }) : <p className="text-slate-500">هنوز دانش‌آموزی ثبت نشده است.</p>}
               <Link to="/TeacherReports" className="inline-block text-violet-700 underline">گزارش‌ها و تاریخچهٔ کامل دوره‌ها</Link>
             </CardContent></Card>
-            <Card className="border-0 shadow-lg"><CardHeader><CardTitle>تکلیف هدفمند و سوال چندگزینه‌ای</CardTitle></CardHeader><CardContent className="space-y-3"><Input value={assignmentTitle} onChange={(event) => setAssignmentTitle(event.target.value)} placeholder="عنوان تکلیف" /><select className="w-full rounded-xl border p-2" value={gameId} onChange={(event) => setGameId(event.target.value)}><option value="">بدون بازی (سوال سفارشی)</option>{gameLibrary.map((game) => <option key={game.id} value={game.id}>{game.title}</option>)}</select><Input value={questionPrompt} onChange={(event) => setQuestionPrompt(event.target.value)} placeholder="متن سوال سفارشی (اختیاری)" /><div className="grid sm:grid-cols-2 gap-2">{questionOptions.map((option, index) => <div key={index} className="flex items-center gap-2"><input aria-label={`گزینه ${index + 1} پاسخ درست`} type="radio" name="correct-option" checked={Number(correctIndex) === index} onChange={() => setCorrectIndex(index)} /><Input value={option} onChange={(event) => setQuestionOptions((options) => options.map((value, optionIndex) => optionIndex === index ? event.target.value : value))} placeholder={`گزینهٔ ${index + 1}`} /></div>)}</div><p className="text-xs text-slate-500">دکمهٔ کنار گزینه، پاسخ درست را تعیین می‌کند؛ دانش‌آموز گزینه را انتخاب می‌کند و بازخورد را می‌بیند.</p><Input value={questionFeedback} onChange={(event) => setQuestionFeedback(event.target.value)} placeholder="بازخورد پاسخ (مثلاً نکتهٔ آموزشی)" /><div className="flex flex-wrap gap-3">{currentClass.students.map((student) => <label key={student.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={studentIds.includes(student.id)} onChange={(event) => setStudentIds((ids) => event.target.checked ? [...ids, student.id] : ids.filter((id) => id !== student.id))} />{student.name}</label>)}</div><Button onClick={addAssignment} disabled={!currentClass.students.length}>تخصیص تکلیف به افراد انتخاب‌شده</Button><ul className="list-disc pr-5 text-sm text-slate-600">{currentClass.assignments.map((item) => <li key={item.id}>{item.title} · {item.studentIds.length} دانش‌آموز</li>)}</ul></CardContent></Card>
+            <Card className="border-0 shadow-lg"><CardHeader><CardTitle>تخصیص فعالیت، بازی یا سؤال به دانش‌آموزان</CardTitle></CardHeader><CardContent className="space-y-3"><Input value={assignmentTitle} onChange={(event) => setAssignmentTitle(event.target.value)} placeholder="عنوان تکلیف (اختیاری؛ پیش‌فرض عنوان فعالیت)" /><select className="w-full rounded-xl border p-2" value={selectedActivityId} onChange={(event) => setSelectedActivityId(event.target.value)}><option value="">انتخاب فعالیت ساخته‌شده (اختیاری)</option>{savedActivities.map((activity) => <option key={activity.id} value={activity.id}>{activity.title} · {activity.type}</option>)}</select><select className="w-full rounded-xl border p-2" value={gameId} onChange={(event) => setGameId(event.target.value)}><option value="">بدون بازی آماده (سؤال سفارشی یا فعالیت بالا)</option>{gameLibrary.map((game) => <option key={game.id} value={game.id}>{game.title}</option>)}</select><Input type="datetime-local" value={assignmentDeadline} onChange={(event) => setAssignmentDeadline(event.target.value)} aria-label="مهلت تکلیف" /><div className="grid sm:grid-cols-2 gap-2"><label className="text-sm flex items-center gap-2">تعداد دفعات مجاز<select className="rounded-lg border p-2" value={assignmentMaxAttempts} onChange={(event) => setAssignmentMaxAttempts(event.target.value)}>{[1,2,3,5,10].map((n) => <option key={n} value={n}>{n}</option>)}</select></label><label className="text-sm flex items-center gap-2"><input type="checkbox" checked={assignmentShowScore} onChange={(event) => setAssignmentShowScore(event.target.checked)} />نمایش امتیاز به دانش‌آموز</label><label className="text-sm flex items-center gap-2"><input type="checkbox" checked={assignmentShowAnswers} onChange={(event) => setAssignmentShowAnswers(event.target.checked)} />نمایش پاسخ صحیح در پایان</label><label className="text-sm flex items-center gap-2"><input type="checkbox" checked={assignmentShuffleItems} onChange={(event) => setAssignmentShuffleItems(event.target.checked)} />ترتیب تصادفی آیتم‌ها</label></div><Input value={questionPrompt} onChange={(event) => setQuestionPrompt(event.target.value)} placeholder="متن سؤال سفارشی (اختیاری)" /><div className="grid sm:grid-cols-2 gap-2">{questionOptions.map((option, index) => <div key={index} className="flex items-center gap-2"><input aria-label={`گزینه ${index + 1} پاسخ درست`} type="radio" name="correct-option" checked={Number(correctIndex) === index} onChange={() => setCorrectIndex(index)} /><Input value={option} onChange={(event) => setQuestionOptions((options) => options.map((value, optionIndex) => optionIndex === index ? event.target.value : value))} placeholder={`گزینهٔ ${index + 1}`} /></div>)}</div><p className="text-xs text-slate-500">دکمهٔ کنار گزینه، پاسخ درست را تعیین می‌کند؛ دانش‌آموز گزینه را انتخاب می‌کند و بازخورد را می‌بیند.</p><Input value={questionFeedback} onChange={(event) => setQuestionFeedback(event.target.value)} placeholder="بازخورد پاسخ (مثلاً نکتهٔ آموزشی)" /><div className="flex flex-wrap gap-3">{currentClass.students.map((student) => <label key={student.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={studentIds.includes(student.id)} onChange={(event) => setStudentIds((ids) => event.target.checked ? [...ids, student.id] : ids.filter((id) => id !== student.id))} />{student.name}</label>)}</div><Button onClick={addAssignment} disabled={!currentClass.students.length}>تخصیص تکلیف به افراد انتخاب‌شده</Button><ul className="list-disc pr-5 text-sm text-slate-600">{currentClass.assignments.map((item) => <li key={item.id}>{item.title} · {item.studentIds.length} دانش‌آموز</li>)}</ul></CardContent></Card>
           </>}
           <Card className="border-0 shadow-lg"><CardHeader><CardTitle>سوال ساخت‌شدهٔ معلم برای بازی‌ها</CardTitle></CardHeader><CardContent className="space-y-4"><select className="w-full rounded-xl border p-2" value={teacherQuestionGameId} onChange={(event) => { const nextGame = gameLibrary.find((game) => game.id === event.target.value); setTeacherQuestionGameId(event.target.value); setTeacherQuestionEngine(nextGame?.engine || "quiz"); }}><option value="">انتخاب بازی</option>{gameLibrary.map((game) => <option key={game.id} value={game.id}>{game.title}</option>)}</select>{teacherGame && <div className="space-y-3"><div className="flex gap-4 text-sm"><label className="flex items-center gap-2"><input type="radio" name="teacher-question-scope" checked={teacherQuestionScope === "all"} onChange={() => setTeacherQuestionScope("all")} />برای همه</label><label className="flex items-center gap-2"><input type="radio" name="teacher-question-scope" checked={teacherQuestionScope === "selected"} onChange={() => setTeacherQuestionScope("selected")} />فقط برای انتخاب‌شده‌ها</label></div>{teacherQuestionScope === "selected" && <div className="flex flex-wrap gap-3">{currentClass.students.map((student) => <label key={student.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={teacherQuestionStudentIds.includes(student.id)} onChange={(event) => setTeacherQuestionStudentIds((ids) => event.target.checked ? [...ids, student.id] : ids.filter((id) => id !== student.id))} />{student.name}</label>)}</div>}{teacherGame.engine === "quiz" && <div className="space-y-2"><Input value={teacherQuestionPrompt} onChange={(event) => setTeacherQuestionPrompt(event.target.value)} placeholder="متن سؤال" /><div className="grid sm:grid-cols-2 gap-2">{teacherQuestionOptions.map((option, index) => <div key={index} className="flex items-center gap-2"><input aria-label={`گزینهٔ ${index + 1} سؤال معلم`} type="radio" name="teacher-correct-option" checked={Number(teacherQuestionCorrectIndex) === index} onChange={() => setTeacherQuestionCorrectIndex(index)} /><Input value={option} onChange={(event) => setTeacherQuestionOptions((options) => options.map((value, optionIndex) => optionIndex === index ? event.target.value : value))} placeholder={`گزینهٔ ${index + 1}`} /></div>)}</div></div>}{teacherGame.engine === "match" || teacherGame.engine === "memory" ? <div className="grid sm:grid-cols-2 gap-2"><Input value={teacherQuestionPrompt} onChange={(event) => setTeacherQuestionPrompt(event.target.value)} placeholder="متن کارت" /><Input value={teacherQuestionEmoji} onChange={(event) => setTeacherQuestionEmoji(event.target.value)} placeholder="اموجی اختیاری" /></div> : null}{teacherGame.engine === "sort" && <div className="grid sm:grid-cols-2 gap-2"><Input value={teacherQuestionLabel} onChange={(event) => setTeacherQuestionLabel(event.target.value)} placeholder="عنوان گزینهٔ مرتب‌سازی" /><Input value={teacherQuestionCategory} onChange={(event) => setTeacherQuestionCategory(event.target.value)} placeholder="نام دسته" /></div>}{(teacherGame.engine === "scramble" || teacherGame.engine === "type" || teacherGame.engine === "fillblank") && <div className="grid sm:grid-cols-2 gap-2"><Input value={teacherQuestionAnswer} onChange={(event) => setTeacherQuestionAnswer(event.target.value)} placeholder={teacherGame.engine === "scramble" ? "پاسخ کلمه" : "پاسخ درست"} /><Input value={teacherQuestionHint} onChange={(event) => setTeacherQuestionHint(event.target.value)} placeholder="راهنما یا نکته" /><Input value={teacherQuestionPrompt} onChange={(event) => setTeacherQuestionPrompt(event.target.value)} placeholder={teacherGame.engine === "fillblank" ? "متن جمله با جای خالی" : "حروف درهم‌ریخته (اختیاری)"} /></div>}</div>}{currentClass.teacherQuestions?.length > 0 && <ul className="space-y-2 text-sm text-slate-700">{currentClass.teacherQuestions.filter((item) => !teacherQuestionGameId || item.gameId === teacherQuestionGameId).slice(0, 6).map((item) => <li key={item.id} className="rounded-lg bg-slate-50 p-2">{item.gameTitle} · {item.scope === "all" ? "برای همه" : `برای ${item.studentIds.length} دانش‌آموز`} · {item.engine === "quiz" ? item.question.question : item.engine === "sort" ? `${item.question.label} → ${item.question.category}` : item.question.text || item.question.answer || item.question.label || item.question.question}</li>)}</ul>}</CardContent></Card>
         </div>
