@@ -13,6 +13,7 @@ const COLORS = [
   "from-purple-400 to-purple-500", "from-yellow-400 to-yellow-500", "from-pink-400 to-pink-500",
   "from-orange-400 to-orange-500", "from-teal-400 to-teal-500", "from-cyan-400 to-cyan-500",
 ];
+const FRUITS = ["🍎", "🍊", "🍇", "🍉", "🍓", "🍌", "🍍", "🥝"];
 
 export default function PlayBalloon_pop() {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ export default function PlayBalloon_pop() {
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
                 <Trophy className="w-20 h-20 text-violet-500 mx-auto mb-6" />
               </motion.div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">همه بادکنک‌ها ترکید! 🎉</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">{activity.type === "flying_fruit" ? "همه میوه‌ها جمع شدند! 🍉" : "همه بادکنک‌ها ترکید! 🎉"}</h2>
               <div className="bg-white/80 rounded-2xl p-6 mb-6 clay-element">
                 <p className="text-5xl font-bold text-violet-600">{score}/{activity.content.items.length}</p>
                 <p className="text-2xl font-bold text-violet-500 mt-2">{pct}%</p>
@@ -106,7 +107,7 @@ export default function PlayBalloon_pop() {
             </Button>
           )}
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800">{activity.title} 🎈</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{activity.title} {activity.type === "flying_fruit" ? "🍎" : "🎈"}</h1>
             <p className="text-gray-600">سوال {qIdx + 1} از {activity.content.items.length}</p>
           </div>
           <div className="bg-white clay-element rounded-xl px-4 py-2 text-xl font-bold text-violet-600">{score}/{progress}</div>
@@ -131,10 +132,10 @@ export default function PlayBalloon_pop() {
                 <motion.button key={idx} onClick={() => handlePop(opt, idx)} disabled={popped !== null}
                   initial={{ y: 50, opacity: 0 }} animate={{ y: isPopped ? -200 : 0, opacity: isPopped ? 0 : 1, scale: isWrong ? [1, 1.2, 0.8, 1] : 1 }}
                   transition={{ delay: idx * 0.1, duration: isWrong ? 0.3 : 0.4 }}
-                  className={`relative p-6 md:p-8 rounded-full clay-element text-center font-bold text-white text-lg md:text-xl shadow-lg ${
+                  className={`relative p-6 md:p-8 ${activity.type === "flying_fruit" ? "rounded-2xl" : "rounded-full"} clay-element text-center font-bold text-white text-lg md:text-xl shadow-lg ${
                     isWrong ? 'bg-red-500' : `bg-gradient-to-br ${COLORS[idx % COLORS.length]}`
                   } ${isPopped ? 'pointer-events-none' : 'hover:scale-105'}`}>
-                  <span className={`block ${isPopped ? 'opacity-0' : ''}`}>{opt}</span>
+                  <span className={`block ${isPopped ? 'opacity-0' : ''}`}>{activity.type === "flying_fruit" ? `${FRUITS[idx % FRUITS.length]} ` : ""}{opt}</span>
                   <motion.span className="absolute inset-0 flex items-center justify-center text-5xl"
                     initial={{ scale: 0 }} animate={{ scale: isPopped ? 1 : 0 }}>💥</motion.span>
                 </motion.button>
