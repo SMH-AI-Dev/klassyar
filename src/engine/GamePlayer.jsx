@@ -56,7 +56,7 @@ export default function GamePlayer({ game, userId = "guest" }) {
     typing: TypingEngine,
   };
 
-  const Engine = engines[game.engine];
+  const Engine = engines[round.game.engine];
   if (!Engine) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
