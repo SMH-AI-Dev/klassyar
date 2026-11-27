@@ -117,8 +117,6 @@ function TeacherClasses({ user }) {
   const [selectedActivityId, setSelectedActivityId] = useState("");
   const [assignmentDeadline, setAssignmentDeadline] = useState("");
   const [assignmentMaxAttempts, setAssignmentMaxAttempts] = useState("1");
-  const [assignmentShowScore, setAssignmentShowScore] = useState(true);
-  const [assignmentShowAnswers, setAssignmentShowAnswers] = useState(false);
   const [assignmentShuffleItems, setAssignmentShuffleItems] = useState(true);
   const [gameId, setGameId] = useState("");
   const [questionPrompt, setQuestionPrompt] = useState("");
@@ -291,14 +289,12 @@ function TeacherClasses({ user }) {
         questions,
         deadline: assignmentDeadline || null,
         maxAttempts: Number(assignmentMaxAttempts),
-        showScore: assignmentShowScore,
-        showAnswers: assignmentShowAnswers,
         shuffleItems: assignmentShuffleItems,
       }, user?.id);
       setAssignmentTitle(""); setQuestionPrompt(""); setQuestionOptions(["", "", "", ""]);
       setCorrectIndex(0); setQuestionFeedback(""); setStudentIds([]); setGameId("");
       setSelectedActivityId(""); setAssignmentDeadline(""); setAssignmentMaxAttempts("1");
-      setAssignmentShowScore(true); setAssignmentShowAnswers(false); setAssignmentShuffleItems(true);
+      setAssignmentShuffleItems(true);
       refresh(currentClass.id); showMessage("تکلیف به دانش‌آموزان انتخاب‌شده تخصیص یافت.");
     } catch (reason) { showError(reason.message); }
   };
