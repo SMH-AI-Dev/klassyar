@@ -1,6 +1,5 @@
 import {
   createExpandedMathQuestions,
-  createProceduralGames,
   expandExistingPersianGame,
 } from "./gameContentGenerator.js";
 import selectionPrompt from "./selectionPrompt.js";
@@ -1090,4 +1089,4 @@ const expandedExistingGames = gameLibrary.map(toMultipleChoice).map((game) => {
   });
 });
 
-export default [...expandedExistingGames, ...createProceduralGames()];
+export default expandedExistingGames;
