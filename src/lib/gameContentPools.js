@@ -111,7 +111,7 @@ export function getFallbackContentPool(game) {
   const isEnglish = /^eng-/i.test(String(game?.id || ""));
   const questionPool = isEnglish ? ENGLISH_QUESTION_POOL : PERSIAN_QUESTION_POOL;
   const wordPool = isEnglish ? ENGLISH_WORD_POOL : PERSIAN_WORD_POOL;
-  if (["anagram", "hangman", "wordsearch"].includes(game?.engine)) return wordPool;
+  if (["scramble", "anagram", "hangman", "wordsearch"].includes(game?.engine)) return wordPool;
   return questionPool;
 }
 
