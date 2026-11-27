@@ -397,7 +397,16 @@ function canonicalContent(value) {
 
 function contentItemKey(item, engine) {
   if (engine === "quiz") return questionKey(item);
-  return stableValue(canonicalContent(item));
+  if (["match", "memory"].includes(engine)) {
+    return `${normalizeText(item?.text ?? item?.label)}|${normalizeText(item?.en ?? item?.answer)}`;
+  }
+  if (engine === "sort") return `${normalizeText(item?.label)}|${normalizeText(item?.category)}`;
+  if (["scramble", "anagram", "hangman", "wordsearch"].includes(engine)) {
+    return normalizeText(item?.answer ?? item?.a);
+  }
+  if (engine === "type") return `${normalizeText(item?.hint ?? item?.question)}|${normalizeText(item?.answer ?? item?.a)}`;
+  if (engine === "fillblank") return `${normalizeText(item?.text ?? item?.question)}|${normalizeText(item?.answer ?? item?.a)}`;
+  return `${normalizeText(item?.q ?? item?.question ?? item?.hint ?? item?.text)}|${normalizeText(item?.a ?? item?.answer ?? item?.correctAnswer)}`;
 }
 
 function uniqueContentItems(items, engine) {
