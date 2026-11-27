@@ -6,6 +6,62 @@ import { useState } from "react";
 import { demoSamples } from "@/lib/demoData";
 import { classroom } from "@/lib/classroom";
 
+const SHUFFLE_FIELDS_BY_TYPE = {
+  quiz: ["questions"],
+  flashcard: ["cards"],
+  matching: ["pairs"],
+  memory_game: ["pairs"],
+  group_sort: ["items"],
+  wordsearch: ["items"],
+  random_wheel: ["items"],
+  true_false: ["items"],
+  unjumble: ["items", "sentences"],
+  whack_a_mole: ["items"],
+  fill_blank: ["questions"],
+  ranking: ["items"],
+  spinner: ["items"],
+  card_flip: ["cards", "items"],
+  drag_text: ["items"],
+  balloon_pop: ["items"],
+  missing_word: ["questions"],
+  anagram: ["items"],
+  random_cards: ["items"],
+  airplane: ["questions"],
+  gameshow_quiz: ["questions"],
+  hangman: ["items"],
+  image_quiz: ["questions"],
+  labelled_diagram: ["labels"],
+  maze_chase: ["questions"],
+  open_the_box: ["items"],
+  flip_tiles: ["tiles"],
+  match: ["pairs"],
+  type: ["questions"],
+  scramble: ["words"],
+};
+
+function seededShuffle(items, seedText) {
+  const result = [...items];
+  let seed = Array.from(String(seedText)).reduce((value, char) => (value * 31 + char.charCodeAt(0)) >>> 0, 2166136261);
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const target = seed % (index + 1);
+    [result[index], result[target]] = [result[target], result[index]];
+  }
+  return result;
+}
+
+function prepareAssignedActivity(snapshot, assignment, studentId, attemptNumber) {
+  if (!snapshot) return null;
+  const prepared = { ...snapshot, content: { ...(snapshot.content || {}) } };
+  if (assignment?.shuffleItems === false) return prepared;
+  const fields = SHUFFLE_FIELDS_BY_TYPE[prepared.type] || [];
+  const field = fields.find((name) => Array.isArray(prepared.content[name]) && prepared.content[name].length > 1);
+  if (!field) return prepared;
+  const seed = `${assignment.id}:${studentId || "student"}:${attemptNumber}`;
+  prepared.content[field] = seededShuffle(prepared.content[field], seed);
+  return prepared;
+}
+
 export function useGameData() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -34,7 +90,15 @@ export function useGameData() {
   const assignmentExpired = Boolean(assignment?.deadline && Date.now() > Date.parse(assignment.deadline));
   const attemptsExhausted = Boolean(assignment?.maxAttempts && assignmentAttempts.length >= assignment.maxAttempts);
   const assignedActivity = assignment?.activitySnapshot && !assignmentExpired && !attemptsExhausted
-    ? { ...assignment.activitySnapshot, assignmentId }
+    ? {
+        ...prepareAssignedActivity(
+          assignment.activitySnapshot,
+          assignment,
+          studentProfile?.student?.id,
+          assignmentAttempts.length + 1,
+        ),
+        assignmentId,
+      }
     : null;
 
   const demoActivity = isDemo ? demoSamples[type] || demoSamples.quiz : null;
