@@ -95,6 +95,16 @@ function collectWordRecords(games, language) {
     for (const item of game.cards || []) {
       add(language === "fa" ? item.text : item.en, item.text, game.id);
     }
+    const questionItems = [...(game.questions || []), ...(game.questionBank || [])];
+    for (const item of questionItems) {
+      const clue = item.question || item.hint || item.text || item.q || game.title;
+      const answer = item.options?.[item.correctIndex] ?? item.answer ?? item.a;
+      add(answer, clue, game.id);
+      for (const option of item.options || []) add(option, clue, game.id);
+    }
+    for (const item of game.items || []) {
+      add(item.answer || item.a || item.label || item.name, item.hint || item.q || item.text || game.title, game.id);
+    }
   }
   return uniqueBy(records, (item) => item.a);
 }
