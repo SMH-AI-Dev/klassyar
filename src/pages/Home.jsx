@@ -44,14 +44,13 @@ const gameTypes = [
   { name: "نمودار برچسب‌دار", emoji: "🏷️", type: "labelled_diagram", color: "from-emerald-400 to-green-400" },
   { name: "کارت‌های تصادفی", emoji: "🎲", type: "random_cards", color: "from-amber-400 to-yellow-400" },
   { name: "🎮 ۳۵۰ بازی آموزشی", emoji: "🎮", type: "game-hub", color: "from-emerald-400 to-teal-400", isHub: true },
-  { name: "🏴 ۵۰ بازی انگلیسی", emoji: "🏴", type: "english-hub", color: "from-blue-400 to-indigo-400", isHub: true },
 ];
 
 const features = [
   {
     image: gamesImg,
     icon: Gamepad2, title: "بازی‌های متنوع",
-    description: "۴۳۰ بازی و فعالیت مختلف برای یادگیری جذاب",
+    description: "۳۵۰ بازی و فعالیت تعاملی برای یادگیری دروس مدرسه",
     color: "from-purple-400 to-pink-400"
   },
   {
@@ -117,13 +116,6 @@ export default function Home() {
                     className="px-8 py-6 text-lg rounded-2xl border-2 border-purple-300 clay-element hover:bg-purple-50">
                     <BookOpen className="w-5 h-5 ml-2" />
                     آشنایی با امکانات
-                  </Button>
-                </Link>
-                <Link to="/LanguageLearning">
-                  <Button size="lg" variant="outline"
-                    className="px-8 py-6 text-lg rounded-2xl border-2 border-green-300 clay-element hover:bg-green-50">
-                    <BookOpen className="w-5 h-5 ml-2" />
-                    آموزش زبان
                   </Button>
                 </Link>
               </div>
