@@ -24,6 +24,7 @@ function normalizeText(value) {
     .replace(/[ًٌٍَُِّْـ]/g, "")
     .replace(/[\u200c\u200d]/g, " ")
     .replace(/\s+/g, " ")
+    .trim()
     .replace(/[؟?!.،,:;؛]+$/g, "")
     .toLocaleLowerCase();
 }
