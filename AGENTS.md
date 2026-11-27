@@ -8,7 +8,7 @@
 ## Key Facts
 - App is called "کلاس یار" (KlassYar) — an educational gamification platform
 - Currently on version 2.1.0
-- Total games in KlassYar: 359 school/Persian activities (50 English-learning games were moved to the independent LinguaPlay repository)
+- Total games in KlassYar: 59 school/Persian activities; language-learning content is maintained in the independent LinguaPlay repository
 - Language: Persian (RTL)
 - Framework: React + Vite + Tailwind
 - Auth: Local (localStorage), Firebase removed
