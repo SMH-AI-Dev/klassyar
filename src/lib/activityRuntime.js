@@ -2,7 +2,7 @@ export function normalizeActivityForPlay(activity) {
   if (!activity?.content || typeof activity.content !== "object") return activity;
   const content = { ...activity.content };
 
-  if (activity.type === "group_sort") {
+  if (["group_sort", "speed_sorting"].includes(activity.type)) {
     const groups = content.groups || [];
     if (!Array.isArray(content.items) || !content.items.length) {
       const allItems = content.all_items?.length
@@ -24,7 +24,7 @@ export function normalizeActivityForPlay(activity) {
     }
   }
 
-  if (activity.type === "gameshow_quiz" && !Array.isArray(content.items)) {
+  if (["gameshow_quiz", "win_or_lose_quiz"].includes(activity.type) && !Array.isArray(content.items)) {
     content.items = (content.questions || []).map((question) => {
       const correctIndex = Number.isInteger(question.correctAnswer)
         ? question.correctAnswer
@@ -38,6 +38,14 @@ export function normalizeActivityForPlay(activity) {
         image: question.image || "",
       };
     });
+  }
+
+  if (["balloon_pop", "flying_fruit"].includes(activity.type) && !Array.isArray(content.items)) {
+    content.items = (content.questions || []).map((question) => ({
+      question: question.question || "",
+      answer: question.answer || "",
+      options: [question.answer, ...(question.wrongAnswers || [])].filter(Boolean),
+    }));
   }
 
   if (activity.type === "true_false" && !Array.isArray(content.questions)) {
