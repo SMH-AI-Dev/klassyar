@@ -71,8 +71,8 @@ jobs:
         with:
           name: android-apk
           path: |
-            android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
 
   desktop:
     name: Desktop (${{ matrix.os }})
