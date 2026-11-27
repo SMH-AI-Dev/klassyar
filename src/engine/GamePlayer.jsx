@@ -23,11 +23,12 @@ import { classroom } from "@/lib/classroom";
 export default function GamePlayer({ game, userId = "guest" }) {
   const navigate = useNavigate();
   const [round, setRound] = useState(() => createQuestionRound(game, "open", userId));
-  const activeGameId = useRef(game.id);
+  const activeGameId = useRef(`${userId}:${game.id}`);
 
   useEffect(() => {
-    if (activeGameId.current !== game.id) {
-      activeGameId.current = game.id;
+    const activeScope = `${userId}:${game.id}`;
+    if (activeGameId.current !== activeScope) {
+      activeGameId.current = activeScope;
       setRound(createQuestionRound(game, "open", userId));
     }
     const handlePageShow = (event) => {
