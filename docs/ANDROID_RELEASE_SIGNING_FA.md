@@ -14,7 +14,7 @@ powershell -ExecutionPolicy Bypass -File .\\scripts\\create-two-android-signing-
 در PowerShell ویندوز، در پوشه‌ای خارج از مخزن KlassYar اجرا کنید:
 
 ```powershell
-keytool -genkeypair -v -keystore klassyar-release.jks -alias klassyar -keyalg RSA -keysize 4096 -validity 10000
+keytool -genkeypair -v -keystore klassyar-release.jks -alias klassyar -storetype JKS -keyalg RSA -keysize 4096 -validity 10000
 ```
 
 این کلید فقط برای `com.klassyar.app` است. آن را با کلید LinguaPlay مشترک نکنید. فایل JKS و رمزهای آن را در دو محل امن و رمزگذاری‌شده نگهداری کنید؛ فایل JKS را در Git یا فضای عمومی بارگذاری نکنید.
