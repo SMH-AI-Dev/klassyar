@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import ActivityResultReporter from "@/lib/ActivityResultReporter";
 import selectionPrompt from "@/lib/selectionPrompt";
+import { useGameData } from "@/hooks/useGameData";
 
 const shuffle = (items) => {
   const shuffled = [...items];
@@ -28,7 +29,14 @@ function readData(searchParams) {
 export default function PlayType() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const data = useMemo(() => readData(searchParams), [searchParams]);
+  const { activity: assignedActivity } = useGameData();
+  const data = useMemo(() => {
+    const linkedData = readData(searchParams);
+    if (linkedData) return linkedData;
+    return assignedActivity
+      ? { ...assignedActivity, ...(assignedActivity.content || {}) }
+      : null;
+  }, [searchParams, assignedActivity]);
   const [questions, setQuestions] = useState(() => shuffle(data?.questions || []));
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
