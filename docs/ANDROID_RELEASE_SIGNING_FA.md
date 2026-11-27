@@ -2,6 +2,15 @@
 
 ## ۱. ساخت کلید
 
+برای ساخت هر دو کلید با نام‌های مستقل، می‌توانید اسکریپت زیر را از پوشه ریشه مخزن KlassYar در PowerShell اجرا کنید:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\\scripts\\create-two-android-signing-keys.ps1
+```
+
+این اسکریپت کلیدها را خارج از مخزن و در مسیر `%LOCALAPPDATA%\\SMH-Android-Signing` ایجاد می‌کند و فایل Base64 هر keystore را نیز برای واردکردن به GitHub Secrets می‌سازد. رمزها را خودتان در پنجره تعاملی keytool تعیین می‌کنید؛ اسکریپت آن‌ها را ذخیره نمی‌کند.
+
+
 در PowerShell ویندوز، در پوشه‌ای خارج از مخزن KlassYar اجرا کنید:
 
 ```powershell
