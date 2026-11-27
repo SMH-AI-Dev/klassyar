@@ -139,7 +139,14 @@ export function convertActivityData(activity, targetType) {
     case "flashcard": content = toFlashcards(activity); break;
     case "matching": content = toMatching(activity); break;
     case "quiz":
-    case "gameshow_quiz": content = toQuiz(activity); break;
+    case "gameshow_quiz":
+      content = ["quiz", "gameshow_quiz"].includes(activity.type)
+        ? { questions: (activity.content.questions || []).map((question) => ({
+            ...question,
+            options: Array.isArray(question.options) ? [...question.options] : [],
+          })) }
+        : toQuiz(activity);
+      break;
     case "type": content = toType(activity); break;
     default: throw new Error("تبدیل به این قالب هنوز پشتیبانی نمی‌شود");
   }
