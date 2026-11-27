@@ -24,11 +24,11 @@ const SHUFFLE_FIELDS_BY_TYPE = {
   drag_text: ["items"],
   balloon_pop: ["items"],
   missing_word: ["questions"],
-  anagram: ["items"],
+  anagram: ["items", "words"],
   random_cards: ["items"],
   airplane: ["questions"],
-  gameshow_quiz: ["questions"],
-  hangman: ["items"],
+  gameshow_quiz: ["items", "questions"],
+  hangman: ["items", "words"],
   image_quiz: ["questions"],
   labelled_diagram: ["labels"],
   maze_chase: ["questions"],
@@ -50,9 +50,74 @@ function seededShuffle(items, seedText) {
   return result;
 }
 
+function normalizeActivityForPlay(activity) {
+  if (!activity?.content || typeof activity.content !== "object") return activity;
+  const content = { ...activity.content };
+
+  if (activity.type === "group_sort" && !Array.isArray(content.items)) {
+    content.items = (content.groups || []).flatMap((group) =>
+      (group.items || []).map((item) => typeof item === "string"
+        ? { text: item, group: group.name, icon: group.icon || "📁" }
+        : { ...item, text: item.text || item.label || item.item || "", group: group.name, icon: item.icon || group.icon || "📁" })
+    );
+  }
+
+  if (activity.type === "gameshow_quiz" && !Array.isArray(content.items)) {
+    content.items = (content.questions || []).map((question) => {
+      const correctIndex = Number.isInteger(question.correctAnswer)
+        ? question.correctAnswer
+        : Number.isInteger(question.correct_answer)
+          ? question.correct_answer
+          : 0;
+      return {
+        question: question.question || question.prompt || "",
+        options: Array.isArray(question.options) ? question.options : [],
+        correctAnswer: question.options?.[correctIndex] ?? question.correctAnswer ?? question.correct_answer ?? "",
+        image: question.image || "",
+      };
+    });
+  }
+
+  if (activity.type === "true_false" && !Array.isArray(content.questions)) {
+    content.questions = (content.statements || content.items || []).map((statement) => {
+      const value = statement.is_true ?? statement.isTrue ?? statement.correct;
+      return {
+        question: statement.text || statement.question || "",
+        correctAnswer: value === true || value === "true" ? "true" : "false",
+        explanation: statement.explanation || "",
+      };
+    });
+  }
+
+  if (activity.type === "fill_blank" && !Array.isArray(content.questions)) {
+    content.questions = (content.sentences || []).map((sentence) => ({
+      question: sentence.text || sentence.sentence || "",
+      answer: sentence.correctAnswers?.[0] || sentence.blanks?.[0]?.answer || sentence.answer || "",
+      hint: sentence.hint || "",
+    }));
+  }
+
+  if (activity.type === "anagram" && !Array.isArray(content.items)) {
+    content.items = (content.words || []).map((item) => ({
+      word: item.word || item.answer || "",
+      hint: item.hint || item.clue || "",
+    }));
+  }
+
+  if (activity.type === "hangman" && !Array.isArray(content.items)) {
+    content.items = (content.words || []).map((item) => ({
+      word: item.word || item.answer || "",
+      hint: item.hint || item.clue || "",
+    }));
+  }
+
+  return { ...activity, content };
+}
+
 function prepareAssignedActivity(snapshot, assignment, studentId, attemptNumber) {
   if (!snapshot) return null;
-  const prepared = { ...snapshot, content: { ...(snapshot.content || {}) } };
+  const normalized = normalizeActivityForPlay(snapshot);
+  const prepared = { ...normalized, content: { ...(normalized.content || {}) } };
   if (assignment?.shuffleItems === false) return prepared;
   const fields = SHUFFLE_FIELDS_BY_TYPE[prepared.type] || [];
   const field = fields.find((name) => Array.isArray(prepared.content[name]) && prepared.content[name].length > 1);
@@ -127,7 +192,7 @@ export function useGameData() {
   };
 
   return {
-    activity: isDemo ? demoActivity : assignmentId ? assignedActivity : activity,
+    activity: normalizeActivityForPlay(isDemo ? demoActivity : assignmentId ? assignedActivity : activity),
     isLoading: isDemo || assignmentId ? false : isLoading,
     isDemo,
     type,
