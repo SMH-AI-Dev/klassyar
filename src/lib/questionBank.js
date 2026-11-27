@@ -418,9 +418,9 @@ export function getGameContentBank(game) {
   const field = contentField(game);
   const source = Array.isArray(game[field]) ? game[field] : sourceItems(game);
   const primary = uniqueContentItems(source, game.engine);
-  if (primary.length >= MINIMUM_BANK_SIZE) return primary;
+  if (primary.length >= MINIMUM_BANK_SIZE) return primary.slice(0, MINIMUM_BANK_SIZE);
   const fallback = getFallbackContentPool(game);
-  return uniqueContentItems([...primary, ...fallback], game.engine);
+  return uniqueContentItems([...primary, ...fallback], game.engine).slice(0, MINIMUM_BANK_SIZE);
 }
 
 function gameRoundSize(game, bankLength) {
