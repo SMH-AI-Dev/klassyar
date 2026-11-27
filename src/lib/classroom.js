@@ -339,7 +339,10 @@ export const classroom = {
           })),
         };
       }
-      return item;
+      return {
+        ...item,
+        questions: Array.isArray(item.questions) ? item.questions : [],
+      };
     }) : [];
     if (invitation.assignments !== undefined &&
         (!Array.isArray(assignments) || assignments.length > 200 ||
