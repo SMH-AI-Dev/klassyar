@@ -25,3 +25,5 @@ jobs:
         run: node node_modules/vite/bin/vite.js build
       - name: Audit all Persian and English game banks
         run: node src/lib/auditGameCatalog.js
+      - name: Verify assignment snapshot delivery and attempt limits
+        run: node src/lib/auditAssignmentFlow.js

@@ -40,13 +40,31 @@ export default function StudentAssignments() {
         : assignments.length === 0 ? <Card className="border-0 shadow-lg"><CardContent className="p-6">در حال حاضر تکلیفی برای این پروفایل تخصیص نیافته است.</CardContent></Card>
           : assignments.map((assignment) => {
             const previous = classroom.assignmentAnswers(assignment.id);
+            const attempts = classroom.results().filter((item) =>
+              item.assignmentId === assignment.id && item.studentId === profile.student.id);
+            const expired = Boolean(assignment.deadline && Date.now() > Date.parse(assignment.deadline));
+            const maxAttempts = Number.isInteger(assignment.maxAttempts) ? assignment.maxAttempts : 1;
+            const attemptCount = Math.max(attempts.length, previous?.attemptCount || 0);
+            const attemptsExhausted = attemptCount >= maxAttempts;
+            const unavailable = expired || attemptsExhausted;
+            const activitySnapshot = assignment.activitySnapshot;
+            const activityType = assignment.activityType || activitySnapshot?.type;
+            const activityLink = activitySnapshot
+              ? `/Play?type=${encodeURIComponent(activityType || "quiz")}&assignmentId=${encodeURIComponent(assignment.id)}`
+              : null;
+            const gamePath = String(assignment.gameId || "").startsWith("eng-") ? "/play-english" : "/play-game";
             return <Card key={assignment.id} className="border-0 shadow-lg"><CardHeader><CardTitle>{assignment.title}</CardTitle></CardHeader><CardContent className="space-y-3">
-              {assignment.gameId && <Link className="text-violet-700 underline text-sm" to={`/play-game/${encodeURIComponent(assignment.gameId)}`}>رفتن به بازی: {assignment.gameTitle}</Link>}
+              {activityLink && !unavailable && <Link className="text-violet-700 underline text-sm" to={activityLink}>شروع فعالیت: {activitySnapshot.title}</Link>}
+              {assignment.gameId && <Link className={unavailable ? "pointer-events-none text-slate-400 text-sm" : "text-violet-700 underline text-sm"} to={unavailable ? "#" : `${gamePath}/${encodeURIComponent(assignment.gameId)}?assignmentId=${encodeURIComponent(assignment.id)}`}>رفتن به بازی: {assignment.gameTitle}</Link>}
+              {assignment.deadline && <p className="text-xs text-slate-500">مهلت: {new Date(assignment.deadline).toLocaleString("fa-IR")}</p>}
+              <p className="text-xs text-slate-500">تلاش‌ها: {attemptCount} از {maxAttempts}</p>
+              {expired && <p role="status" className="text-sm text-rose-700">مهلت این تکلیف به پایان رسیده است.</p>}
+              {!expired && attemptsExhausted && <p role="status" className="text-sm text-amber-700">تعداد دفعات مجاز این تکلیف تمام شده است.</p>}
               {assignment.questions.length > 0 && <form onSubmit={(event) => submitAssignment(event, assignment)} className="space-y-3">{assignment.questions.map((question, index) => {
                 const value = selectedOptions[`${assignment.id}:${index}`] ?? previous?.answers?.[index]?.choiceIndex;
                 const correct = value !== undefined && Number(value) === question.correctIndex;
                 return <fieldset key={`${assignment.id}-${index}`} className="rounded-xl border bg-white p-3"><legend className="font-semibold">{question.prompt}</legend><div className="space-y-2 mt-2">{question.options.map((option, optionIndex) => <label key={optionIndex} className="flex items-center gap-2"><input required type="radio" name={`answer-${index}`} value={optionIndex} checked={value !== undefined && Number(value) === optionIndex} onChange={(event) => selectOption(assignment, index, event.target.value)} />{option}</label>)}</div>{value !== undefined && <p aria-live="polite" className={correct ? "mt-2 text-emerald-700" : "mt-2 text-amber-700"}>{correct ? "پاسخ درست است. " : "دوباره فکر کن. "}{question.feedback}</p>}</fieldset>;
-              })}<Button type="submit" size="sm"><CheckCircle2 className="w-4 h-4 ml-1" />ثبت پاسخ تکلیف</Button>{previous && <span className="text-xs text-slate-500 mr-2">آخرین ذخیره: {new Date(previous.updatedAt).toLocaleDateString("fa-IR")}</span>}</form>}
+              })}<Button type="submit" size="sm" disabled={unavailable}><CheckCircle2 className="w-4 h-4 ml-1" />ثبت پاسخ تکلیف</Button>{previous && <span className="text-xs text-slate-500 mr-2">آخرین ذخیره: {new Date(previous.updatedAt).toLocaleDateString("fa-IR")}</span>}</form>}
             </CardContent></Card>;
           })}
     </div>

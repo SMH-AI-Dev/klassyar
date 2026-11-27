@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import QuizEngine from "./QuizEngine";
@@ -56,6 +56,20 @@ function prepareEngineGame(game) {
 
 export default function GamePlayer({ game, userId = "guest" }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const assignmentId = searchParams.get("assignmentId");
+  const studentProfile = assignmentId ? classroom.student() : null;
+  const assignment = assignmentId
+    ? (studentProfile?.assignments || []).find((item) => item.id === assignmentId) || null
+    : null;
+  const assignmentAttempts = assignmentId
+    ? classroom.results().filter((item) => item.assignmentId === assignmentId && item.studentId === studentProfile?.student?.id)
+    : [];
+  const assignmentExpired = Boolean(assignment?.deadline && Date.now() > Date.parse(assignment.deadline));
+  const attemptsExhausted = Boolean(assignment?.maxAttempts && assignmentAttempts.length >= assignment.maxAttempts);
+  const assignmentInvalid = Boolean(assignmentId && (
+    !assignment || assignment.gameId !== game.id || assignmentExpired || attemptsExhausted
+  ));
   const [round, setRound] = useState(() => createGameRound(game, "open", userId));
   const activeScope = useRef(`${userId}:${game.id}`);
 
@@ -75,6 +89,17 @@ export default function GamePlayer({ game, userId = "guest" }) {
   const Engine = ENGINE_BY_TYPE[round.engine || round.game?.engine || game.engine];
   const engineGame = prepareEngineGame(round.game);
 
+  if (assignmentInvalid) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
+        <p className="text-lg font-bold text-slate-800">
+          {!assignment ? "این تکلیف در پروفایل دانش‌آموز پیدا نشد" : assignmentExpired ? "مهلت این تکلیف به پایان رسیده است" : "تعداد دفعات مجاز این تکلیف تمام شده است"}
+        </p>
+        <Button onClick={() => navigate("/StudentAssignments")} className="mt-4">بازگشت به تکلیف‌ها</Button>
+      </div>
+    );
+  }
+
   if (!Engine) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
@@ -88,6 +113,7 @@ export default function GamePlayer({ game, userId = "guest" }) {
     classroom.recordResult({
       gameId: game.id,
       gameTitle: game.title,
+      assignmentId: assignmentId || null,
       roundId: round.id,
       score,
       total,

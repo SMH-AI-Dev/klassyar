@@ -339,18 +339,34 @@ export const classroom = {
           })),
         };
       }
-      return item;
+      return {
+        ...item,
+        questions: Array.isArray(item.questions) ? item.questions : [],
+      };
     }) : [];
     if (invitation.assignments !== undefined &&
         (!Array.isArray(assignments) || assignments.length > 200 ||
-         assignments.some((item) => !item || typeof item.id !== "string" ||
-           !text(item.title) || !Array.isArray(item.questions) ||
-           item.questions.some((question) => !question || !text(question.prompt) ||
-             !Array.isArray(question.options) || question.options.length < 2 ||
-             question.options.some((option) => typeof option !== "string" || !option.trim()) ||
-             !Number.isInteger(question.correctIndex) || question.correctIndex < 0 ||
-             question.correctIndex >= question.options.length || typeof question.feedback !== "string") ||
-           !Array.isArray(item.studentIds) || !item.studentIds.includes(invitation.student.id)))) {
+         assignments.some((item) => {
+           const hasQuestions = Array.isArray(item?.questions) && item.questions.length <= 100 &&
+             item.questions.every((question) => question && text(question.prompt) &&
+               Array.isArray(question.options) && question.options.length >= 2 &&
+               question.options.length <= 6 &&
+               question.options.every((option) => typeof option === "string" && option.trim()) &&
+               Number.isInteger(question.correctIndex) && question.correctIndex >= 0 &&
+               question.correctIndex < question.options.length && typeof question.feedback === "string");
+           const snapshot = item?.activitySnapshot;
+           const hasSnapshot = Boolean(snapshot && typeof snapshot.id === "string" &&
+             text(snapshot.title) && text(snapshot.type) && snapshot.content &&
+             typeof snapshot.content === "object" && !Array.isArray(snapshot.content) &&
+             JSON.stringify(snapshot).length <= 1500000);
+           const hasGame = typeof item?.gameId === "string" && item.gameId.trim();
+           const validDeadline = !item?.deadline || Number.isFinite(Date.parse(item.deadline));
+           return !item || typeof item.id !== "string" || !text(item.title) ||
+             (!hasQuestions && !hasSnapshot && !hasGame) ||
+             !validDeadline ||
+             (item.maxAttempts !== undefined && (!Number.isInteger(item.maxAttempts) || item.maxAttempts < 1 || item.maxAttempts > 10)) ||
+             !Array.isArray(item.studentIds) || !item.studentIds.includes(invitation.student.id);
+         }))) {
       throw new Error("تکلیف‌های داخل دعوت‌نامه معتبر نیستند");
     }
     const sameStudentClass = previous?.student?.id === inviteStudent.id &&
@@ -619,23 +635,31 @@ export const classroom = {
       throw new Error("تکلیف یا پاسخ‌های واردشده معتبر نیست");
     }
     const records = parse(ANSWER_KEY, []);
+    const list = Array.isArray(records) ? records : [];
+    const index = list.findIndex((item) => item.assignmentId === assignmentId && item.studentId === student.student.id);
+    const previous = index < 0 ? null : list[index];
+    const attemptCount = (previous?.attemptCount || 0) + 1;
+    const maxAttempts = Number.isInteger(assignment.maxAttempts) ? assignment.maxAttempts : 1;
+    if (attemptCount > maxAttempts) throw new Error("تعداد دفعات مجاز این تکلیف تمام شده است");
+    const validatedAnswers = answers.map((answer, answerIndex) => {
+      const question = assignment.questions[answerIndex];
+      if (!Number.isInteger(answer.choiceIndex) || answer.choiceIndex < 0 ||
+          answer.choiceIndex >= question.options.length ||
+          answer.selectedOption !== question.options[answer.choiceIndex] ||
+          answer.correct !== (answer.choiceIndex === question.correctIndex)) {
+        throw new Error("یکی از پاسخ‌های انتخاب‌شده معتبر نیست");
+      }
+      return answer;
+    });
+    const updatedAt = new Date().toISOString();
     const next = {
       assignmentId, studentId: student.student.id, classId: student.classroom.id,
       cycleId: assignment.cycleId || student.cycleId || null,
-      answers: answers.map((answer, index) => {
-        const question = assignment.questions[index];
-        if (!Number.isInteger(answer.choiceIndex) || answer.choiceIndex < 0 ||
-            answer.choiceIndex >= question.options.length ||
-            answer.selectedOption !== question.options[answer.choiceIndex] ||
-            answer.correct !== (answer.choiceIndex === question.correctIndex)) {
-          throw new Error("یکی از پاسخ‌های انتخاب‌شده معتبر نیست");
-        }
-        return answer;
-      }),
-      updatedAt: new Date().toISOString(),
+      answers: validatedAnswers,
+      attemptCount,
+      attempts: [...(previous?.attempts || []), { answers: validatedAnswers, updatedAt }].slice(-10),
+      updatedAt,
     };
-    const list = Array.isArray(records) ? records : [];
-    const index = list.findIndex((item) => item.assignmentId === assignmentId && item.studentId === student.student.id);
     if (index < 0) list.push(next);
     else list[index] = next;
     save(ANSWER_KEY, list.slice(-1000));
@@ -644,30 +668,71 @@ export const classroom = {
   addAssignment(classId, assignment, userId) {
     const state = currentState(userId);
     const target = ensureClass(state, classId);
+    const questions = Array.isArray(assignment.questions) ? assignment.questions : [];
+    const snapshot = assignment.activitySnapshot && typeof assignment.activitySnapshot === "object"
+      ? assignment.activitySnapshot
+      : null;
+    const gameId = text(assignment.gameId);
     if (!text(assignment.title) || !Array.isArray(assignment.studentIds) || !assignment.studentIds.length) {
       throw new Error("عنوان تکلیف و دست‌کم یک دانش‌آموز را انتخاب کنید");
     }
     if (!assignment.studentIds.every((id) => target.students.some((student) => student.id === id))) {
       throw new Error("دانش‌آموز انتخاب‌شده به این کلاس تعلق ندارد");
     }
-    if (!Array.isArray(assignment.questions) || assignment.questions.length > 100 ||
-        assignment.questions.some((question) => !question || !text(question.prompt) ||
-          !Array.isArray(question.options) || question.options.length < 2 || question.options.length > 6 ||
-          question.options.some((option) => !text(option)) ||
-          !Number.isInteger(question.correctIndex) || question.correctIndex < 0 ||
-          question.correctIndex >= question.options.length || typeof question.feedback !== "string")) {
+    if (!questions.length && !snapshot && !gameId) {
+      throw new Error("برای تکلیف باید یک بازی آماده، فعالیت ساخته‌شده یا سؤال سفارشی انتخاب کنید");
+    }
+    if (questions.length > 100 || questions.some((question) => !question || !text(question.prompt) ||
+        !Array.isArray(question.options) || question.options.length < 2 || question.options.length > 6 ||
+        question.options.some((option) => !text(option)) ||
+        !Number.isInteger(question.correctIndex) || question.correctIndex < 0 ||
+        question.correctIndex >= question.options.length || typeof question.feedback !== "string")) {
       throw new Error("هر سوال باید متن، حداقل دو گزینه، پاسخ درست و بازخورد داشته باشد");
     }
+    let activitySnapshot = null;
+    if (snapshot) {
+      if (!text(snapshot.id) || !text(snapshot.title) || !text(snapshot.type) ||
+          !snapshot.content || typeof snapshot.content !== "object" || Array.isArray(snapshot.content)) {
+        throw new Error("نسخهٔ فعالیت انتخاب‌شده معتبر نیست");
+      }
+      activitySnapshot = {
+        id: text(snapshot.id),
+        title: text(snapshot.title),
+        type: text(snapshot.type),
+        description: text(snapshot.description),
+        content: snapshot.content,
+        theme: text(snapshot.theme || "lavender"),
+        options: snapshot.options && typeof snapshot.options === "object" ? snapshot.options : {},
+      };
+      if (JSON.stringify(activitySnapshot).length > 1500000) {
+        throw new Error("حجم فعالیت برای ارسال در دعوت‌نامه بیش از حد مجاز است");
+      }
+    }
+    const deadline = assignment.deadline ? new Date(assignment.deadline).toISOString() : null;
+    const maxAttempts = Number.isInteger(assignment.maxAttempts)
+      ? Math.max(1, Math.min(10, assignment.maxAttempts))
+      : 1;
     const record = {
-      id: makeId(), title: text(assignment.title), gameId: text(assignment.gameId),
-      gameTitle: text(assignment.gameTitle), studentIds: assignment.studentIds,
-      questions: assignment.questions.map((question) => ({
+      id: makeId(),
+      title: text(assignment.title),
+      gameId,
+      gameTitle: text(assignment.gameTitle || activitySnapshot?.title),
+      activityType: activitySnapshot?.type || "",
+      activitySnapshot,
+      studentIds: [...new Set(assignment.studentIds)],
+      questions: questions.map((question) => ({
         prompt: text(question.prompt),
         options: question.options.map(text),
         correctIndex: question.correctIndex,
         feedback: text(question.feedback),
       })),
-      createdAt: new Date().toISOString(), cycleId: target.cycles.find((cycle) => cycle.status === "active")?.id || null,
+      deadline,
+      maxAttempts,
+      showScore: assignment.showScore !== false,
+      showAnswers: assignment.showAnswers === true,
+      shuffleItems: assignment.shuffleItems !== false,
+      createdAt: new Date().toISOString(),
+      cycleId: target.cycles.find((cycle) => cycle.status === "active")?.id || null,
     };
     target.assignments.push(record);
     save(KEY, state);
