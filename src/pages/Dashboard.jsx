@@ -4,7 +4,7 @@ import { localData } from "@/api/localDataClient";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Gamepad2, Trophy, Users, TrendingUp, BookOpen, Globe } from "lucide-react";
+import { Plus, Gamepad2, Trophy, Users, TrendingUp, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ActivityGrid from "@/components/dashboard/ActivityGrid";
@@ -120,7 +120,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"
+          className="grid grid-cols-1 gap-4 mb-8"
         >
           <motion.div whileHover={{ scale: 1.02 }}>
             <Card
@@ -136,23 +136,6 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-500">۳۵۰ بازی آموزشی تعاملی</p>
                 </div>
                 <span className="text-2xl">🎮</span>
-              </CardContent>
-            </Card>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <Card
-              className="clay-element bg-gradient-to-br from-blue-50 to-indigo-50 border-0 cursor-pointer hover:shadow-lg transition-all"
-              onClick={() => navigate('/english-hub')}
-            >
-              <CardContent className="p-6 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-2xl shadow-lg">
-                  <Globe className="w-7 h-7" />
-                </div>
-                <div className="flex-1 text-right">
-                  <h3 className="text-lg font-bold text-gray-800">باشگاه چالش انگلیسی</h3>
-                  <p className="text-sm text-gray-500">۵۰ بازی آموزش زبان انگلیسی</p>
-                </div>
-                <span className="text-2xl">🏴</span>
               </CardContent>
             </Card>
           </motion.div>
