@@ -200,71 +200,6 @@ function withBank(game, bank) {
   };
 }
 
-function topicalVocabularyQuestions(topicRecords, allVocabulary) {
-  const bank = [];
-  for (const [topicIndex, target] of topicRecords.entries()) {
-    const distractors = allVocabulary.filter((entry) => entry.en !== target.en);
-    for (let cursor = 0; cursor < 48 && bank.length < MINIMUM_QUESTION_COUNT; cursor += 1) {
-      const selected = [];
-      let candidateIndex = (topicIndex * 47 + cursor * 13) % distractors.length;
-      while (selected.length < 3) {
-        const candidate = distractors[candidateIndex % distractors.length];
-        if (candidate && candidate.en !== target.en && !selected.some((entry) => entry.en === candidate.en)) selected.push(candidate);
-        candidateIndex += 1;
-      }
-      const choices = [target.en, ...selected.map((entry) => entry.en)];
-      const shift = (topicIndex + cursor) % choices.length;
-      const options = [...choices.slice(shift), ...choices.slice(0, shift)];
-      bank.push({
-        question: `کدام واژه معنی «${target.fa}» را دارد؟ مثال: ${target.example}`,
-        options,
-        correctIndex: options.indexOf(target.en),
-      });
-    }
-    if (bank.length >= MINIMUM_QUESTION_COUNT) break;
-  }
-  return bank;
-}
-
-function variedScrambles(records) {
-  const bank = [];
-  for (const record of records) {
-    const letters = [...record.en.toLowerCase()];
-    if (letters.length < 2 || !/^[a-z]+$/.test(record.en)) continue;
-    for (const scrambled of uniquePermutations(letters, 405 - bank.length)) {
-      if (scrambled === record.en.toLowerCase()) continue;
-      bank.push({ scrambled, answer: record.en, hint: record.fa });
-      if (bank.length >= MINIMUM_QUESTION_COUNT) return bank;
-    }
-  }
-  return bank;
-}
-
-function uniquePermutations(letters, limit) {
-  const result = [];
-  const counts = new Map();
-  for (const letter of letters) counts.set(letter, (counts.get(letter) || 0) + 1);
-  const current = [];
-  function visit() {
-    if (result.length >= limit) return;
-    if (current.length === letters.length) {
-      result.push(current.join(""));
-      return;
-    }
-    for (const [letter, count] of counts) {
-      if (!count) continue;
-      counts.set(letter, count - 1);
-      current.push(letter);
-      visit();
-      current.pop();
-      counts.set(letter, count);
-      if (result.length >= limit) return;
-    }
-  }
-  visit();
-  return result;
-}
-
 function sequenceCards(cards, target = MINIMUM_QUESTION_COUNT) {
   if (!cards.length) return [];
   const width = cards.length < 8 ? 4 : 3;
@@ -400,8 +335,6 @@ function generatedPersianQuiz(gameId) {
   if (gameId === "iq-logic") return logicQuestions();
   if (gameId === "attn-numbers") return attentionNumberQuestions();
   if (gameId === "attn-find-diff") return oddOneOutQuestions();
-  if (gameId === "attn-spelling") return persianSpellingQuestions();
-  if (gameId === "cr-word-maker") return wordMakerQuestions();
   if (gameId === "cr-color-mix") return colorMixQuestions();
   if (gameId === "cr-problem-solving") {
     return createProceduralQuestionBank({ groupId: "sequences", skillIndex: 6, level: 2 });
@@ -482,26 +415,6 @@ function generatedClimateQuestions() {
     options,
     correctIndex: options.indexOf(type.answer),
   })));
-}
-
-function wordMakerQuestions() {
-  const vocabulary = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-  const answers = [...new Set(vocabulary.map((entry) => entry.en))];
-  return vocabulary.filter((entry) => /^[a-z]{2,}$/i.test(entry.en)).map((entry, index) => {
-    const scrambled = scrambleWord(entry.en, index);
-    const choices = [entry.en];
-    for (let offset = 1; choices.length < 4; offset += 1) {
-      const candidate = answers[(index + offset * 37) % answers.length];
-      if (!choices.includes(candidate)) choices.push(candidate);
-    }
-    const rotation = index % choices.length;
-    const options = [...choices.slice(rotation), ...choices.slice(0, rotation)];
-    return {
-      question: `از حروف «${scrambled}» واژه بساز؛ معنی آن «${entry.fa}» است. مثال: ${entry.example}`,
-      options,
-      correctIndex: options.indexOf(entry.en),
-    };
-  });
 }
 
 function colorMixQuestions() {
@@ -629,130 +542,6 @@ function permutations(values) {
   return values.flatMap((value, index) =>
     permutations([...values.slice(0, index), ...values.slice(index + 1)]).map((rest) => [value, ...rest]),
   );
-}
-
-function persianSpellingQuestions() {
-  const vocabulary = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-  const replacements = { ا: "آ", س: "ص", ت: "ط", ز: "ذ", ک: "گ", ه: "ح", ی: "ئ", ب: "پ", د: "ذ", ق: "غ" };
-  return vocabulary.map((entry, index) => {
-    const answer = entry.fa;
-    const options = [answer];
-    for (let offset = 0; options.length < 4; offset += 1) {
-      const chars = [...answer];
-      const position = (index + offset) % Math.max(chars.length, 1);
-      if (replacements[chars[position]]) chars[position] = replacements[chars[position]];
-      else chars[position] = `${chars[position]}‌`;
-      let candidate = chars.join("");
-      if (options.includes(candidate)) candidate = `${answer}${"‌".repeat(offset + 1)}`;
-      if (!options.includes(candidate)) options.push(candidate);
-    }
-    return {
-      question: `املای درست معنی فارسی واژهٔ “${entry.en}” را انتخاب کن. جمله: ${entry.example}`,
-      options,
-      correctIndex: 0,
-    };
-  }).slice(0, MINIMUM_QUESTION_COUNT);
-}
-
-function filterVocabularyTopic(records, gameId) {
-  const cues = {
-    "eng-voc-colors": ["red", "blue", "green", "yellow", "black", "white", "orange", "purple", "pink", "brown"],
-    "eng-voc-animals": ["animal", "cat", "dog", "bird", "fish", "horse", "cow", "lion", "tiger", "monkey", "rabbit", "sheep", "elephant"],
-    "eng-voc-food": ["food", "apple", "banana", "orange", "bread", "water", "milk", "egg", "rice", "meat", "chicken"],
-    "eng-voc-body": ["body", "head", "hand", "foot", "eye", "ear", "nose", "mouth", "arm", "leg", "hair"],
-    "eng-voc-clothes": ["clothes", "shirt", "pants", "shoes", "hat", "socks", "dress", "jacket", "scarf"],
-    "eng-voc-house": ["house", "table", "chair", "bed", "door", "window", "fridge", "sofa", "kitchen"],
-    "eng-voc-school": ["school", "book", "pen", "pencil", "bag", "ruler", "eraser", "desk", "teacher", "student"],
-    "eng-voc-weather": ["weather", "sunny", "rainy", "cloudy", "windy", "snowy", "spring", "summer", "winter", "autumn"],
-    "eng-voc-jobs": ["job", "doctor", "teacher", "engineer", "pilot", "nurse", "farmer", "cook", "artist"],
-    "eng-voc-transport": ["transport", "car", "bus", "train", "plane", "bike", "ship", "boat"],
-  };
-  const cuesForGame = cues[gameId];
-  if (!cuesForGame) return records;
-  const normalizedCues = cuesForGame.map((cue) => cue.toLowerCase());
-  return records.filter((entry) => {
-    const text = `${entry.en} ${entry.example}`.toLowerCase();
-    return normalizedCues.some((cue) => text.includes(cue));
-  });
-}
-
-function makeAnswerOptions(answer, records, selector, index) {
-  const pool = [...new Set(records.map(selector).filter((value) => value && value !== answer))];
-  const options = [answer];
-  for (let offset = 0; options.length < 4 && offset < pool.length; offset += 1) {
-    const candidate = pool[(index + offset * 31) % pool.length];
-    if (!options.includes(candidate)) options.push(candidate);
-  }
-  return options.length >= 2 ? options : [answer, `${answer} (review)`];
-}
-
-function buildEnglishItem(engine, skill, entry, index, records) {
-  if (engine === "match") {
-    if (skill !== "vocabulary") return null;
-    return { id: `curriculum-${index}-${entry.en}`, text: entry.fa, en: entry.en, emoji: "📘" };
-  }
-  if (engine === "sort") {
-    const grade = entry.grade || "7";
-    return { id: `curriculum-${index}`, label: entry.en || entry.rule || entry.scenario, category: `Grade ${grade}` };
-  }
-  if (engine === "scramble") {
-    if (skill !== "vocabulary" || !/^[a-z]+$/i.test(entry.en)) return null;
-    const scrambled = scrambleWord(entry.en, index);
-    if (scrambled === entry.en) return null;
-    return { scrambled, answer: entry.en, hint: entry.fa };
-  }
-  if (engine === "fillblank") {
-    if (skill === "grammar") return { text: `${entry.example} — Complete the rule: ___`, answer: entry.rule };
-    if (skill === "listening") return { text: `${entry.text} — ${entry.questions?.[0]} ___`, answer: String(entry.answers?.[0] || "") };
-    return null;
-  }
-  if (engine === "type") {
-    if (skill === "grammar") return { hint: `${entry.example} (${entry.pattern})`, answer: entry.rule };
-    if (skill === "conversation") return { hint: `${entry.scenario}: ${entry.dialogue}`, answer: entry.dialogue };
-    if (skill === "listening") return { hint: `${entry.questions?.[0]} ${entry.text}`, answer: String(entry.answers?.[0] || "") };
-    return { hint: `${entry.fa}: ${entry.example}`, answer: entry.en };
-  }
-  if (engine === "quiz") {
-    let prompt;
-    let answer;
-    let selector;
-    if (skill === "grammar") {
-      prompt = `Which grammar rule is shown by “${entry.example}” (${entry.pattern})?`;
-      answer = entry.rule;
-      selector = (item) => item.rule;
-    } else if (skill === "conversation") {
-      prompt = `Which lesson dialogue belongs to “${entry.scenario}”: ${entry.fa}?`;
-      answer = entry.dialogue;
-      selector = (item) => item.dialogue;
-    } else if (skill === "listening") {
-      prompt = `Read: “${entry.text}” ${entry.questions[0]}`;
-      answer = String(entry.answers[0]);
-      selector = (item) => String(item.answers?.[0] || "");
-    } else {
-      prompt = `What does “${entry.fa}” mean in English? Example: ${entry.example}`;
-      answer = entry.en;
-      selector = (item) => item.en;
-    }
-    const options = makeAnswerOptions(answer, records, selector, index);
-    return { question: `${prompt} · lesson ${entry.grade || "7"}-${index + 1}`, options, correctIndex: 0 };
-  }
-  return null;
-}
-
-function validEngineItem(engine, item) {
-  if (!item || typeof item !== "object") return false;
-  if (engine === "quiz") return Boolean(item.question && item.options?.length >= 2 && Number.isInteger(item.correctIndex));
-  if (engine === "match") return Boolean(item.id && (item.text || item.en || item.emoji));
-  if (engine === "sort") return Boolean(item.id && item.label && item.category);
-  if (engine === "scramble") return Boolean(item.scrambled && item.answer && item.hint);
-  if (engine === "fillblank") return Boolean(item.text?.includes("___") && item.answer);
-  if (engine === "type") return Boolean(item.hint && item.answer);
-  return false;
-}
-
-function sortCategories(items) {
-  const grades = [...new Set(items.map((item) => item.category))];
-  return grades.map((name) => ({ name, items: [] }));
 }
 
 export function createExpandedMathQuestions(gameId) {
