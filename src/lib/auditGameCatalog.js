@@ -48,8 +48,17 @@ function validateRecord(game, item) {
       return Boolean(item.id && (item.text || item.label) && (item.en || item.answer));
     case "sort":
       return Boolean(item.id && item.label && item.category);
-    case "scramble":
-      return Boolean(item.scrambled && item.answer && item.hint);
+    case "scramble": {
+      const scrambled = normalize(item.scrambled).replace(/\s/g, "");
+      const answer = normalize(item.answer).replace(/\s/g, "");
+      return Boolean(
+        scrambled &&
+        answer &&
+        item.hint &&
+        scrambled.length === answer.length &&
+        [...scrambled].sort().join("") === [...answer].sort().join("")
+      );
+    }
     case "type":
       return Boolean(item.hint && item.answer);
     case "fillblank":
@@ -62,7 +71,10 @@ function validateRecord(game, item) {
     case "whack":
     case "balloons":
     case "truefalse":
-    case "wordsearch":
+    case "wordsearch": {
+      const word = String(item.a || item.answer || "").replace(/[\s\u200c]/g, "");
+      return Boolean((item.q || item.hint || item.question) && word.length >= 2 && word.length <= 10 && /^[\p{L}\p{N}-]+$/u.test(word));
+    }
     case "openbox":
       return Boolean((item.q || item.hint || item.question) && (item.a || item.answer));
     default:
