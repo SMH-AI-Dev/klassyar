@@ -143,6 +143,7 @@ export default function PlayGroup_sort() {
           )}
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800">{activity.title}</h1>
+            {activity.type === "speed_sorting" && <p className="text-sm font-bold text-rose-600">زمان باقی‌مانده: {timeLeft} ثانیه</p>}
             <p className="text-gray-600">
               {Object.keys(userAssignments).length} از {items.length} دسته‌بندی شده
             </p>
