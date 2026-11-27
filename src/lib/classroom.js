@@ -632,23 +632,31 @@ export const classroom = {
       throw new Error("تکلیف یا پاسخ‌های واردشده معتبر نیست");
     }
     const records = parse(ANSWER_KEY, []);
+    const list = Array.isArray(records) ? records : [];
+    const index = list.findIndex((item) => item.assignmentId === assignmentId && item.studentId === student.student.id);
+    const previous = index < 0 ? null : list[index];
+    const attemptCount = (previous?.attemptCount || 0) + 1;
+    const maxAttempts = Number.isInteger(assignment.maxAttempts) ? assignment.maxAttempts : 1;
+    if (attemptCount > maxAttempts) throw new Error("تعداد دفعات مجاز این تکلیف تمام شده است");
+    const validatedAnswers = answers.map((answer, answerIndex) => {
+      const question = assignment.questions[answerIndex];
+      if (!Number.isInteger(answer.choiceIndex) || answer.choiceIndex < 0 ||
+          answer.choiceIndex >= question.options.length ||
+          answer.selectedOption !== question.options[answer.choiceIndex] ||
+          answer.correct !== (answer.choiceIndex === question.correctIndex)) {
+        throw new Error("یکی از پاسخ‌های انتخاب‌شده معتبر نیست");
+      }
+      return answer;
+    });
+    const updatedAt = new Date().toISOString();
     const next = {
       assignmentId, studentId: student.student.id, classId: student.classroom.id,
       cycleId: assignment.cycleId || student.cycleId || null,
-      answers: answers.map((answer, index) => {
-        const question = assignment.questions[index];
-        if (!Number.isInteger(answer.choiceIndex) || answer.choiceIndex < 0 ||
-            answer.choiceIndex >= question.options.length ||
-            answer.selectedOption !== question.options[answer.choiceIndex] ||
-            answer.correct !== (answer.choiceIndex === question.correctIndex)) {
-          throw new Error("یکی از پاسخ‌های انتخاب‌شده معتبر نیست");
-        }
-        return answer;
-      }),
-      updatedAt: new Date().toISOString(),
+      answers: validatedAnswers,
+      attemptCount,
+      attempts: [...(previous?.attempts || []), { answers: validatedAnswers, updatedAt }].slice(-10),
+      updatedAt,
     };
-    const list = Array.isArray(records) ? records : [];
-    const index = list.findIndex((item) => item.assignmentId === assignmentId && item.studentId === student.student.id);
     if (index < 0) list.push(next);
     else list[index] = next;
     save(ANSWER_KEY, list.slice(-1000));
