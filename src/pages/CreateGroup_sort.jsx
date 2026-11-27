@@ -205,6 +205,22 @@ export default function CreateGroup_sort() {
                     className="rounded-xl clay-element"
                   />
                 </div>
+                {activity.type === "speed_sorting" && (
+                  <div>
+                    <Label>محدودیت زمانی (ثانیه)</Label>
+                    <Input
+                      type="number"
+                      min="10"
+                      max="300"
+                      value={activity.content.timeLimit || 60}
+                      onChange={(e) => setActivity({
+                        ...activity,
+                        content: { ...activity.content, timeLimit: Math.max(10, Math.min(300, Number(e.target.value) || 60)) }
+                      })}
+                      className="rounded-xl clay-element"
+                    />
+                  </div>
+                )}
               </CardContent>
             </Card>
 
