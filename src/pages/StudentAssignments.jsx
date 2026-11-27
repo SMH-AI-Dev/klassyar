@@ -40,8 +40,24 @@ export default function StudentAssignments() {
         : assignments.length === 0 ? <Card className="border-0 shadow-lg"><CardContent className="p-6">در حال حاضر تکلیفی برای این پروفایل تخصیص نیافته است.</CardContent></Card>
           : assignments.map((assignment) => {
             const previous = classroom.assignmentAnswers(assignment.id);
+            const attempts = classroom.results().filter((item) =>
+              item.assignmentId === assignment.id && item.studentId === profile.student.id);
+            const expired = Boolean(assignment.deadline && Date.now() > Date.parse(assignment.deadline));
+            const maxAttempts = Number.isInteger(assignment.maxAttempts) ? assignment.maxAttempts : 1;
+            const attemptsExhausted = attempts.length >= maxAttempts;
+            const unavailable = expired || attemptsExhausted;
+            const activitySnapshot = assignment.activitySnapshot;
+            const activityType = assignment.activityType || activitySnapshot?.type;
+            const activityLink = activitySnapshot
+              ? `/Play?type=${encodeURIComponent(activityType || "quiz")}&assignmentId=${encodeURIComponent(assignment.id)}`
+              : null;
             return <Card key={assignment.id} className="border-0 shadow-lg"><CardHeader><CardTitle>{assignment.title}</CardTitle></CardHeader><CardContent className="space-y-3">
-              {assignment.gameId && <Link className="text-violet-700 underline text-sm" to={`/play-game/${encodeURIComponent(assignment.gameId)}`}>رفتن به بازی: {assignment.gameTitle}</Link>}
+              {activityLink && !unavailable && <Link className="text-violet-700 underline text-sm" to={activityLink}>شروع فعالیت: {activitySnapshot.title}</Link>}
+              {assignment.gameId && <Link className={unavailable ? "pointer-events-none text-slate-400 text-sm" : "text-violet-700 underline text-sm"} to={unavailable ? "#" : `/play-game/${encodeURIComponent(assignment.gameId)}?assignmentId=${encodeURIComponent(assignment.id)}`}>رفتن به بازی: {assignment.gameTitle}</Link>}
+              {assignment.deadline && <p className="text-xs text-slate-500">مهلت: {new Date(assignment.deadline).toLocaleString("fa-IR")}</p>}
+              <p className="text-xs text-slate-500">تلاش‌ها: {attempts.length} از {maxAttempts}</p>
+              {expired && <p role="status" className="text-sm text-rose-700">مهلت این تکلیف به پایان رسیده است.</p>}
+              {!expired && attemptsExhausted && <p role="status" className="text-sm text-amber-700">تعداد دفعات مجاز این تکلیف تمام شده است.</p>}
               {assignment.questions.length > 0 && <form onSubmit={(event) => submitAssignment(event, assignment)} className="space-y-3">{assignment.questions.map((question, index) => {
                 const value = selectedOptions[`${assignment.id}:${index}`] ?? previous?.answers?.[index]?.choiceIndex;
                 const correct = value !== undefined && Number(value) === question.correctIndex;
