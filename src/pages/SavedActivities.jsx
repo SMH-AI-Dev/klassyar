@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { localData } from "@/api/localDataClient";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ export default function SavedActivities() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const importInput = useRef(null);
+  const [folderFilter, setFolderFilter] = useState("all");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
 
   // دریافت فعالیت‌های کاربر
   const { data: activities = [], isLoading } = useQuery({
@@ -71,6 +73,12 @@ export default function SavedActivities() {
     }
   };
 
+  const folders = [...new Set(activities.map((activity) => activity.folder || "بدون پوشه"))].sort();
+  const visibleActivities = activities.filter((activity) =>
+    (folderFilter === "all" || (activity.folder || "بدون پوشه") === folderFilter) &&
+    (!favoritesOnly || activity.favorite)
+  );
+
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -85,7 +93,7 @@ export default function SavedActivities() {
               فعالیت‌های شما
             </h1>
             <p className="text-gray-600 text-lg">
-              {activities.length} فعالیت ذخیره شده
+              {visibleActivities.length} از {activities.length} فعالیت
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -119,6 +127,16 @@ export default function SavedActivities() {
           </div>
         </motion.div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <select className="rounded-xl border bg-white px-4 py-2" value={folderFilter} onChange={(event) => setFolderFilter(event.target.value)} aria-label="فیلتر پوشه">
+            <option value="all">همهٔ پوشه‌ها</option>
+            {folders.map((folder) => <option key={folder} value={folder}>{folder}</option>)}
+          </select>
+          <Button type="button" variant={favoritesOnly ? "default" : "outline"} onClick={() => setFavoritesOnly((value) => !value)}>
+            {favoritesOnly ? "نمایش همهٔ فعالیت‌ها" : "فقط علاقه‌مندی‌ها"}
+          </Button>
+        </div>
+
         {/* Activities Grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -129,7 +147,7 @@ export default function SavedActivities() {
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
             </div>
-          ) : activities.length === 0 ? (
+          ) : visibleActivities.length === 0 ? (
             <Card className="clay-element bg-white/60 border-0">
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-6">🎮</div>
@@ -150,7 +168,7 @@ export default function SavedActivities() {
               </CardContent>
             </Card>
           ) : (
-            <ActivityGrid activities={activities} />
+            <ActivityGrid activities={visibleActivities} />
           )}
         </motion.div>
       </div>
