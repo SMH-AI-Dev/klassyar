@@ -73,11 +73,15 @@ function collectQuestionRecords(games) {
   return uniqueBy(records, (item) => `${item.q}|${item.a}`);
 }
 
-function collectWordRecords(games) {
+function collectWordRecords(games, language) {
   const records = [];
+  const hasLanguageScript = (value) => language === "fa"
+    ? /[\u0600-\u06FF]/.test(String(value ?? ""))
+    : /[A-Za-z]/.test(String(value ?? ""));
   const add = (word, clue, sourceGameId) => {
     const answer = String(word ?? "").trim();
     if (!answer || /\s/.test(answer) || !/^[\p{L}\p{N}-]+$/u.test(answer)) return;
+    if (!hasLanguageScript(answer)) return;
     if (Array.from(answer).length < 2 || Array.from(answer).length > 10) return;
     records.push({
       id: `word-pool-${sourceGameId}-${records.length}`,
@@ -89,7 +93,9 @@ function collectWordRecords(games) {
   };
   for (const game of games) {
     for (const item of game.words || []) add(item.answer, item.hint, game.id);
-    for (const item of game.cards || []) add(item.en, item.text, game.id);
+    for (const item of game.cards || []) {
+      add(language === "fa" ? item.text : item.en, item.text, game.id);
+    }
   }
   return uniqueBy(records, (item) => item.a);
 }
@@ -97,10 +103,12 @@ function collectWordRecords(games) {
 const persianGames = gameLibrary.filter((game) => !/^eng-/i.test(game.id));
 const englishOnlyGames = [...englishGames, ...gameLibrary.filter((game) => /^eng-/i.test(game.id))];
 
-const PERSIAN_QUESTION_POOL = collectQuestionRecords(persianGames);
-const ENGLISH_QUESTION_POOL = collectQuestionRecords(englishOnlyGames);
-const PERSIAN_WORD_POOL = collectWordRecords(persianGames);
-const ENGLISH_WORD_POOL = collectWordRecords(englishOnlyGames);
+const PERSIAN_QUESTION_POOL = collectQuestionRecords(persianGames)
+  .filter((item) => /[\u0600-\u06FF]/.test(item.q + item.a));
+const ENGLISH_QUESTION_POOL = collectQuestionRecords(englishOnlyGames)
+  .filter((item) => /[A-Za-z]/.test(item.q + item.a));
+const PERSIAN_WORD_POOL = collectWordRecords(persianGames, "fa");
+const ENGLISH_WORD_POOL = collectWordRecords(englishOnlyGames, "en");
 
 /**
  * Generic legacy mini-games have small starter sets. This supplies them with
