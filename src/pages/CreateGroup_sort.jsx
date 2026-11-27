@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,18 +12,21 @@ import { motion } from "framer-motion";
 
 export default function CreateGroup_sort() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activityType = searchParams.get("type") || "group_sort";
   const queryClient = useQueryClient();
   const [activity, setActivity] = useState({
     title: "",
     description: "",
-    type: "group_sort",
+    type: activityType,
     theme: "mint",
     content: {
       groups: [
         { name: "گروه ۱", icon: "📁", items: [] },
         { name: "گروه ۲", icon: "📂", items: [] }
       ],
-      all_items: ["", "", "", ""]
+      all_items: ["", "", "", ""],
+      timeLimit: 60
     }
   });
 
