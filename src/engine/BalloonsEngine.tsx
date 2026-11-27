@@ -33,7 +33,7 @@ export default function BalloonsEngine({ game, roundId, onProgress, onComplete, 
   function advance(nextScore: number, nextLives: number) {
     setLocked(true);
     setTimeout(() => {
-      if (nextLives <= 0 || idx + 1 >= game.items.length) onFinish({ score: nextScore, total: game.items.length });
+      if (nextLives <= 0 || idx + 1 >= game.items.length) onComplete({ score: nextScore, total: game.items.length });
       else {
         setIdx(idx + 1);
         setPopped([]);
