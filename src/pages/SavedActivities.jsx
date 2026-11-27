@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { localData } from "@/api/localDataClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Plus, Upload } from "lucide-react";
+import { ArrowRight, Plus, Upload, Globe } from "lucide-react";
 import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
 import ActivityGrid from "@/components/dashboard/ActivityGrid";
@@ -107,6 +107,10 @@ export default function SavedActivities() {
               <Upload className="w-5 h-5 ml-2" />
               واردکردن فعالیت
             </Button>
+            <a href="https://wordwall.net/community" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-2xl border-2 border-emerald-200 px-5 py-3 text-sm font-medium text-emerald-700 hover:bg-emerald-50">
+              <Globe className="w-5 h-5 ml-2" />
+              کشف منابع Wordwall
+            </a>
             <Button
               onClick={() => navigate('/Dashboard')}
               variant="outline"
@@ -152,10 +156,10 @@ export default function SavedActivities() {
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-6">🎮</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  هنوز فعالیتی ساخته نشده
+                  {activities.length ? "در این فیلتر فعالیتی پیدا نشد" : "هنوز فعالیتی ساخته نشده"}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  با ساخت اولین فعالیت خود شروع کنید!
+                  {activities.length ? "فیلتر پوشه یا علاقه‌مندی‌ها را تغییر دهید." : "با ساخت اولین فعالیت خود شروع کنید!"}
                 </p>
                 <Button
                   onClick={() => navigate('/Dashboard')}
