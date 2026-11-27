@@ -66,15 +66,18 @@ function validateRecord(game, item) {
     case "typing":
       return Boolean((item.q || item.hint || item.question) && (item.a || item.answer));
     case "anagram":
-    case "hangman":
-    case "wheel":
-    case "whack":
-    case "balloons":
-    case "truefalse":
+    case "hangman": {
+      const word = String(item.a || item.answer || "").replace(/[\s\u200c]/g, "");
+      return Boolean((item.q || item.hint || item.question) && word.length >= 2 && word.length <= 20 && /^[\p{L}\p{N}-]+$/u.test(word));
+    }
     case "wordsearch": {
       const word = String(item.a || item.answer || "").replace(/[\s\u200c]/g, "");
       return Boolean((item.q || item.hint || item.question) && word.length >= 2 && word.length <= 10 && /^[\p{L}\p{N}-]+$/u.test(word));
     }
+    case "wheel":
+    case "whack":
+    case "balloons":
+    case "truefalse":
     case "openbox":
       return Boolean((item.q || item.hint || item.question) && (item.a || item.answer));
     default:
