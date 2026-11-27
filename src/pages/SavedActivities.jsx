@@ -1,14 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { localData } from "@/api/localDataClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Plus, Upload } from "lucide-react";
+import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
 import ActivityGrid from "@/components/dashboard/ActivityGrid";
 
 export default function SavedActivities() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const importInput = useRef(null);
 
   // دریافت فعالیت‌های کاربر
   const { data: activities = [], isLoading } = useQuery({
@@ -23,6 +27,49 @@ export default function SavedActivities() {
       }
     },
   });
+
+  const handleImport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      if (file.size > 2_000_000) throw new Error("حجم بستهٔ فعالیت نباید بیشتر از ۲ مگابایت باشد");
+      const bundle = JSON.parse(await file.text());
+      if (bundle.format !== "klassyar-activity" || bundle.schemaVersion !== 1 || !bundle.activity) {
+        throw new Error("فرمت فایل، بستهٔ معتبر کلاس‌یار نیست");
+      }
+      const activity = bundle.activity;
+      const supportedTypes = new Set([
+        "quiz", "gameshow_quiz", "flashcard", "matching", "group_sort", "memory_game",
+        "random_wheel", "true_false", "unjumble", "whack_a_mole", "wordsearch", "fill_blank",
+        "ranking", "crossword", "timeline", "spinner", "card_flip", "hotspot", "drag_text",
+        "balloon_pop", "maze_chase", "airplane", "open_the_box", "missing_word", "anagram",
+        "hangman", "flip_tiles", "image_quiz", "labelled_diagram", "random_cards", "match",
+        "type", "scramble",
+      ]);
+      if (!activity.title || !supportedTypes.has(activity.type) ||
+          !activity.content || typeof activity.content !== "object" || Array.isArray(activity.content)) {
+        throw new Error("ساختار فعالیت یا قالب آن در این نسخه پشتیبانی نمی‌شود");
+      }
+      await localData.entities.Activity.create({
+        title: `${activity.title} - واردشده`,
+        description: activity.description || "",
+        type: activity.type,
+        theme: activity.theme || "lavender",
+        content: activity.content,
+        sourceActivityId: activity.id || null,
+        sourceBundleVersion: bundle.schemaVersion,
+        sourceAttribution: bundle.attribution || null,
+        sourceLicense: bundle.license || "unspecified",
+        importedAt: new Date().toISOString(),
+      });
+      await queryClient.invalidateQueries({ queryKey: ["activities"] });
+      toast.success("فعالیت با موفقیت وارد کتابخانه شد");
+    } catch (error) {
+      toast.error(error.message || "واردکردن بستهٔ فعالیت ناموفق بود");
+    } finally {
+      event.target.value = "";
+    }
+  };
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -41,7 +88,17 @@ export default function SavedActivities() {
               {activities.length} فعالیت ذخیره شده
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
+            <input ref={importInput} type="file" accept=".json,.klassyar.json,application/json" className="hidden" onChange={handleImport} />
+            <Button
+              onClick={() => importInput.current?.click()}
+              variant="outline"
+              size="lg"
+              className="border-2 border-violet-200 text-violet-700 px-5 py-6 text-lg rounded-2xl clay-element"
+            >
+              <Upload className="w-5 h-5 ml-2" />
+              واردکردن فعالیت
+            </Button>
             <Button
               onClick={() => navigate('/Dashboard')}
               variant="outline"
