@@ -46,7 +46,8 @@ function hashValue(value) {
 }
 
 function sourceItems(game) {
-  return game?.questionBank || game?.questions || game?.words || game?.cards || game?.items || [];
+  const sources = [game?.questionBank, game?.questions, game?.words, game?.cards, game?.items];
+  return sources.find((items) => Array.isArray(items) && items.length) || [];
 }
 
 function optionText(option) {
