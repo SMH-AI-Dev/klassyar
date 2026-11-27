@@ -421,14 +421,43 @@ function uniqueContentItems(items, engine) {
 }
 
 /** Returns the original content records for a game without changing its interaction model. */
+function letterSignature(value) {
+  return Array.from(String(value ?? "").normalize("NFKC").replace(/[\s\u00ad\u200b\u200c\u200d]/g, "")).sort().join("");
+}
+
+function deterministicScramble(value) {
+  const characters = Array.from(String(value ?? "").replace(/\s/g, ""));
+  let seed = Number.parseInt(hashValue(normalizeText(value)), 36) || 1;
+  for (let index = characters.length - 1; index > 0; index -= 1) {
+    seed = (seed * 9301 + 49297) % 233280;
+    const target = seed % (index + 1);
+    [characters[index], characters[target]] = [characters[target], characters[index]];
+  }
+  if (characters.join("") === String(value) && characters.length > 1) {
+    characters.push(characters.shift());
+  }
+  return characters.join("");
+}
+
+function prepareNativeItem(game, item) {
+  if (game.engine !== "scramble") return item;
+  const answer = asText(item.answer);
+  const cleaned = asText(item.scrambled).replace(/[\s\u00ad\u200b\u200c\u200d]/g, "");
+  const scrambled = letterSignature(cleaned) === letterSignature(answer)
+    ? cleaned
+    : deterministicScramble(answer);
+  return { ...item, scrambled };
+}
+
 export function getGameContentBank(game) {
   if (!game) return [];
   if (game.engine === "quiz") return getQuestionBank(game);
   const field = contentField(game);
   const source = Array.isArray(game[field]) ? game[field] : sourceItems(game);
-  const primary = uniqueContentItems(source, game.engine);
+  const prepared = source.map((item) => prepareNativeItem(game, item));
+  const primary = uniqueContentItems(prepared, game.engine);
   if (primary.length >= MINIMUM_BANK_SIZE) return primary.slice(0, MINIMUM_BANK_SIZE);
-  const fallback = getFallbackContentPool(game);
+  const fallback = getFallbackContentPool(game).map((item) => prepareNativeItem(game, item));
   return uniqueContentItems([...primary, ...fallback], game.engine).slice(0, MINIMUM_BANK_SIZE);
 }
 
