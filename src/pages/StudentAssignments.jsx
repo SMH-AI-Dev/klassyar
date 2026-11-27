@@ -52,9 +52,10 @@ export default function StudentAssignments() {
             const activityLink = activitySnapshot
               ? `/Play?type=${encodeURIComponent(activityType || "quiz")}&assignmentId=${encodeURIComponent(assignment.id)}`
               : null;
+            const gamePath = String(assignment.gameId || "").startsWith("eng-") ? "/play-english" : "/play-game";
             return <Card key={assignment.id} className="border-0 shadow-lg"><CardHeader><CardTitle>{assignment.title}</CardTitle></CardHeader><CardContent className="space-y-3">
               {activityLink && !unavailable && <Link className="text-violet-700 underline text-sm" to={activityLink}>شروع فعالیت: {activitySnapshot.title}</Link>}
-              {assignment.gameId && <Link className={unavailable ? "pointer-events-none text-slate-400 text-sm" : "text-violet-700 underline text-sm"} to={unavailable ? "#" : `/play-game/${encodeURIComponent(assignment.gameId)}?assignmentId=${encodeURIComponent(assignment.id)}`}>رفتن به بازی: {assignment.gameTitle}</Link>}
+              {assignment.gameId && <Link className={unavailable ? "pointer-events-none text-slate-400 text-sm" : "text-violet-700 underline text-sm"} to={unavailable ? "#" : `${gamePath}/${encodeURIComponent(assignment.gameId)}?assignmentId=${encodeURIComponent(assignment.id)}`}>رفتن به بازی: {assignment.gameTitle}</Link>}
               {assignment.deadline && <p className="text-xs text-slate-500">مهلت: {new Date(assignment.deadline).toLocaleString("fa-IR")}</p>}
               <p className="text-xs text-slate-500">تلاش‌ها: {attemptCount} از {maxAttempts}</p>
               {expired && <p role="status" className="text-sm text-rose-700">مهلت این تکلیف به پایان رسیده است.</p>}
