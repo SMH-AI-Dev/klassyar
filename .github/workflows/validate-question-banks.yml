@@ -29,3 +29,5 @@ jobs:
         run: node src/lib/auditAssignmentFlow.js
       - name: Verify compatible activity template conversions
         run: node src/lib/auditActivityConversion.js
+      - name: Verify creator-to-player runtime adapters
+        run: node src/lib/auditActivityRuntime.js
