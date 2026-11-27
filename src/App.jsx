@@ -14,14 +14,8 @@ import MyClasses from './pages/MyClasses';
 import Login from './pages/Login';
 import TeacherReports from './pages/TeacherReports';
 import StudentAssignments from './pages/StudentAssignments';
-import LanguageLearning from './pages/LanguageLearning';
-import GradeSelection from './pages/GradeSelection';
-import LearningOptions from './pages/LearningOptions';
-import LearningItems from './pages/LearningItems';
 import GameHub from './pages/GameHub';
-import EnglishGameHub from './pages/EnglishGameHub';
 import PlayGame from './pages/PlayGame';
-import PlayEnglish from './pages/PlayEnglish';
 
 const routerBasename = import.meta.env.BASE_URL.startsWith('/')
   ? import.meta.env.BASE_URL
@@ -177,14 +171,8 @@ function AppContent() {
         <Route path="/MyClasses" element={<ProtectedLayout><MyClasses /></ProtectedLayout>} />
         <Route path="/TeacherReports" element={<ProtectedLayout><TeacherOnly><TeacherReports /></TeacherOnly></ProtectedLayout>} />
         <Route path="/StudentAssignments" element={<ProtectedLayout><StudentOnly><StudentAssignments /></StudentOnly></ProtectedLayout>} />
-        <Route path="/LanguageLearning" element={<ProtectedLayout><LanguageLearning /></ProtectedLayout>} />
-        <Route path="/LanguageLearning/grades" element={<ProtectedLayout><GradeSelection /></ProtectedLayout>} />
-        <Route path="/LanguageLearning/:gradeId" element={<ProtectedLayout><LearningOptions /></ProtectedLayout>} />
-        <Route path="/LanguageLearning/:gradeId/:optionId" element={<ProtectedLayout><LearningItems /></ProtectedLayout>} />
         <Route path="/game-hub" element={<ProtectedLayout><GameHub /></ProtectedLayout>} />
-        <Route path="/english-hub" element={<ProtectedLayout><EnglishGameHub /></ProtectedLayout>} />
         <Route path="/play-game/:gameId" element={<PlayGame />} />
-        <Route path="/play-english/:gameId" element={<PlayEnglish />} />
         
         {/* Create Route */}
         <Route path="/Create" element={<ProtectedRoute><CreateRouter /></ProtectedRoute>} />
