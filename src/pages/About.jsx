@@ -99,7 +99,7 @@ const creatorLinks = [
 
 export default function About() {
   return (
-    <main dir="rtl" className="min-h-screen px-4 py-8 md:px-6 lg:px-8">
+    <div dir="rtl" className="min-h-screen px-4 py-8 md:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-10 md:space-y-14">
         <motion.header
           initial={{ opacity: 0, y: 24 }}
@@ -313,6 +313,6 @@ export default function About() {
           </a>
         </footer>
       </div>
-    </main>
+    </div>
   );
 }
