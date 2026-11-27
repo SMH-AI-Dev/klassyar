@@ -63,8 +63,16 @@ function mergeTeacherQuestions(game, teacherQuestions) {
   }
 
   const merged = { ...game };
+  const existingBank = game.questionBank || game.questions || game.words || game.cards || game.items || [];
+  merged.questionBank = [...existingBank, ...prepared];
+
   if (game.engine === "quiz") {
-    merged.questions = [...(game.questions || []), ...prepared.filter((item) => item?.question && Array.isArray(item.options))];
+    const validPrepared = prepared.filter((item) =>
+      (item?.question || item?.q) &&
+      (Array.isArray(item.options) || item.answer || item.a || item.correctAnswer)
+    );
+    merged.questions = [...(game.questions || []), ...validPrepared];
+    merged.questionBank = [...(game.questionBank || game.questions || []), ...validPrepared];
     return merged;
   }
   if (game.engine === "scramble") {
@@ -88,6 +96,14 @@ function mergeTeacherQuestions(game, teacherQuestions) {
   }
   if (game.engine === "type" || game.engine === "fillblank") {
     merged.questions = [...(game.questions || []), ...prepared];
+    return merged;
+  }
+  if (Array.isArray(game.items)) {
+    merged.items = [...game.items, ...prepared];
+    return merged;
+  }
+  if (Array.isArray(game.questions)) {
+    merged.questions = [...game.questions, ...prepared];
     return merged;
   }
   return merged;
@@ -116,5 +132,5 @@ export default function PlayEnglish() {
     );
   }
 
-  return <GamePlayer game={mergedGame} />;
+  return <GamePlayer game={mergedGame} userId={user?.id || "guest"} />;
 }

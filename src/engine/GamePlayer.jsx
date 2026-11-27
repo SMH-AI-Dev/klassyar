@@ -3,59 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import QuizEngine from "./QuizEngine";
-import MatchEngine from "./MatchEngine";
-import TypeEngine from "./TypeEngine";
-import SortEngine from "./SortEngine";
-import ScrambleEngine from "./ScrambleEngine";
-import FillBlankEngine from "./FillBlankEngine";
-import AnagramEngine from "./AnagramEngine";
-import HangmanEngine from "./HangmanEngine";
-import WheelEngine from "./WheelEngine";
-import WhackEngine from "./WhackEngine";
-import BalloonsEngine from "./BalloonsEngine";
-import TrueFalseEngine from "./TrueFalseEngine";
-import WordSearchEngine from "./WordSearchEngine";
-import OpenBoxEngine from "./OpenBoxEngine";
-import TypingEngine from "./TypingEngine";
 import { createQuestionRound, saveQuestionRoundProgress } from "@/lib/questionBank";
 import { classroom } from "@/lib/classroom";
 
-export default function GamePlayer({ game }) {
+export default function GamePlayer({ game, userId = "guest" }) {
   const navigate = useNavigate();
-  const [round, setRound] = useState(() => createQuestionRound(game, "open"));
-  const activeGameId = useRef(game.id);
+  const [round, setRound] = useState(() => createQuestionRound(game, "open", userId));
+  const activeGameId = useRef(`${userId}:${game.id}`);
 
   useEffect(() => {
-    if (activeGameId.current !== game.id) {
-      activeGameId.current = game.id;
-      setRound(createQuestionRound(game, "open"));
+    const activeScope = `${userId}:${game.id}`;
+    if (activeGameId.current !== activeScope) {
+      activeGameId.current = activeScope;
+      setRound(createQuestionRound(game, "open", userId));
     }
     const handlePageShow = (event) => {
-      if (event.persisted) setRound(createQuestionRound(game, "return"));
+      if (event.persisted) setRound(createQuestionRound(game, "return", userId));
     };
     window.addEventListener("pageshow", handlePageShow);
     return () => window.removeEventListener("pageshow", handlePageShow);
-  }, [game]);
+  }, [game, userId]);
 
-  const engines = {
-    quiz: QuizEngine,
-    match: MatchEngine,
-    type: TypeEngine,
-    sort: SortEngine,
-    scramble: ScrambleEngine,
-    fillblank: FillBlankEngine,
-    anagram: AnagramEngine,
-    hangman: HangmanEngine,
-    wheel: WheelEngine,
-    whack: WhackEngine,
-    balloons: BalloonsEngine,
-    truefalse: TrueFalseEngine,
-    wordsearch: WordSearchEngine,
-    openbox: OpenBoxEngine,
-    typing: TypingEngine,
-  };
-
-  const Engine = engines[game.engine];
+  const Engine = QuizEngine;
   if (!Engine) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -77,7 +46,7 @@ export default function GamePlayer({ game }) {
         key={round.id}
         game={round.game}
         roundId={round.id}
-        onProgress={(progress) => saveQuestionRoundProgress(game.id, progress)}
+        onProgress={(progress) => saveQuestionRoundProgress(game.id, progress, userId)}
         onComplete={({ score, total }) => classroom.recordResult({
           gameId: game.id,
           gameTitle: game.title,
@@ -86,7 +55,7 @@ export default function GamePlayer({ game }) {
           total,
           percent: total ? Math.round((score / total) * 100) : 0,
         })}
-        onRestart={() => setRound(createQuestionRound(game, "restart"))}
+        onRestart={() => setRound(createQuestionRound(game, "restart", userId))}
       />
     </div>
   );

@@ -1035,8 +1035,8 @@ const gameLibrary = [
   },
   {
     id: "typing-game",
-    title: "پاسخ را بنویس",
-    description: "جواب را تایپ کن و موشک را جلو ببر",
+    title: "پاسخ را انتخاب کن",
+    description: "پاسخ درست را از میان چهار گزینه انتخاب کن",
     icon: "🚀",
     category: "زبان",
     difficulty: "متوسط",
