@@ -95,6 +95,9 @@ export const localData = {
           created_date: new Date().toISOString(),
           created_by: currentUserEmail() || 'guest@klassyar.local',
           plays_count: 0,
+          folder: activityData.folder || "بدون پوشه",
+          favorite: Boolean(activityData.favorite),
+          visibility: activityData.visibility || "private",
         };
         data.activities.push(activity);
         saveData(data);

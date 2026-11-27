@@ -1,14 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { localData } from "@/api/localDataClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Plus, Upload, Globe } from "lucide-react";
+import { toast } from "@/lib/sonner";
 import { motion } from "framer-motion";
 import ActivityGrid from "@/components/dashboard/ActivityGrid";
 
 export default function SavedActivities() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const importInput = useRef(null);
+  const [folderFilter, setFolderFilter] = useState("all");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
 
   // دریافت فعالیت‌های کاربر
   const { data: activities = [], isLoading } = useQuery({
@@ -24,6 +30,55 @@ export default function SavedActivities() {
     },
   });
 
+  const handleImport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      if (file.size > 2_000_000) throw new Error("حجم بستهٔ فعالیت نباید بیشتر از ۲ مگابایت باشد");
+      const bundle = JSON.parse(await file.text());
+      if (bundle.format !== "klassyar-activity" || bundle.schemaVersion !== 1 || !bundle.activity) {
+        throw new Error("فرمت فایل، بستهٔ معتبر کلاس‌یار نیست");
+      }
+      const activity = bundle.activity;
+      const supportedTypes = new Set([
+        "quiz", "gameshow_quiz", "flashcard", "matching", "group_sort", "memory_game",
+        "random_wheel", "true_false", "unjumble", "whack_a_mole", "wordsearch", "fill_blank",
+        "ranking", "crossword", "timeline", "spinner", "card_flip", "hotspot", "drag_text",
+        "balloon_pop", "maze_chase", "airplane", "open_the_box", "missing_word", "anagram",
+        "hangman", "flip_tiles", "image_quiz", "labelled_diagram", "random_cards", "match",
+        "type", "scramble",
+      ]);
+      if (!activity.title || !supportedTypes.has(activity.type) ||
+          !activity.content || typeof activity.content !== "object" || Array.isArray(activity.content)) {
+        throw new Error("ساختار فعالیت یا قالب آن در این نسخه پشتیبانی نمی‌شود");
+      }
+      await localData.entities.Activity.create({
+        title: `${activity.title} - واردشده`,
+        description: activity.description || "",
+        type: activity.type,
+        theme: activity.theme || "lavender",
+        content: activity.content,
+        sourceActivityId: activity.id || null,
+        sourceBundleVersion: bundle.schemaVersion,
+        sourceAttribution: bundle.attribution || null,
+        sourceLicense: bundle.license || "unspecified",
+        importedAt: new Date().toISOString(),
+      });
+      await queryClient.invalidateQueries({ queryKey: ["activities"] });
+      toast.success("فعالیت با موفقیت وارد کتابخانه شد");
+    } catch (error) {
+      toast.error(error.message || "واردکردن بستهٔ فعالیت ناموفق بود");
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const folders = [...new Set(activities.map((activity) => activity.folder || "بدون پوشه"))].sort();
+  const visibleActivities = activities.filter((activity) =>
+    (folderFilter === "all" || (activity.folder || "بدون پوشه") === folderFilter) &&
+    (!favoritesOnly || activity.favorite)
+  );
+
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -38,10 +93,24 @@ export default function SavedActivities() {
               فعالیت‌های شما
             </h1>
             <p className="text-gray-600 text-lg">
-              {activities.length} فعالیت ذخیره شده
+              {visibleActivities.length} از {activities.length} فعالیت
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
+            <input ref={importInput} type="file" accept=".json,.klassyar.json,application/json" className="hidden" onChange={handleImport} />
+            <Button
+              onClick={() => importInput.current?.click()}
+              variant="outline"
+              size="lg"
+              className="border-2 border-violet-200 text-violet-700 px-5 py-6 text-lg rounded-2xl clay-element"
+            >
+              <Upload className="w-5 h-5 ml-2" />
+              واردکردن فعالیت
+            </Button>
+            <a href="https://wordwall.net/community" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-2xl border-2 border-emerald-200 px-5 py-3 text-sm font-medium text-emerald-700 hover:bg-emerald-50">
+              <Globe className="w-5 h-5 ml-2" />
+              کشف منابع Wordwall
+            </a>
             <Button
               onClick={() => navigate('/Dashboard')}
               variant="outline"
@@ -62,6 +131,16 @@ export default function SavedActivities() {
           </div>
         </motion.div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <select className="rounded-xl border bg-white px-4 py-2" value={folderFilter} onChange={(event) => setFolderFilter(event.target.value)} aria-label="فیلتر پوشه">
+            <option value="all">همهٔ پوشه‌ها</option>
+            {folders.map((folder) => <option key={folder} value={folder}>{folder}</option>)}
+          </select>
+          <Button type="button" variant={favoritesOnly ? "default" : "outline"} onClick={() => setFavoritesOnly((value) => !value)}>
+            {favoritesOnly ? "نمایش همهٔ فعالیت‌ها" : "فقط علاقه‌مندی‌ها"}
+          </Button>
+        </div>
+
         {/* Activities Grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -72,15 +151,15 @@ export default function SavedActivities() {
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
             </div>
-          ) : activities.length === 0 ? (
+          ) : visibleActivities.length === 0 ? (
             <Card className="clay-element bg-white/60 border-0">
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-6">🎮</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  هنوز فعالیتی ساخته نشده
+                  {activities.length ? "در این فیلتر فعالیتی پیدا نشد" : "هنوز فعالیتی ساخته نشده"}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  با ساخت اولین فعالیت خود شروع کنید!
+                  {activities.length ? "فیلتر پوشه یا علاقه‌مندی‌ها را تغییر دهید." : "با ساخت اولین فعالیت خود شروع کنید!"}
                 </p>
                 <Button
                   onClick={() => navigate('/Dashboard')}
@@ -93,7 +172,7 @@ export default function SavedActivities() {
               </CardContent>
             </Card>
           ) : (
-            <ActivityGrid activities={activities} />
+            <ActivityGrid activities={visibleActivities} />
           )}
         </motion.div>
       </div>
