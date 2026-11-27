@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,13 @@ import { motion } from "framer-motion";
 
 export default function CreateDrag_text() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activityType = searchParams.get("type") || "drag_text";
   const queryClient = useQueryClient();
   const [activity, setActivity] = useState({
     title: "",
     description: "",
-    type: "drag_text",
+    type: activityType,
     theme: "cyan",
     content: {
       sentences: [
