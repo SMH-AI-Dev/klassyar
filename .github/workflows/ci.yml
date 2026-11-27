@@ -1,0 +1,57 @@
+name: KlassYar CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npm run build:android
+      - run: node scripts/ensure-android-cordova-gradle.mjs
+      - name: Create disposable CI signing key
+        run: |
+          keytool -genkeypair -noprompt -v -storetype JKS \
+            -keystore "$RUNNER_TEMP/klassyar-ci-test.jks" \
+            -alias ci-test -keyalg RSA -keysize 2048 -validity 3650 \
+            -storepass ci-test-store-password -keypass ci-test-key-password \
+            -dname "CN=KlassYar CI Test, OU=CI, O=SMH-AI-Dev, L=CI, ST=CI, C=US"
+
+      - name: Build debug APK, signed release APK, and AAB for verification
+        working-directory: android
+        env:
+          KLASSYAR_ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/klassyar-ci-test.jks
+          KLASSYAR_ANDROID_STORE_PASSWORD: ci-test-store-password
+          KLASSYAR_ANDROID_KEY_ALIAS: ci-test
+          KLASSYAR_ANDROID_KEY_PASSWORD: ci-test-key-password
+        run: gradle assembleDebug assembleRelease bundleRelease --no-daemon
+
+      - name: Verify disposable release signatures
+        run: |
+          APK="$(find android/app/build/outputs/apk/release -name '*.apk' -print -quit)"
+          AAB="$(find android/app/build/outputs/bundle/release -name '*.aab' -print -quit)"
+          test -n "$APK"
+          test -n "$AAB"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          jarsigner -verify -verbose -certs "$AAB" >/dev/null

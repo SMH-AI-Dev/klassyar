@@ -1,4 +1,4 @@
-name: Validate Klassyar question banks
+name: Validate KlassYar school question banks
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Build application
         run: node node_modules/vite/bin/vite.js build
-      - name: Audit all Persian and English game banks
+      - name: Audit all KlassYar school game banks
         run: node src/lib/auditGameCatalog.js
       - name: Verify assignment snapshot delivery and attempt limits
         run: node src/lib/auditAssignmentFlow.js

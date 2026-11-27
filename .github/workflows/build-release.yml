@@ -1,4 +1,4 @@
-﻿name: Build Desktop & Android
+﻿name: Build Desktop & Signed Android
 
 on:
   push:
@@ -30,14 +30,28 @@ jobs:
         run: npm run build:android
       - name: Sync Capacitor
         run: npx cap sync android
+      - name: Prepare optional Cordova Gradle include
+        run: node scripts/ensure-android-cordova-gradle.mjs
+      - name: Validate Android signing secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.KLASSYAR_ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.KLASSYAR_ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.KLASSYAR_ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.KLASSYAR_ANDROID_KEY_PASSWORD }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64" || { echo "Missing KLASSYAR_ANDROID_KEYSTORE_BASE64"; exit 1; }
+          test -n "$ANDROID_STORE_PASSWORD" || { echo "Missing KLASSYAR_ANDROID_STORE_PASSWORD"; exit 1; }
+          test -n "$ANDROID_KEY_ALIAS" || { echo "Missing KLASSYAR_ANDROID_KEY_ALIAS"; exit 1; }
+          test -n "$ANDROID_KEY_PASSWORD" || { echo "Missing KLASSYAR_ANDROID_KEY_PASSWORD"; exit 1; }
+
       - name: Prepare Android signing key
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.KLASSYAR_ANDROID_KEYSTORE_BASE64 }}
         run: |
-          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
-            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/klassyar-release.keystore"
-          fi
-      - name: Build APKs
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/klassyar-release.keystore"
+          test -s "$RUNNER_TEMP/klassyar-release.keystore"
+
+      - name: Build signed APK and AAB
         working-directory: android
         env:
           KLASSYAR_ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/klassyar-release.keystore
@@ -45,18 +59,25 @@ jobs:
           KLASSYAR_ANDROID_KEY_ALIAS: ${{ secrets.KLASSYAR_ANDROID_KEY_ALIAS }}
           KLASSYAR_ANDROID_KEY_PASSWORD: ${{ secrets.KLASSYAR_ANDROID_KEY_PASSWORD }}
         run: |
-          gradle assembleDebug --no-daemon
-          if [ -f "$KLASSYAR_ANDROID_KEYSTORE_FILE" ] && [ -n "$KLASSYAR_ANDROID_STORE_PASSWORD" ] && [ -n "$KLASSYAR_ANDROID_KEY_ALIAS" ] && [ -n "$KLASSYAR_ANDROID_KEY_PASSWORD" ]; then
-            gradle assembleRelease --no-daemon
-          else
-            echo "Skipping signed Android release APK; the installable debug APK will be included. Configure signing secrets for a stable release signature."
-          fi
+          gradle assembleRelease bundleRelease --no-daemon
+
+      - name: Verify APK signature
+        run: |
+          APK="$(find android/app/build/outputs/apk/release -name '*.apk' -print -quit)"
+          test -n "$APK"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          AAB="$(find android/app/build/outputs/bundle/release -name '*.aab' -print -quit)"
+          test -n "$AAB"
+          jarsigner -verify -verbose -certs "$AAB" >/dev/null
+
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: |
-            android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
 
   desktop:
     name: Desktop (${{ matrix.os }})

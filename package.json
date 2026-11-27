@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postbuild": "copy /Y dist\\index.html dist\\404.html >nul",
+    "postbuild": "node scripts/copy-spa-fallback.mjs",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist --dotfiles",
     "preview": "vite preview",

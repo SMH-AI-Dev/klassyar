@@ -1,322 +1,317 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Sparkles, Users, Trophy, Zap, BookOpen, Mail, Phone, Github, BrainCircuit } from "lucide-react";
+import {
+  Heart, Sparkles, Trophy, BookOpen, Mail, Github,
+  BrainCircuit, Gamepad2, ShieldCheck, GraduationCap, Database,
+  Smartphone, Lightbulb, Target
+} from "lucide-react";
 import { motion } from "framer-motion";
 
-// All about-page images, sorted by their 2-digit number (02.jpg .. 33.jpg).
-const aboutImagesModule = import.meta.glob('../assets/about/*.jpg', { eager: true, import: 'default' });
+// تصاویر صفحه درباره ما، به ترتیب شماره فایل (02.jpg تا 33.jpg)
+const aboutImagesModule = import.meta.glob("../assets/about/*.jpg", {
+  eager: true,
+  import: "default",
+});
 const aboutImages = Object.keys(aboutImagesModule)
   .sort((a, b) => {
-    const na = parseInt(a.match(/(\d{2})\.jpg$/)?.[1] ?? "99", 10);
-    const nb = parseInt(b.match(/(\d{2})\.jpg$/)?.[1] ?? "99", 10);
+    const na = Number(a.match(/(\d{2})\.jpg$/)?.[1] ?? "99");
+    const nb = Number(b.match(/(\d{2})\.jpg$/)?.[1] ?? "99");
     return na - nb;
   })
   .map((key) => aboutImagesModule[key]);
 
-const teamMembers = [
-  {
-    name: "Seyed Mehdi Hosseini",
-    role: "Computer Software Engineer and AI specialist",
-    emoji: "👨‍💻",
-    description: "طراح و توسعه‌دهندهٔ کلاسیار با تمرکز بر نرم‌افزار و هوش مصنوعی",
-    contacts: [
-      { label: "Email", value: "dev.smh.ai@gmail.com", href: "mailto:dev.smh.ai@gmail.com", icon: Mail, style: "border-emerald-200 bg-emerald-50 text-emerald-800" },
-      { label: "Telephone", value: "+98 902 491 2785", href: "tel:+989024912785", icon: Phone, style: "border-sky-200 bg-sky-50 text-sky-800" },
-      { label: "Hugging Face", value: "huggingface.co/SMH-DEV-AI", href: "https://huggingface.co/SMH-DEV-AI/", icon: BrainCircuit, style: "border-amber-200 bg-amber-50 text-amber-900", external: true },
-      { label: "GitHub", value: "github.com/SMH-AI-Dev", href: "https://github.com/SMH-AI-Dev/", icon: Github, style: "border-slate-300 bg-slate-100 text-slate-800", external: true },
-    ],
-    color: "from-purple-400 to-pink-400"
-  },
-  {
-    name: "GitHub Copilot",
-    role: "هوش مصنوعی یار و همراه",
-    emoji: "🤖",
-    description: "کمک به پیاده‌سازی، بهینه‌سازی و خلق ایده‌های نوآورانه",
-    color: "from-green-400 to-emerald-400"
-  }
-];
-
 const features = [
   {
-    icon: Sparkles,
-    title: "گیمیفیکیشن آموزشی",
-    description: "تبدیل یادگیری به یک تجربه جذاب و سرگرم‌کننده",
-    color: "from-purple-400 to-pink-400"
+    icon: Gamepad2,
+    emoji: "🎮",
+    title: "بازی‌های آموزشی متنوع",
+    description:
+      "از فلش‌کارت و تطبیق تا مرتب‌سازی، حافظه، گردونه و بازی‌های تعاملی؛ هر بازی با روش تعامل متناسب با ماهیت خودش.",
+    color: "from-violet-500 to-fuchsia-500",
   },
   {
-    icon: Users,
-    title: "برای همه",
-    description: "معلمان، دانش‌آموزان و والدین - همه با هم",
-    color: "from-blue-400 to-cyan-400"
+    icon: GraduationCap,
+    emoji: "👩‍🏫",
+    title: "ابزارهای آموزشی معلم",
+    description:
+      "امکان طراحی فعالیت، مدیریت تجربه یادگیری و پیگیری عملکرد دانش‌آموزان در مسیر توسعه محصول.",
+    color: "from-sky-500 to-cyan-500",
   },
   {
-    icon: Zap,
-    title: "نوآوری مداوم",
-    description: "به‌روزرسانی‌ها و قابلیت‌های جدید به طور مرتب",
-    color: "from-orange-400 to-red-400"
+    icon: ShieldCheck,
+    emoji: "🔒",
+    title: "رویکرد محلی و آفلاین",
+    description:
+      "تمرکز بر نگهداری محلی اطلاعات و فراهم‌کردن تجربه اصلی بدون وابستگی اجباری به سرویس ابری.",
+    color: "from-emerald-500 to-teal-500",
   },
   {
-    icon: Heart,
-    title: "ساخته با عشق",
-    description: "هر خط کد با دقت و علاقه نوشته شده است",
-    color: "from-rose-400 to-pink-400"
+    icon: Database,
+    emoji: "🧩",
+    title: "بانک محتوای اختصاصی",
+    description:
+      "محتوای هر بازی ساختار مخصوص خودش را دارد؛ کارت، جفت، کلمه، دسته و سؤال به یک قالب واحد تبدیل نمی‌شوند.",
+    color: "from-amber-500 to-orange-500",
   },
   {
-    icon: Heart,
-    title: "پیشنهادات و انتقادات",
-    description: "هرگونه پیشنهاد و انتقاد سازنده‌ای که کمک به پیشرفت این اپلیکیشن باشد را با جان و دل می‌پذیریم",
-    email: "klasyar.smh@gmail.com",
-    color: "from-rose-400 to-pink-400"
-  }
+    icon: Smartphone,
+    emoji: "📱",
+    title: "تجربه چنددستگاهی",
+    description:
+      "طراحی واکنش‌گرا و مسیر توسعه نسخه‌های قابل نصب برای دستگاه‌های مختلف.",
+    color: "from-pink-500 to-rose-500",
+  },
+  {
+    icon: Target,
+    emoji: "🎯",
+    title: "یادگیری هدفمند",
+    description:
+      "هدف، تمرین فعال، بازخورد روشن و پیشرفت قابل مشاهده است؛ نه صرفاً نمایش سؤال و پاسخ.",
+    color: "from-indigo-500 to-blue-500",
+  },
+];
+
+const creatorLinks = [
+  {
+    label: "ایمیل",
+    value: "dev.smh.ai@gmail.com",
+    href: "mailto:dev.smh.ai@gmail.com",
+    icon: Mail,
+    color: "border-emerald-200 bg-emerald-50 text-emerald-800",
+  },
+  {
+    label: "GitHub",
+    value: "github.com/SMH-AI-Dev",
+    href: "https://github.com/SMH-AI-Dev/",
+    icon: Github,
+    color: "border-slate-200 bg-slate-50 text-slate-800",
+    external: true,
+  },
+  {
+    label: "Hugging Face",
+    value: "huggingface.co/SMH-DEV-AI",
+    href: "https://huggingface.co/SMH-DEV-AI/",
+    icon: BrainCircuit,
+    color: "border-amber-200 bg-amber-50 text-amber-900",
+    external: true,
+  },
 ];
 
 export default function About() {
   return (
-    <div className="min-h-screen p-4 md:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto space-y-8 md:space-y-12">
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+    <div dir="rtl" className="min-h-screen px-4 py-8 md:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl space-y-10 md:space-y-14">
+        <motion.header
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-violet-100 via-fuchsia-50 to-sky-100 px-5 py-10 text-center shadow-sm md:px-12 md:py-16"
         >
-          <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-3xl mx-auto mb-4 md:mb-6 flex items-center justify-center clay-element">
-            <Heart className="w-8 h-8 md:w-10 md:h-10 text-white animate-pulse" />
+          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-fuchsia-300/30 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-8 h-52 w-52 rounded-full bg-sky-300/30 blur-2xl" />
+          <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-300/50">
+            <Gamepad2 className="h-10 w-10" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-2">🎮 کلاس یار</h1>
-          <h2 className="text-3xl md:text-5xl font-bold text-purple-600 mb-4">🏫 کلاس، یار بود 📚</h2>
-          <div className="text-lg md:text-2xl text-gray-600 max-w-3xl mx-auto px-4 space-y-3">
-            <p>
-              🌟 <strong>پلتفرم گیمیفیکیشن آموزشی</strong> با <strong>۱۳۰ بازی و فعالیت تعاملی</strong> 🎯
-            </p>
-            <p>
-              👩‍🏫 ساخته شده برای <strong>معلمان</strong> ، <strong>دانش‌آموزان</strong> و <strong>والدین</strong> 🤝
-            </p>
-            <p className="text-base md:text-lg text-purple-500">
-              ✨ هر درس ، یک ماجراجویی جدید &nbsp; | &nbsp; هر بازی ، یک قدم به سوی یادگیری 🚀
-            </p>
+          <p className="relative mb-2 text-sm font-bold tracking-widest text-violet-700">
+            ✨ LEARN • PLAY • GROW ✨
+          </p>
+          <h1 className="relative mb-3 text-4xl font-black text-slate-800 md:text-6xl">
+            🎮 کلاس‌یار
+          </h1>
+          <h2 className="relative mb-5 text-2xl font-extrabold text-violet-700 md:text-3xl">
+            کلاس، یارِ یادگیری 📚
+          </h2>
+          <p className="relative mx-auto max-w-3xl text-base leading-8 text-slate-700 md:text-xl">
+            پلتفرم بازی‌محور آموزش دروس مدرسه؛ جایی که تمرین، کشف و بازی در کنار
+            هم قرار می‌گیرند تا یادگیری فعال‌تر و جذاب‌تر شود.
+          </p>
+          <div className="relative mt-7 flex flex-wrap justify-center gap-2">
+            {["🇮🇷 فارسی‌محور", "🧩 بازی‌های تعاملی", "👩‍🏫 ابزار معلم", "🔒 آفلاین‌محور"].map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/80 bg-white/75 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm"
+              >
+                {item}
+              </span>
+            ))}
           </div>
-        </motion.div>
+        </motion.header>
 
-        {/* Story Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.1 }}
         >
-          <Card className="clay-element bg-gradient-to-br from-purple-50 to-pink-50 border-0">
-            <CardContent className="p-6 md:p-8 lg:p-12">
-              <div className="flex items-center gap-3 mb-4 md:mb-6">
-                <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">داستان ما</h2>
+          <Card className="overflow-hidden border-0 bg-gradient-to-br from-white to-violet-50 shadow-sm">
+            <CardContent className="p-6 md:p-10">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                  <BookOpen className="h-6 w-6" />
+                </span>
+                <div>
+                  <h2 className="text-2xl font-extrabold text-slate-800">📖 داستان کلاس‌یار</h2>
+                  <p className="text-sm text-slate-500">آموزش با مشارکت، تجربه و بازی</p>
+                </div>
               </div>
-              <div className="space-y-4 md:space-y-6 text-base md:text-lg text-gray-700 leading-relaxed">
+              <div className="space-y-4 text-base leading-8 text-slate-700 md:text-lg">
                 <p>
-                  کلاس یار از یک رویا آغاز شد: رویای ساختن پلتفرمی که یادگیری را برای دانش‌آموزان 
-                  ایرانی جذاب‌تر، تعاملی‌تر و لذت‌بخش‌تر کند. این پروژه با سعی و تلاش بی‌وقفه، 
-                  کوشش شبانه‌روزی و اشتیاق فراوان به دنیای آموزش، شکل گرفت.
+                  کلاس‌یار با این ایده شکل گرفت که تمرین آموزشی می‌تواند فراتر از
+                  پاسخ‌دادن به پرسش‌های تکراری باشد. دانش‌آموز باید فرصت کشف،
+                  انتخاب، ساختن، مرتب‌کردن، به‌خاطر سپردن و تجربه‌کردن داشته باشد.
                 </p>
                 <p>
-                  ما باور داریم که آموزش باید همچون یک بازی جذاب باشد - جایی که هر دانش‌آموز با 
-                  اشتیاق منتظر درس بعدی باشد و هر معلم بتواند با ابزارهای ساده اما قدرتمند، 
-                  تجربه‌های یادگیری بی‌نظیری خلق کند.
+                  به همین دلیل، بازی‌های کلاس‌یار از مکانیک‌های متنوع استفاده
+                  می‌کنند. فلش‌کارت باید فلش‌کارت بماند، بازی تطبیق باید بر پایه
+                  جفت‌یابی اجرا شود و بازی مرتب‌سازی باید تعامل مرتب‌کردن را حفظ
+                  کند؛ محتوای هرکدام نیز از بانک متناسب با همان بازی انتخاب می‌شود.
                 </p>
-                <div className="bg-white/60 p-4 md:p-6 rounded-2xl clay-element">
-                  <p className="text-purple-700 font-medium text-sm md:text-base">
-                    💡 این پلتفرم نتیجه همکاری انسان و هوش مصنوعی است - ترکیبی از خلاقیت انسانی، 
-                    تجربه عملی و قدرت محاسباتی هوش مصنوعی که با هم، چیزی فراتر از تصور ساخته‌اند.
-                  </p>
+                <div className="rounded-2xl border border-violet-100 bg-violet-50/80 p-5 text-violet-900">
+                  <div className="mb-2 flex items-center gap-2 font-bold">
+                    <Lightbulb className="h-5 w-5" /> 💡 اصل طراحی
+                  </div>
+                  فناوری باید در خدمت یادگیری باشد؛ نه اینکه روش یادگیری را به
+                  محدودیت‌های یک قالب واحد تقلیل دهد.
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.section>
 
-        {/* Team Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className="text-center mb-6 md:mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">تیم سازنده</h2>
-            <p className="text-gray-600 text-base md:text-lg px-4">افرادی که کلاس یار را به واقعیت تبدیل کردند</p>
+        <section>
+          <div className="mb-7 text-center">
+            <h2 className="text-2xl font-black text-slate-800 md:text-3xl">🌟 ویژگی‌ها و اصول کلیدی</h2>
+            <p className="mt-2 text-slate-600">آنچه تجربه آموزشی کلاس‌یار بر پایه آن شکل می‌گیرد</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <Card className="clay-element bg-white border-0 h-full">
-                  <CardContent className="p-8 md:p-10 text-center">
-                    <div className={`w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br ${member.color} rounded-3xl mx-auto mb-4 flex items-center justify-center clay-element text-4xl md:text-5xl`}>
-                      {member.emoji}
-                    </div>
-                    <motion.h3
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      whileHover={{ y: -2 }}
-                      className="mb-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-lg font-bold text-violet-900 md:text-xl"
-                    >
-                      {member.name}
-                    </motion.h3>
-                    <motion.p
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.08 }}
-                      whileHover={{ y: -2 }}
-                      className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800 md:text-base"
-                    >
-                      {member.role}
-                    </motion.p>
-                    <p className="text-gray-600 text-sm mb-4">
-                      {member.description}
-                    </p>
-                    {member.contacts && (
-                      <div className="mt-5 grid gap-2 text-left">
-                        {member.contacts.map((contact, contactIndex) => (
-                          <motion.a
-                            key={contact.label}
-                            href={contact.href}
-                            target={contact.external ? "_blank" : undefined}
-                            rel={contact.external ? "noreferrer" : undefined}
-                            initial={{ opacity: 0, x: 14 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.55 + contactIndex * 0.08, duration: 0.35 }}
-                            whileHover={{ y: -2, scale: 1.01 }}
-                            className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 text-sm transition-shadow hover:shadow-md ${contact.style}`}
-                          >
-                            <contact.icon className="h-5 w-5 shrink-0" />
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-xs font-semibold opacity-70">{contact.label}</span>
-                              <span dir="ltr" className="block break-all text-left font-medium">{contact.value}</span>
-                            </span>
-                          </motion.a>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Features Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="text-center mb-6 md:mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">ویژگی‌های کلیدی</h2>
-            <p className="text-gray-600 text-base md:text-lg px-4">چرا کلاس یار متفاوت است؟</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + index * 0.1 }}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.06 }}
+                whileHover={{ y: -4 }}
               >
-                <Card className="clay-element bg-white border-0">
+                <Card className="h-full border-0 shadow-sm transition-shadow hover:shadow-lg">
                   <CardContent className="p-6">
-                    <div className={`w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br ${feature.color} rounded-2xl mb-4 flex items-center justify-center clay-element`}>
-                      <feature.icon className="w-7 h-7 md:w-8 md:h-8 text-white" />
+                    <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.color} text-white shadow-md`}>
+                      <feature.icon className="h-7 w-7" />
                     </div>
-                    <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
-                      {feature.title}
+                    <h3 className="mb-2 text-lg font-extrabold text-slate-800">
+                      {feature.emoji} {feature.title}
                     </h3>
-                    <p className="text-gray-600 text-sm md:text-base">
-                      {feature.description}
-                    </p>
-                    {feature.email && (
-                      <p className="text-purple-600 text-sm mt-2">
-                        📧 {feature.email}
-                      </p>
-                    )}
+                    <p className="text-sm leading-7 text-slate-600">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </section>
 
-        {/* Gallery Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <div className="text-center mb-6 md:mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">نگاهی به کلاس یار</h2>
-            <p className="text-gray-600 text-base md:text-lg px-4">تصاویری از دنیای کلاس یار</p>
+        <section>
+          <div className="mb-7 text-center">
+            <h2 className="text-2xl font-black text-slate-800 md:text-3xl">🖼️ گالری کلاس‌یار</h2>
+            <p className="mt-2 text-slate-600">نگاهی به بخش‌های مختلف برنامه</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {aboutImages.map((src, index) => (
-              <motion.div
+              <motion.figure
                 key={src}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: (index % 8) * 0.05 }}
+                transition={{ delay: (index % 8) * 0.04 }}
+                className="overflow-hidden rounded-2xl bg-white shadow-sm"
               >
                 <img
                   src={src}
-                  alt="تصویری از کلاس یار"
+                  alt={`تصویر ${index + 1} از محیط کلاس‌یار`}
                   loading="lazy"
-                  className="w-full h-auto rounded-2xl clay-element"
+                  className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.03]"
                 />
-              </motion.div>
+              </motion.figure>
             ))}
           </div>
-        </motion.div>
+        </section>
 
-        {/* Mission Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
         >
-          <Card className="clay-element bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 border-0">
-            <CardContent className="p-6 md:p-8 lg:p-12 text-center text-white">
-              <Trophy className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6" />
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">ماموریت ما</h2>
-              <p className="text-base md:text-xl leading-relaxed max-w-3xl mx-auto mb-4 md:mb-6">
-                ما متعهدیم که با ارائه ابزارهای نوآورانه و کاربرپسند، آموزش را برای نسل آینده ایران 
-                متحول کنیم. هر روز تلاش می‌کنیم تا کلاس یار را بهتر، سریع‌تر و جذاب‌تر کنیم.
+          <Card className="overflow-hidden border-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-sky-600 text-white shadow-lg">
+            <CardContent className="p-7 text-center md:p-10">
+              <Trophy className="mx-auto mb-4 h-12 w-12" />
+              <h2 className="mb-4 text-2xl font-black md:text-3xl">🚀 مأموریت ما</h2>
+              <p className="mx-auto max-w-3xl text-base leading-8 text-white/95 md:text-lg">
+                ساخت ابزارهایی ساده، خلاقانه و در دسترس برای کمک به معلمان و
+                دانش‌آموزان؛ ابزارهایی که یادگیری را فعال‌تر کنند و امکان تجربه
+                روش‌های گوناگون تمرین را فراهم آورند.
               </p>
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl">⭐</span>
-                <span className="text-2xl">⭐</span>
-                <span className="text-2xl">⭐</span>
+              <div className="mt-6 flex items-center justify-center gap-3 text-2xl">
+                <span>⭐</span><span>🎯</span><span>🌱</span><span>✨</span>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.section>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="text-center py-6 md:py-8 border-t border-purple-200"
-        >
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Heart className="w-4 h-4 md:w-5 md:h-5 text-red-500 fill-red-500 animate-pulse" />
-            <p className="text-base md:text-lg font-medium text-gray-700">
-              ساخته شده با عشق برای آموزش ایران
-            </p>
+        <section>
+          <div className="mb-7 text-center">
+            <h2 className="text-2xl font-black text-slate-800 md:text-3xl">👨‍💻 سازنده و توسعه</h2>
+            <p className="mt-2 text-slate-600">طراحی و توسعه با تمرکز بر نرم‌افزار و هوش مصنوعی</p>
           </div>
-          <p className="text-sm md:text-base text-gray-500">
-            نسخه 2.0.1 | © 2026 کلاس یار | تمامی حقوق محفوظ است
-          </p>
-        </motion.div>
+          <Card className="mx-auto max-w-3xl border-0 shadow-md">
+            <CardContent className="p-6 md:p-8">
+              <div className="mb-5 flex flex-col items-center gap-3 text-center sm:flex-row sm:text-right">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500 to-pink-500 text-4xl text-white shadow-md">
+                  👨‍💻
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-800">Seyed Mehdi Hosseini</h3>
+                  <p className="mt-1 text-sm font-medium text-violet-700">
+                    مهندس نرم‌افزار کامپیوتر و فعال حوزه هوش مصنوعی
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    ایده‌پرداز و توسعه‌دهنده کلاس‌یار
+                  </p>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {creatorLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noreferrer" : undefined}
+                    className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 transition hover:-translate-y-0.5 hover:shadow-md ${link.color}`}
+                  >
+                    <link.icon className="h-5 w-5 shrink-0" />
+                    <span className="min-w-0">
+                      <span className="block text-xs opacity-70">{link.label}</span>
+                      <span dir="ltr" className="block break-all text-left text-sm font-semibold">{link.value}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <footer className="border-t border-violet-100 py-7 text-center">
+          <div className="mb-2 flex items-center justify-center gap-2 text-slate-700">
+            <Heart className="h-5 w-5 fill-rose-500 text-rose-500" />
+            <span className="font-semibold">ساخته‌شده برای تجربه بهتر یادگیری</span>
+            <Sparkles className="h-5 w-5 text-amber-500" />
+          </div>
+          <p className="text-sm text-slate-500">کلاس‌یار | © 2026 | SMH-AI-Dev</p>
+          <a
+            href="https://github.com/SMH-AI-Dev/klassyar"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-violet-700 hover:text-violet-900"
+          >
+            <Github className="h-4 w-4" /> مشاهده مخزن در GitHub
+          </a>
+        </footer>
       </div>
     </div>
   );

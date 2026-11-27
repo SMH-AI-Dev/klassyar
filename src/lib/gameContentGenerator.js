@@ -1,4 +1,3 @@
-import learningContent from "./learningContent.js";
 
 const PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 const MINIMUM_QUESTION_COUNT = 400;
@@ -188,249 +187,6 @@ export function createProceduralQuestionBank({ groupId, skillIndex = 0, level = 
   return Array.from({ length: count }, (_, index) => buildQuestion(groupId, skillIndex, level, index));
 }
 
-const activityNames = [
-  "واژه‌های کاربردی", "خواندن سرنخ", "مفهوم جمله", "مرور واژگان", "تمرین روزانه",
-  "واژه در بافت", "معنی و کاربرد", "کشف واژه", "گنجینه لغت", "جمله‌های کوتاه",
-  "تمرین شنیداری", "آزمون واژه", "تمرین پایانی",
-  "جمله‌های کوتاه", "واژه‌های خانواده", "تمرین واژه‌خوانی", "یادگیری گام‌به‌گام", "واژه و مثال",
-  "دستور زبان", "گفت‌وگو", "برداشت از متن", "مفهوم و معنی", "مرور درس",
-  "آموزش تعاملی", "تمرین مستقل", "یادگیری با سرنخ", "مأموریت واژه", "چالش جمله",
-  "کارت‌های یادگیری", "مرور هوشمند", "دانش‌واژه", "مهارت خواندن", "دقت شنیداری",
-  "یادگیری سریع", "بازی تمرینی", "تمرین مفردات", "پازل آموزشی", "مسیر یادگیری",
-  "یادگیری روزانه", "تمرین مرحله‌ای", "چالش کلاس", "بازی مرور", "مهارت واژگان",
-  "واژه‌نامه فعال", "تمرین شناخت", "یادگیری خلاق", "سنجش آموخته‌ها", "مسابقه دانایی",
-  "واژه در گفت‌وگو", "چالش یادگیری",
-];
-
-export function createProceduralGames() {
-  const vocabulary = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-  const grammar = uniqueRecords("grammar", (entry) => entry.rule && entry.example);
-  const listening = uniqueRecords("listening", (entry) => entry.text && entry.answers?.[0]);
-  const activityGroups = [
-    { engine: "quiz", icon: "🧠", title: "دانش‌پژوه", description: "تمرین واژگان انگلیسی از محتوای درسی موجود", bank: (edition) => vocabularyQuestions(vocabulary, edition) },
-    { engine: "match", icon: "🃏", title: "جفت‌یاب", description: "جفت‌سازی واژه‌های انگلیسی و معنی فارسی", bank: (edition) => vocabularyCards(vocabulary, edition) },
-    { engine: "sort", icon: "🗂️", title: "دسته‌بند", description: "دسته‌بندی واژه‌ها بر پایه پایهٔ درسی", bank: (edition) => vocabularySortItems(vocabulary, edition).items },
-    { engine: "fillblank", icon: "✍️", title: "جای‌خالی", description: "تمرین قاعده‌های گرامری در جمله‌های درسی", bank: (edition) => grammarBlanks(grammar, edition) },
-    { engine: "type", icon: "🗳️", title: "پاسخ‌گزین", description: "انتخاب پاسخ به پرسش‌های شنیداری درسی", bank: (edition) => listeningTyping(listening, edition) },
-    { engine: "scramble", icon: "🔤", title: "واژه‌ساز", description: "مرتب‌کردن حروف واژه‌های درسی", bank: (edition) => vocabularyScrambles(vocabulary, edition) },
-  ];
-  const editions = Array.from({ length: 50 }, (_, index) => index + 1);
-  return activityGroups.flatMap((group) => editions.map((edition) => {
-    const bank = group.bank(edition);
-    const activityName = activityNames[edition - 1];
-    return {
-      id: `activity-${group.engine}-${edition}`,
-      title: `${group.title}: ${activityName}`,
-      description: `${group.description}؛ ${activityName}، دورهٔ تمرین ${edition}.`,
-      icon: group.icon,
-      category: "English Practice",
-      difficulty: edition <= 17 ? "Beginner" : edition <= 34 ? "Intermediate" : "Advanced",
-      engine: group.engine,
-      questionBank: bank,
-      ...(group.engine === "quiz" ? { questions: bank } : {}),
-      ...(group.engine === "match" ? { cards: bank } : {}),
-      ...(group.engine === "sort" ? { categories: vocabularySortItems(vocabulary, edition).categories, items: bank } : {}),
-      ...(group.engine === "fillblank" || group.engine === "type" ? { questions: bank } : {}),
-      ...(group.engine === "scramble" ? { words: bank } : {}),
-    };
-  }));
-}
-
-function uniqueRecords(group, isUsable) {
-  const seen = new Set();
-  return Object.entries(learningContent).flatMap(([grade, lessons]) =>
-    (lessons[group] || []).filter(isUsable).map((entry) => ({ ...entry, grade })),
-  ).filter((entry) => {
-    const key = `${entry.en || entry.rule || entry.text}|${entry.fa || entry.example || entry.answers?.[0]}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
-function vocabularyQuestions(vocabulary, edition = 1) {
-  const answers = [...new Set(vocabulary.map((entry) => entry.en))];
-  return vocabulary.map((entry, index) => {
-    const options = [entry.en];
-    for (let offset = 1; options.length < 4; offset += 1) {
-      const candidate = answers[(index + offset * (edition + 36)) % answers.length];
-      if (!options.includes(candidate)) options.push(candidate);
-    }
-    const rotation = (index + edition - 1) % options.length;
-    const orderedOptions = [...options.slice(rotation), ...options.slice(0, rotation)];
-    const variants = [
-      `واژهٔ «${entry.fa}» به انگلیسی چیست؟`,
-      `کدام واژه معنی «${entry.fa}» را می‌رساند؟`,
-      `در واژگان پایهٔ ${entry.grade}، برابر انگلیسی «${entry.fa}» کدام است؟`,
-      `ترجمهٔ انگلیسی واژهٔ فارسی «${entry.fa}» را انتخاب کن.`,
-      `کدام گزینه با معنی فارسی «${entry.fa}» برابر است؟`,
-    ];
-    return {
-      question: `${variants[(edition - 1) % variants.length]} مثال: ${entry.example}`,
-      options: orderedOptions,
-      correctIndex: orderedOptions.indexOf(entry.en),
-    };
-  });
-}
-
-function vocabularyCards(vocabulary, edition = 1) {
-  return vocabulary.map((entry, index) => ({
-    id: `vocab-${index}-${entry.en}`,
-    text: edition % 2 ? entry.fa : entry.en,
-    en: edition % 2 ? entry.en : entry.fa,
-    emoji: ["📘", "🧩", "🌟", "🔎", "📝"][(edition - 1) % 5],
-  }));
-}
-
-function gradeCategories() {
-  return Object.keys(learningContent).map((grade) => ({ name: `Grade ${grade}`, items: [] }));
-}
-
-function vocabularySortItems(vocabulary, edition = 1) {
-  const modes = [
-    { categories: Object.keys(learningContent).map((grade) => `Grade ${grade}`), classify: (entry) => `Grade ${entry.grade}` },
-    { categories: ["Short words", "Medium words", "Long words"], classify: (entry) => [...entry.en].length <= 4 ? "Short words" : [...entry.en].length <= 7 ? "Medium words" : "Long words" },
-    { categories: ["A–H", "I–P", "Q–Z"], classify: (entry) => entry.en[0].toLowerCase() <= "h" ? "A–H" : entry.en[0].toLowerCase() <= "p" ? "I–P" : "Q–Z" },
-    { categories: ["Starts with a vowel", "Starts with a consonant"], classify: (entry) => "aeiou".includes(entry.en[0].toLowerCase()) ? "Starts with a vowel" : "Starts with a consonant" },
-    { categories: ["Even-length words", "Odd-length words"], classify: (entry) => [...entry.en].length % 2 === 0 ? "Even-length words" : "Odd-length words" },
-  ];
-  const mode = modes[(edition - 1) % modes.length];
-  const items = vocabulary.map((entry, index) => ({
-    id: `grade-${entry.grade}-${index}`,
-    label: `${entry.en} — ${entry.fa}`,
-    category: mode.classify(entry),
-  }));
-  return { categories: mode.categories.map((name) => ({ name, items: [] })), items };
-}
-
-function grammarBlanks(grammar, edition = 1) {
-  const prompts = [
-    (entry) => `Example ${edition}: ${entry.example}. Complete the rule name: ___`,
-    (entry) => `Which grammar rule describes “${entry.example}”? ___`,
-    (entry) => `Rule: ${entry.pattern}. Its name is ___ (example: ${entry.example})`,
-    (entry) => `Complete the grammar label for “${entry.example}”: ___`,
-    (entry) => `In “${entry.example}”, the grammar topic is ___`,
-  ];
-  return grammar.map((entry, index) => ({
-    text: prompts[(edition - 1) % prompts.length](entry),
-    answer: entry.rule,
-  }));
-}
-
-function listeningTyping(listening, edition = 1) {
-  const prompt = [
-    (entry) => `${entry.questions?.[0] || "Answer from the passage"} ${entry.text}`,
-    (entry) => `From this passage: ${entry.text}. Answer: ${entry.questions?.[0] || "What is mentioned?"}`,
-    (entry) => `Read the note: ${entry.text}. Respond to: ${entry.questions?.[0] || "What is mentioned?"}`,
-    (entry) => `Recall this passage: ${entry.text}. ${entry.questions?.[0] || "What is mentioned?"}`,
-    (entry) => `Passage: ${entry.text}. ${entry.questions?.[0] || "What is mentioned?"}`,
-  ][(edition - 1) % 5];
-  return listening.map((entry, index) => ({
-    hint: prompt(entry),
-    answer: String(entry.answers[0]),
-  })).filter((entry) => entry.answer.trim());
-}
-
-function scrambleWord(word, index) {
-  const letters = [...word];
-  if (letters.length < 2) return word;
-  const offset = 1 + (index % (letters.length - 1));
-  const scrambled = [...letters.slice(offset), ...letters.slice(0, offset)].join("");
-  return scrambled === word ? `${scrambled.slice(1)}${scrambled[0]}` : scrambled;
-}
-
-function vocabularyScrambles(vocabulary, edition = 1) {
-  return vocabulary.filter((entry) => /^[a-z]{2,}$/i.test(entry.en)).map((entry, index) => ({
-    scrambled: scrambleWord(entry.en, index + edition - 1),
-    answer: entry.en,
-    hint: edition % 2 ? entry.fa : `${entry.fa}: ${entry.example}`,
-  })).filter((item) => item.scrambled !== item.answer);
-}
-
-export function expandEnglishGame(game) {
-  let skill = game.id.startsWith("eng-gram-")
-    ? "grammar"
-    : game.id.startsWith("eng-speak-")
-      ? "conversation"
-      : game.id.startsWith("eng-read-") || game.id.startsWith("eng-list-")
-        ? "listening"
-        : "vocabulary";
-  if (game.id === "eng-list-words") skill = "vocabulary";
-  let records = uniqueRecords(skill, (entry) => {
-    if (skill === "vocabulary") return entry.en && entry.fa;
-    if (skill === "grammar") return entry.rule && entry.example;
-    if (skill === "conversation") return entry.dialogue && entry.scenario;
-    return entry.text && entry.answers?.[0] && entry.questions?.[0];
-  });
-
-  if (["eng-voc-synonyms", "eng-voc-opposites"].includes(game.id)) return game;
-
-  if (skill === "vocabulary" && !["eng-spell-basic", "eng-spell-advanced", "eng-spell-difficult"].includes(game.id)) {
-    records = filterVocabularyTopic(records, game.id);
-  } else if (game.id === "eng-spell-animals") records = filterVocabularyTopic(records, "eng-voc-animals");
-  else if (game.id === "eng-spell-colors") records = filterVocabularyTopic(records, "eng-voc-colors");
-  else if (game.id === "eng-spell-body") records = filterVocabularyTopic(records, "eng-voc-body");
-  else if (game.id === "eng-spell-food") records = filterVocabularyTopic(records, "eng-voc-food");
-  else if (game.id === "eng-spell-advanced" || game.id === "eng-spell-difficult") {
-    records = records.filter((entry) => entry.en.length >= 7);
-  }
-
-  if (game.id === "eng-list-words") records = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-  if (["eng-read-descriptions", "eng-list-describe"].includes(game.id)) {
-    records = uniqueRecords("listening", (entry) => entry.text && entry.questions?.[0] && entry.answers?.[0]);
-    const bank = sequenceCards(records.map((entry, index) => ({
-      id: `passage-${index}`,
-      text: `${entry.questions[0]} — ${entry.text}`,
-      en: String(entry.answers[0]),
-      emoji: "📖",
-    })));
-    if (bank.length >= MINIMUM_QUESTION_COUNT) return withBank(game, bank);
-  }
-  if (game.id === "eng-list-directions") {
-    const bank = createRouteSortItems(game);
-    if (bank.length >= MINIMUM_QUESTION_COUNT) {
-      return {
-        ...game,
-        questionBank: bank,
-        items: bank,
-        categories: [{ name: "Direction sequences", items: [] }, { name: "Place sequences", items: [] }],
-      };
-    }
-  }
-
-  if (skill === "vocabulary" && records.length && game.engine === "match" && records.length < MINIMUM_QUESTION_COUNT) {
-    return withBank(game, sequenceCards(vocabularyCards(records)));
-  }
-  if (skill === "vocabulary" && records.length && game.engine === "quiz" && records.length < MINIMUM_QUESTION_COUNT) {
-    const allVocabulary = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-    return withBank(game, topicalVocabularyQuestions(records, allVocabulary));
-  }
-  if (skill === "vocabulary" && records.length && game.engine === "scramble" && records.length < MINIMUM_QUESTION_COUNT) {
-    return withBank(game, variedScrambles(records));
-  }
-
-  if (["eng-spell-advanced", "eng-spell-difficult"].includes(game.id)) {
-    const pronunciationWords = uniqueRecords("pronunciation", (entry) => entry.word && entry.fa)
-      .map((entry) => ({ en: entry.word, fa: entry.fa, example: entry.tip || entry.word }));
-    records = [...new Map([...records, ...pronunciationWords]
-      .filter((entry) => /^[a-z]+$/i.test(entry.en) && entry.en.length >= 6)
-      .map((entry) => [entry.en.toLowerCase(), entry])).values()];
-  }
-
-  const bank = records.map((entry, index) => buildEnglishItem(game.engine, skill, entry, index, records));
-  const valid = bank.filter((item) => item && validEngineItem(game.engine, item));
-  if (valid.length < 1) return game;
-  return {
-    ...game,
-    questionBank: valid,
-    ...(game.engine === "quiz" ? { questions: valid } : {}),
-    ...(game.engine === "match" ? { cards: valid } : {}),
-    ...(game.engine === "sort" ? { items: valid, categories: sortCategories(valid) } : {}),
-    ...(game.engine === "scramble" ? { words: valid } : {}),
-    ...(["type", "fillblank"].includes(game.engine) ? { questions: valid } : {}),
-  };
-}
-
 function withBank(game, bank) {
   const valid = bank.filter((item) => validEngineItem(game.engine, item));
   return {
@@ -444,69 +200,27 @@ function withBank(game, bank) {
   };
 }
 
-function topicalVocabularyQuestions(topicRecords, allVocabulary) {
-  const bank = [];
-  for (const [topicIndex, target] of topicRecords.entries()) {
-    const distractors = allVocabulary.filter((entry) => entry.en !== target.en);
-    for (let cursor = 0; cursor < 48 && bank.length < MINIMUM_QUESTION_COUNT; cursor += 1) {
-      const selected = [];
-      let candidateIndex = (topicIndex * 47 + cursor * 13) % distractors.length;
-      while (selected.length < 3) {
-        const candidate = distractors[candidateIndex % distractors.length];
-        if (candidate && candidate.en !== target.en && !selected.some((entry) => entry.en === candidate.en)) selected.push(candidate);
-        candidateIndex += 1;
-      }
-      const choices = [target.en, ...selected.map((entry) => entry.en)];
-      const shift = (topicIndex + cursor) % choices.length;
-      const options = [...choices.slice(shift), ...choices.slice(0, shift)];
-      bank.push({
-        question: `کدام واژه معنی «${target.fa}» را دارد؟ مثال: ${target.example}`,
-        options,
-        correctIndex: options.indexOf(target.en),
-      });
-    }
-    if (bank.length >= MINIMUM_QUESTION_COUNT) break;
+function validEngineItem(engine, item) {
+  if (!item || typeof item !== "object") return false;
+  if (engine === "quiz") {
+    return Boolean(item.question && Array.isArray(item.options) && item.options.length >= 2 &&
+      Number.isInteger(item.correctIndex) && item.correctIndex >= 0 && item.correctIndex < item.options.length);
   }
-  return bank;
+  if (engine === "match" || engine === "memory") {
+    return Boolean(item.id && (item.text || item.label || item.en) && (item.en || item.answer || item.text));
+  }
+  if (engine === "sort") return Boolean(item.id && item.label && item.category);
+  if (engine === "scramble" || engine === "anagram" || engine === "hangman" || engine === "wordsearch") {
+    return Boolean(item.scrambled || item.answer || item.a);
+  }
+  if (engine === "type") return Boolean(item.hint && item.answer);
+  if (engine === "fillblank") return Boolean((item.text || item.question) && (item.answer || item.a));
+  return true;
 }
 
-function variedScrambles(records) {
-  const bank = [];
-  for (const record of records) {
-    const letters = [...record.en.toLowerCase()];
-    if (letters.length < 2 || !/^[a-z]+$/.test(record.en)) continue;
-    for (const scrambled of uniquePermutations(letters, 405 - bank.length)) {
-      if (scrambled === record.en.toLowerCase()) continue;
-      bank.push({ scrambled, answer: record.en, hint: record.fa });
-      if (bank.length >= MINIMUM_QUESTION_COUNT) return bank;
-    }
-  }
-  return bank;
-}
-
-function uniquePermutations(letters, limit) {
-  const result = [];
-  const counts = new Map();
-  for (const letter of letters) counts.set(letter, (counts.get(letter) || 0) + 1);
-  const current = [];
-  function visit() {
-    if (result.length >= limit) return;
-    if (current.length === letters.length) {
-      result.push(current.join(""));
-      return;
-    }
-    for (const [letter, count] of counts) {
-      if (!count) continue;
-      counts.set(letter, count - 1);
-      current.push(letter);
-      visit();
-      current.pop();
-      counts.set(letter, count);
-      if (result.length >= limit) return;
-    }
-  }
-  visit();
-  return result;
+function sortCategories(items) {
+  const names = [...new Set(items.map((item) => item.category).filter(Boolean))];
+  return names.map((name) => ({ name, items: [] }));
 }
 
 function sequenceCards(cards, target = MINIMUM_QUESTION_COUNT) {
@@ -533,25 +247,6 @@ function sequenceCards(cards, target = MINIMUM_QUESTION_COUNT) {
     });
   }
   return results;
-}
-
-function createRouteSortItems(game) {
-  const directions = game.items.filter((item) => item.category === "Directions");
-  const places = game.items.filter((item) => item.category === "Places");
-  const result = [];
-  for (const [category, words] of [["Direction sequences", directions], ["Place sequences", places]]) {
-    const total = words.length ** 5;
-    for (let code = 0; code < total && result.length < MINIMUM_QUESTION_COUNT; code += 1) {
-      let remaining = code;
-      const sequence = [];
-      for (let position = 0; position < 5; position += 1) {
-        sequence.push(words[remaining % words.length].label);
-        remaining = Math.floor(remaining / words.length);
-      }
-      result.push({ id: `route-${category}-${code}`, label: sequence.join(" → "), category });
-    }
-  }
-  return result;
 }
 
 export function expandExistingPersianGame(game) {
@@ -663,8 +358,6 @@ function generatedPersianQuiz(gameId) {
   if (gameId === "iq-logic") return logicQuestions();
   if (gameId === "attn-numbers") return attentionNumberQuestions();
   if (gameId === "attn-find-diff") return oddOneOutQuestions();
-  if (gameId === "attn-spelling") return persianSpellingQuestions();
-  if (gameId === "cr-word-maker") return wordMakerQuestions();
   if (gameId === "cr-color-mix") return colorMixQuestions();
   if (gameId === "cr-problem-solving") {
     return createProceduralQuestionBank({ groupId: "sequences", skillIndex: 6, level: 2 });
@@ -745,26 +438,6 @@ function generatedClimateQuestions() {
     options,
     correctIndex: options.indexOf(type.answer),
   })));
-}
-
-function wordMakerQuestions() {
-  const vocabulary = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-  const answers = [...new Set(vocabulary.map((entry) => entry.en))];
-  return vocabulary.filter((entry) => /^[a-z]{2,}$/i.test(entry.en)).map((entry, index) => {
-    const scrambled = scrambleWord(entry.en, index);
-    const choices = [entry.en];
-    for (let offset = 1; choices.length < 4; offset += 1) {
-      const candidate = answers[(index + offset * 37) % answers.length];
-      if (!choices.includes(candidate)) choices.push(candidate);
-    }
-    const rotation = index % choices.length;
-    const options = [...choices.slice(rotation), ...choices.slice(0, rotation)];
-    return {
-      question: `از حروف «${scrambled}» واژه بساز؛ معنی آن «${entry.fa}» است. مثال: ${entry.example}`,
-      options,
-      correctIndex: options.indexOf(entry.en),
-    };
-  });
 }
 
 function colorMixQuestions() {
@@ -892,130 +565,6 @@ function permutations(values) {
   return values.flatMap((value, index) =>
     permutations([...values.slice(0, index), ...values.slice(index + 1)]).map((rest) => [value, ...rest]),
   );
-}
-
-function persianSpellingQuestions() {
-  const vocabulary = uniqueRecords("vocabulary", (entry) => entry.en && entry.fa);
-  const replacements = { ا: "آ", س: "ص", ت: "ط", ز: "ذ", ک: "گ", ه: "ح", ی: "ئ", ب: "پ", د: "ذ", ق: "غ" };
-  return vocabulary.map((entry, index) => {
-    const answer = entry.fa;
-    const options = [answer];
-    for (let offset = 0; options.length < 4; offset += 1) {
-      const chars = [...answer];
-      const position = (index + offset) % Math.max(chars.length, 1);
-      if (replacements[chars[position]]) chars[position] = replacements[chars[position]];
-      else chars[position] = `${chars[position]}‌`;
-      let candidate = chars.join("");
-      if (options.includes(candidate)) candidate = `${answer}${"‌".repeat(offset + 1)}`;
-      if (!options.includes(candidate)) options.push(candidate);
-    }
-    return {
-      question: `املای درست معنی فارسی واژهٔ “${entry.en}” را انتخاب کن. جمله: ${entry.example}`,
-      options,
-      correctIndex: 0,
-    };
-  }).slice(0, MINIMUM_QUESTION_COUNT);
-}
-
-function filterVocabularyTopic(records, gameId) {
-  const cues = {
-    "eng-voc-colors": ["red", "blue", "green", "yellow", "black", "white", "orange", "purple", "pink", "brown"],
-    "eng-voc-animals": ["animal", "cat", "dog", "bird", "fish", "horse", "cow", "lion", "tiger", "monkey", "rabbit", "sheep", "elephant"],
-    "eng-voc-food": ["food", "apple", "banana", "orange", "bread", "water", "milk", "egg", "rice", "meat", "chicken"],
-    "eng-voc-body": ["body", "head", "hand", "foot", "eye", "ear", "nose", "mouth", "arm", "leg", "hair"],
-    "eng-voc-clothes": ["clothes", "shirt", "pants", "shoes", "hat", "socks", "dress", "jacket", "scarf"],
-    "eng-voc-house": ["house", "table", "chair", "bed", "door", "window", "fridge", "sofa", "kitchen"],
-    "eng-voc-school": ["school", "book", "pen", "pencil", "bag", "ruler", "eraser", "desk", "teacher", "student"],
-    "eng-voc-weather": ["weather", "sunny", "rainy", "cloudy", "windy", "snowy", "spring", "summer", "winter", "autumn"],
-    "eng-voc-jobs": ["job", "doctor", "teacher", "engineer", "pilot", "nurse", "farmer", "cook", "artist"],
-    "eng-voc-transport": ["transport", "car", "bus", "train", "plane", "bike", "ship", "boat"],
-  };
-  const cuesForGame = cues[gameId];
-  if (!cuesForGame) return records;
-  const normalizedCues = cuesForGame.map((cue) => cue.toLowerCase());
-  return records.filter((entry) => {
-    const text = `${entry.en} ${entry.example}`.toLowerCase();
-    return normalizedCues.some((cue) => text.includes(cue));
-  });
-}
-
-function makeAnswerOptions(answer, records, selector, index) {
-  const pool = [...new Set(records.map(selector).filter((value) => value && value !== answer))];
-  const options = [answer];
-  for (let offset = 0; options.length < 4 && offset < pool.length; offset += 1) {
-    const candidate = pool[(index + offset * 31) % pool.length];
-    if (!options.includes(candidate)) options.push(candidate);
-  }
-  return options.length >= 2 ? options : [answer, `${answer} (review)`];
-}
-
-function buildEnglishItem(engine, skill, entry, index, records) {
-  if (engine === "match") {
-    if (skill !== "vocabulary") return null;
-    return { id: `curriculum-${index}-${entry.en}`, text: entry.fa, en: entry.en, emoji: "📘" };
-  }
-  if (engine === "sort") {
-    const grade = entry.grade || "7";
-    return { id: `curriculum-${index}`, label: entry.en || entry.rule || entry.scenario, category: `Grade ${grade}` };
-  }
-  if (engine === "scramble") {
-    if (skill !== "vocabulary" || !/^[a-z]+$/i.test(entry.en)) return null;
-    const scrambled = scrambleWord(entry.en, index);
-    if (scrambled === entry.en) return null;
-    return { scrambled, answer: entry.en, hint: entry.fa };
-  }
-  if (engine === "fillblank") {
-    if (skill === "grammar") return { text: `${entry.example} — Complete the rule: ___`, answer: entry.rule };
-    if (skill === "listening") return { text: `${entry.text} — ${entry.questions?.[0]} ___`, answer: String(entry.answers?.[0] || "") };
-    return null;
-  }
-  if (engine === "type") {
-    if (skill === "grammar") return { hint: `${entry.example} (${entry.pattern})`, answer: entry.rule };
-    if (skill === "conversation") return { hint: `${entry.scenario}: ${entry.dialogue}`, answer: entry.dialogue };
-    if (skill === "listening") return { hint: `${entry.questions?.[0]} ${entry.text}`, answer: String(entry.answers?.[0] || "") };
-    return { hint: `${entry.fa}: ${entry.example}`, answer: entry.en };
-  }
-  if (engine === "quiz") {
-    let prompt;
-    let answer;
-    let selector;
-    if (skill === "grammar") {
-      prompt = `Which grammar rule is shown by “${entry.example}” (${entry.pattern})?`;
-      answer = entry.rule;
-      selector = (item) => item.rule;
-    } else if (skill === "conversation") {
-      prompt = `Which lesson dialogue belongs to “${entry.scenario}”: ${entry.fa}?`;
-      answer = entry.dialogue;
-      selector = (item) => item.dialogue;
-    } else if (skill === "listening") {
-      prompt = `Read: “${entry.text}” ${entry.questions[0]}`;
-      answer = String(entry.answers[0]);
-      selector = (item) => String(item.answers?.[0] || "");
-    } else {
-      prompt = `What does “${entry.fa}” mean in English? Example: ${entry.example}`;
-      answer = entry.en;
-      selector = (item) => item.en;
-    }
-    const options = makeAnswerOptions(answer, records, selector, index);
-    return { question: `${prompt} · lesson ${entry.grade || "7"}-${index + 1}`, options, correctIndex: 0 };
-  }
-  return null;
-}
-
-function validEngineItem(engine, item) {
-  if (!item || typeof item !== "object") return false;
-  if (engine === "quiz") return Boolean(item.question && item.options?.length >= 2 && Number.isInteger(item.correctIndex));
-  if (engine === "match") return Boolean(item.id && (item.text || item.en || item.emoji));
-  if (engine === "sort") return Boolean(item.id && item.label && item.category);
-  if (engine === "scramble") return Boolean(item.scrambled && item.answer && item.hint);
-  if (engine === "fillblank") return Boolean(item.text?.includes("___") && item.answer);
-  if (engine === "type") return Boolean(item.hint && item.answer);
-  return false;
-}
-
-function sortCategories(items) {
-  const grades = [...new Set(items.map((item) => item.category))];
-  return grades.map((name) => ({ name, items: [] }));
 }
 
 export function createExpandedMathQuestions(gameId) {

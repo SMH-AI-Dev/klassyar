@@ -164,19 +164,14 @@ function isNumericAnswer(value) {
 }
 
 function fallbackDistractors(answer, game) {
-  const english = /^(eng-|English)/i.test(asText(game?.id) + " " + asText(game?.category));
   if (/^(درست|غلط|صحیح|نادرست|true|false)$/i.test(answer)) {
-    return english
-      ? ["Not enough information", "None of the above", "Cannot be determined"]
-      : ["اطلاعات کافی نیست", "هیچ‌کدام از گزینه‌ها", "قابل تشخیص نیست"];
+    return ["اطلاعات کافی نیست", "هیچ‌کدام از گزینه‌ها", "قابل تشخیص نیست"];
   }
   if (isNumericAnswer(answer)) {
     const numeric = Number(asText(answer).replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit))).replace(/,/g, ""));
     return [-3, -2, -1, 1, 2, 3, 5, 10].map((offset) => persian(numeric + offset));
   }
-  return english
-    ? ["None of the above", "Not enough information", "Another choice"]
-    : ["هیچ‌کدام از گزینه‌ها", "اطلاعات کافی نیست", "گزینهٔ دیگری"];
+  return ["هیچ‌کدام از گزینه‌ها", "اطلاعات کافی نیست", "گزینهٔ دیگری"];
 }
 
 function buildFourOptions(base, answerPool, game) {
@@ -198,9 +193,7 @@ function buildFourOptions(base, answerPool, game) {
     if (distractors.length === 3) break;
   }
   for (let index = 1; distractors.length < 3; index += 1) {
-    const fallback = /^(eng-|English)/i.test(asText(game?.id) + " " + asText(game?.category))
-      ? `Alternative ${index}`
-      : `گزینهٔ جایگزین ${persian(index)}`;
+    const fallback = `گزینهٔ جایگزین ${persian(index)}`;
     const key = normalizeText(fallback);
     if (!seen.has(key)) {
       seen.add(key);

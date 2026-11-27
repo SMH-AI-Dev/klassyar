@@ -1,5 +1,4 @@
 import gameLibrary from "./gameLibrary.js";
-import englishGames from "./englishGames.js";
 import { getGameContentBank, MINIMUM_BANK_SIZE } from "./questionBank.js";
 
 function normalize(value) {
@@ -87,7 +86,6 @@ function validateRecord(game, item) {
 
 const catalogues = [
   ["fa", gameLibrary],
-  ["en", englishGames],
 ];
 let failures = 0;
 const report = catalogues.flatMap(([language, games]) => games.map((game) => {
