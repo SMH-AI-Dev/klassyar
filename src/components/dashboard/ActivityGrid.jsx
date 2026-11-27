@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Share2, Edit, Eye, Trash2, Copy, Shuffle } from "lucide-react";
+import { Play, Share2, Edit, Eye, Trash2, Copy, Shuffle, Star, Folder } from "lucide-react";
 import { motion } from "framer-motion";
 import { localData } from "@/api/localDataClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -108,6 +108,25 @@ export default function ActivityGrid({ activities }) {
     },
   });
 
+  const updateActivityMutation = useMutation({
+    mutationFn: ({ id, updates }) => localData.entities.Activity.update(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
+      toast.success("تنظیمات فعالیت ذخیره شد");
+    },
+    onError: () => toast.error("ذخیرهٔ تغییرات فعالیت ناموفق بود"),
+  });
+
+  const handleFolder = (activity) => {
+    const folder = window.prompt("نام پوشهٔ فعالیت را وارد کنید:", activity.folder || "بدون پوشه");
+    if (folder === null) return;
+    updateActivityMutation.mutate({ id: activity.id, updates: { folder: folder.trim() || "بدون پوشه" } });
+  };
+
+  const handleFavorite = (activity) => {
+    updateActivityMutation.mutate({ id: activity.id, updates: { favorite: !activity.favorite } });
+  };
+
   const duplicateMutation = useMutation({
     mutationFn: (activity) => {
       const { id, created_date, plays_count, created_by, ...copy } = activity;
@@ -198,6 +217,10 @@ export default function ActivityGrid({ activities }) {
             </div>
 
             <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="outline">{activity.folder || "بدون پوشه"}</Badge>
+                <Badge variant="secondary">محلی و خصوصی</Badge>
+              </div>
               {activity.description && (
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                   {activity.description}
@@ -232,6 +255,12 @@ export default function ActivityGrid({ activities }) {
                     <Edit className="w-4 h-4" />
                   </Button>
                 </Link>
+                <Button onClick={() => handleFavorite(activity)} variant="outline" size="icon" title={activity.favorite ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"} className="rounded-xl clay-element">
+                  <Star className={`w-4 h-4 ${activity.favorite ? "fill-amber-400 text-amber-500" : ""}`} />
+                </Button>
+                <Button onClick={() => handleFolder(activity)} variant="outline" size="icon" title="انتقال به پوشه" className="rounded-xl clay-element">
+                  <Folder className="w-4 h-4" />
+                </Button>
                 <Button onClick={() => duplicateMutation.mutate(activity)} variant="outline" size="icon" title="ساخت نسخه کپی" className="rounded-xl clay-element">
                   <Copy className="w-4 h-4" />
                 </Button>
