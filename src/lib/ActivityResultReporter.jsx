@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { classroom } from "@/lib/classroom";
 
 export default function ActivityResultReporter({ activity, type, score, total }) {
+  const [searchParams] = useSearchParams();
+  const assignmentId = searchParams.get("assignmentId");
   const reported = useRef(false);
 
   useEffect(() => {
@@ -13,6 +16,7 @@ export default function ActivityResultReporter({ activity, type, score, total })
       classroom.recordResult({
         gameId: activity.id || `activity-${type || activity.type || "custom"}`,
         gameTitle: activity.title || "فعالیت آموزشی",
+        assignmentId: assignmentId || null,
         roundId: `activity-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`,
         score: normalizedScore,
         total: normalizedTotal,
@@ -21,7 +25,7 @@ export default function ActivityResultReporter({ activity, type, score, total })
     } catch {
       reported.current = false;
     }
-  }, [activity, score, total, type]);
+  }, [activity, score, total, type, assignmentId]);
 
   return null;
 }
