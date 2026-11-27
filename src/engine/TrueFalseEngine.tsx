@@ -29,7 +29,7 @@ export default function TrueFalseEngine({ game, roundId, onProgress, onComplete,
     const s = score + (ok ? 1 : 0);
     setScore(s);
     setTimeout(() => {
-      if (idx + 1 >= cards.length) onFinish({ score: s, total: cards.length });
+      if (idx + 1 >= cards.length) onComplete({ score: s, total: cards.length });
       else {
         setIdx(idx + 1);
         setResult(null);
