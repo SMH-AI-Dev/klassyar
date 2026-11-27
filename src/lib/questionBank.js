@@ -317,6 +317,10 @@ function questionKey(question) {
   return normalizeText(question?.question);
 }
 
+function questionId(question) {
+  return hashValue(questionKey(question));
+}
+
 function storageKey(userId, gameId) {
   const scope = encodeURIComponent(asText(userId) || "guest");
   const game = encodeURIComponent(asText(gameId));
@@ -354,7 +358,7 @@ function normalizeQuestion(question) {
 export function createQuestionRound(game, reason = "open", userId = "guest") {
   const bank = getQuestionBank(game);
   const targetCount = roundSize(game, bank.length);
-  const fingerprint = hashValue(bank.map(questionKey).join("||"));
+  const fingerprint = hashValue(bank.map((question) => `${questionKey(question)}|${normalizeText(question.options?.[question.correctIndex])}`).join("||"));
   const key = storageKey(userId, game.id);
   const previous = readSnapshot(key);
   let cycleNumber = previous?.bankFingerprint === fingerprint ? (previous.cycleNumber || 1) : 1;
@@ -363,7 +367,7 @@ export function createQuestionRound(game, reason = "open", userId = "guest") {
     ? previous.usedQuestionIds
     : [];
 
-  let remaining = bank.filter((question) => !usedQuestionIds.includes(questionKey(question)));
+  let remaining = bank.filter((question) => !usedQuestionIds.includes(questionId(question)));
   if (!remaining.length && bank.length) {
     cycleNumber += 1;
     usedQuestionIds = [];
@@ -371,7 +375,7 @@ export function createQuestionRound(game, reason = "open", userId = "guest") {
   }
 
   const selected = shuffle(remaining).slice(0, targetCount);
-  const selectedIds = selected.map(questionKey);
+  const selectedIds = selected.map(questionId);
   const randomizedGame = {
     ...game,
     engine: "quiz",
