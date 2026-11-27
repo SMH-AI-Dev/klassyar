@@ -17,5 +17,14 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
       - run: npm ci --no-audit --no-fund
       - run: npm run build
+      - run: npm run build:android
+      - run: npx cap sync android
+      - name: Build Android debug APK for platform verification
+        working-directory: android
+        run: gradle assembleDebug --no-daemon
