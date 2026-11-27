@@ -24,7 +24,7 @@ function New-SmhAndroidKey {
     Write-Host ""
     Write-Host "Creating the dedicated signing key for $AppName." -ForegroundColor Cyan
     Write-Host "Use a strong password. When keytool asks for the key password, you may press Enter to reuse the keystore password."
-    & $keytool.Source -genkeypair -v -keystore $keyStore -alias $Alias -keyalg RSA -keysize 4096 -validity 10000
+    & $keytool.Source -genkeypair -v -keystore $keyStore -alias $Alias -storetype JKS -keyalg RSA -keysize 4096 -validity 10000
     if ($LASTEXITCODE -ne 0 -or -not (Test-Path $keyStore)) {
         throw "keytool failed while creating the $AppName key."
     }
