@@ -27,7 +27,7 @@ export default function WhackEngine({ game, roundId, onProgress, onComplete, onR
       const s = score + 1;
       setScore(s);
       setTimeout(() => {
-        if (idx + 1 >= game.items.length) onFinish({ score: s, total: game.items.length });
+        if (idx + 1 >= game.items.length) onComplete({ score: s, total: game.items.length });
         else {
           setIdx(idx + 1);
           setBad([]);
@@ -42,7 +42,7 @@ export default function WhackEngine({ game, roundId, onProgress, onComplete, onR
       setLives(l);
       if (l <= 0) {
         setLocked(true);
-        setTimeout(() => onFinish({ score, total: game.items.length }), 900);
+        setTimeout(() => onComplete({ score, total: game.items.length }), 900);
       }
     }
   }
