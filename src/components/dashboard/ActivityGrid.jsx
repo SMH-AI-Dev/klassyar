@@ -75,7 +75,7 @@ const activityNames = {
   open_the_box: "جعبه شگفتی",
   missing_word: "کلمه گمشده",
   anagram: "حروف درهم",
-  hangman: "دار بازی",
+  hangman: "حدس واژه",
   flip_tiles: "کاشی برگردان",
   image_quiz: "آزمون تصویری",
   labelled_diagram: "برچسب‌گذاری تصویر",
