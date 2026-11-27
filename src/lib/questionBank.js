@@ -12,7 +12,7 @@ const shuffle = (items) => {
   return result;
 };
 
-const randomId = () => \`\${Date.now().toString(36)}-\${Math.random().toString(36).slice(2, 10)}\`;
+const randomId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 const asText = (value) => value == null ? "" : String(value).trim();
 const persian = (value) => String(value).replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]);
 
@@ -29,9 +29,9 @@ function normalizeText(value) {
 }
 
 function stableValue(value) {
-  if (Array.isArray(value)) return \`[\${value.map(stableValue).join(",")}]\`;
+  if (Array.isArray(value)) return `[${value.map(stableValue).join(",")}]`;
   if (value && typeof value === "object") {
-    return \`{\${Object.keys(value).sort().map((key) => \`\${JSON.stringify(key)}:\${stableValue(value[key])}\`).join(",")}}\`;
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableValue(value[key])}`).join(",")}}`;
   }
   return JSON.stringify(value);
 }
@@ -80,15 +80,15 @@ function extractBaseQuestion(item, game, index) {
   let question = asText(item.question ?? item.q ?? item.hint ?? item.text ?? item.label ?? item.scrambled);
 
   if (game?.engine === "sort" && item.label && item.category) {
-    question = \`این مورد را در دستهٔ مناسب قرار بده: «\${asText(item.label)}»\`;
+    question = `این مورد را در دستهٔ مناسب قرار بده: «${asText(item.label)}»`;
     answer = asText(item.category);
   } else if (["match", "memory"].includes(game?.engine) && (item.text || item.label) && item.en) {
     const clue = asText(item.text || item.label);
     const marker = asText(item.emoji);
-    question = \`معادل انگلیسی «\${clue}»\${marker ? \` با نشانهٔ \${marker}\` : ""} کدام است؟\`;
+    question = `معادل انگلیسی «${clue}»${marker ? ` با نشانهٔ ${marker}` : ""} کدام است؟`;
     answer = asText(item.en);
   } else if (game?.engine === "scramble" && item.scrambled && item.answer) {
-    question = \`با مرتب‌کردن حروف «\${asText(item.scrambled)}» و توجه به سرنخ «\${asText(item.hint)}»، کدام واژه ساخته می‌شود؟\`;
+    question = `با مرتب‌کردن حروف «${asText(item.scrambled)}» و توجه به سرنخ «${asText(item.hint)}»، کدام واژه ساخته می‌شود؟`;
     answer = asText(item.answer);
   } else if (game?.engine === "anagram" || game?.engine === "hangman") {
     question = asText(item.q ?? item.question ?? item.hint ?? item.text);
@@ -106,7 +106,7 @@ function extractBaseQuestion(item, game, index) {
   if (!question || !answer) return null;
 
   return {
-    id: asText(item.id) || \`\${game?.id || "game"}-\${index}-\${hashValue(normalizeText(question) + "|" + normalizeText(answer))}\`,
+    id: asText(item.id) || `${game?.id || "game"}-${index}-${hashValue(normalizeText(question) + "|" + normalizeText(answer))}`,
     question,
     answer,
     sourceOptions,
@@ -117,7 +117,7 @@ function extractBaseQuestion(item, game, index) {
 function uniqueBaseQuestions(items, game) {
   const seen = new Set();
   return items.map((item, index) => extractBaseQuestion(item, game, index)).filter(Boolean).filter((item) => {
-    const key = \`\${normalizeText(item.question)}|\${normalizeText(item.answer)}\`;
+    const key = `${normalizeText(item.question)}|${normalizeText(item.answer)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -175,25 +175,25 @@ const PERSIAN_CONTEXTS = [
 ];
 const QUESTION_FORMS = [
   (question) => question,
-  (question) => \`به پرسش زیر پاسخ بده: \${question}\`,
-  (question) => \`پاسخ درست این پرسش کدام است؟ \${question}\`,
-  (question) => \`کدام گزینه پرسش زیر را درست پاسخ می‌دهد؟ \${question}\`,
-  (question) => \`گزینهٔ صحیح را برای این پرسش انتخاب کن: \${question}\`,
-  (question) => \`پاسخ دقیق پرسش زیر را مشخص کن: \${question}\`,
-  (question) => \`برای پرسش زیر بهترین پاسخ را پیدا کن: \${question}\`,
-  (question) => \`کدام پاسخ با پرسش زیر سازگار است؟ \${question}\`,
-  (question) => \`این پرسش را بخوان و پاسخ مناسب را انتخاب کن: \${question}\`,
-  (question) => \`در این مورد کدام پاسخ صحیح است؟ \${question}\`,
-  (question) => \`دانسته‌هایت را به کار ببر و پاسخ بده: \${question}\`,
-  (question) => \`پاسخ مناسب را از میان گزینه‌ها پیدا کن: \${question}\`,
-  (question) => \`کدام پاسخ، مفهوم پرسش را درست بیان می‌کند؟ \${question}\`,
-  (question) => \`برای تکمیل این تمرین، پاسخ درست را انتخاب کن: \${question}\`,
-  (question) => \`به این مورد توجه کن و گزینهٔ درست را برگزین: \${question}\`,
-  (question) => \`پرسش آموزشی: \${question}\`,
-  (question) => \`اکنون پاسخ این پرسش را مشخص کن: \${question}\`,
-  (question) => \`کدام گزینه پاسخ صحیح‌تری برای این پرسش است؟ \${question}\`,
-  (question) => \`پاسخ را با توجه به صورت پرسش انتخاب کن: \${question}\`,
-  (question) => \`این سؤال را بررسی کن: \${question}\`,
+  (question) => `به پرسش زیر پاسخ بده: ${question}`,
+  (question) => `پاسخ درست این پرسش کدام است؟ ${question}`,
+  (question) => `کدام گزینه پرسش زیر را درست پاسخ می‌دهد؟ ${question}`,
+  (question) => `گزینهٔ صحیح را برای این پرسش انتخاب کن: ${question}`,
+  (question) => `پاسخ دقیق پرسش زیر را مشخص کن: ${question}`,
+  (question) => `برای پرسش زیر بهترین پاسخ را پیدا کن: ${question}`,
+  (question) => `کدام پاسخ با پرسش زیر سازگار است؟ ${question}`,
+  (question) => `این پرسش را بخوان و پاسخ مناسب را انتخاب کن: ${question}`,
+  (question) => `در این مورد کدام پاسخ صحیح است؟ ${question}`,
+  (question) => `دانسته‌هایت را به کار ببر و پاسخ بده: ${question}`,
+  (question) => `پاسخ مناسب را از میان گزینه‌ها پیدا کن: ${question}`,
+  (question) => `کدام پاسخ، مفهوم پرسش را درست بیان می‌کند؟ ${question}`,
+  (question) => `برای تکمیل این تمرین، پاسخ درست را انتخاب کن: ${question}`,
+  (question) => `به این مورد توجه کن و گزینهٔ درست را برگزین: ${question}`,
+  (question) => `پرسش آموزشی: ${question}`,
+  (question) => `اکنون پاسخ این پرسش را مشخص کن: ${question}`,
+  (question) => `کدام گزینه پاسخ صحیح‌تری برای این پرسش است؟ ${question}`,
+  (question) => `پاسخ را با توجه به صورت پرسش انتخاب کن: ${question}`,
+  (question) => `این سؤال را بررسی کن: ${question}`,
 ];
 
 function makeUniqueQuestionBank(baseQuestions, game) {
@@ -216,14 +216,14 @@ function makeUniqueQuestionBank(baseQuestions, game) {
   initial.forEach(add);
 
   if (unique.length < MINIMUM_BANK_SIZE && baseQuestions.length) {
-    for (let round = 0; unique.length < MINIMUM_BANK_SIZE && round < 20; round += 1) {
+    for (let round = 0; unique.length < MINIMUM_BANK_SIZE && round < MINIMUM_BANK_SIZE; round += 1) {
       for (let index = 0; index < baseQuestions.length && unique.length < MINIMUM_BANK_SIZE; index += 1) {
         const base = baseQuestions[index];
         const formIndex = Math.floor(round / PERSIAN_CONTEXTS.length) % QUESTION_FORMS.length;
         const contextIndex = round % PERSIAN_CONTEXTS.length;
-        const question = \`\${PERSIAN_CONTEXTS[contextIndex]} شمارهٔ \${persian(index + 1)}: \${QUESTION_FORMS[formIndex](base.question)}\`;
+        const question = `${PERSIAN_CONTEXTS[contextIndex]} شمارهٔ ${persian(index + 1)}: ${QUESTION_FORMS[formIndex](base.question)}`;
         const variant = {
-          id: \`\${base.id}-variant-\${round}\`,
+          id: `${base.id}-variant-${round}`,
           question,
           options: buildFourOptions(base, answerPool, game),
           correctAnswer: base.answer,
@@ -274,7 +274,7 @@ function questionKey(question) {
 function storageKey(userId, gameId) {
   const scope = encodeURIComponent(asText(userId) || "guest");
   const game = encodeURIComponent(asText(gameId));
-  return \`\${ROUND_PREFIX}\${scope}:\${game}\`;
+  return `${ROUND_PREFIX}${scope}:${game}`;
 }
 
 function readSnapshot(key) {
