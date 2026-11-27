@@ -27,3 +27,5 @@ jobs:
         run: node src/lib/auditGameCatalog.js
       - name: Verify assignment snapshot delivery and attempt limits
         run: node src/lib/auditAssignmentFlow.js
+      - name: Verify compatible activity template conversions
+        run: node src/lib/auditActivityConversion.js
