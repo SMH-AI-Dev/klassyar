@@ -30,6 +30,8 @@ jobs:
         run: npm run build:android
       - name: Sync Capacitor
         run: npx cap sync android
+      - name: Prepare optional Cordova Gradle include
+        run: node scripts/ensure-android-cordova-gradle.mjs
       - name: Validate Android signing secrets
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.KLASSYAR_ANDROID_KEYSTORE_BASE64 }}
