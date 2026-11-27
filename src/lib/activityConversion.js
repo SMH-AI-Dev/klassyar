@@ -120,10 +120,11 @@ export function getCompatibleTemplates(activity) {
   const pairs = getPairs(activity);
   if (pairs.length < 2) return [];
   const options = [];
+  const uniqueAnswers = new Set(pairs.map((pair) => pair.right)).size;
   if (activity.type !== "flashcard") options.push({ type: "flashcard", label: TEMPLATE_LABELS.flashcard });
   if (activity.type !== "matching") options.push({ type: "matching", label: TEMPLATE_LABELS.matching });
-  if (pairs.length >= 4 && activity.type !== "quiz") options.push({ type: "quiz", label: TEMPLATE_LABELS.quiz });
-  if (pairs.length >= 4 && activity.type !== "gameshow_quiz") options.push({ type: "gameshow_quiz", label: TEMPLATE_LABELS.gameshow_quiz });
+  if (pairs.length >= 4 && uniqueAnswers >= 4 && activity.type !== "quiz") options.push({ type: "quiz", label: TEMPLATE_LABELS.quiz });
+  if (pairs.length >= 4 && uniqueAnswers >= 4 && activity.type !== "gameshow_quiz") options.push({ type: "gameshow_quiz", label: TEMPLATE_LABELS.gameshow_quiz });
   if (activity.type !== "type") options.push({ type: "type", label: TEMPLATE_LABELS.type });
   return options;
 }
