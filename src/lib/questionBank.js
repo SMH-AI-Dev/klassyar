@@ -355,7 +355,190 @@ function normalizeQuestion(question) {
   };
 }
 
+
+const CONTENT_FIELD_BY_ENGINE = {
+  quiz: "questions",
+  match: "cards",
+  memory: "cards",
+  sort: "items",
+  scramble: "words",
+  fillblank: "questions",
+  type: "questions",
+  typing: "items",
+  anagram: "items",
+  hangman: "items",
+  wheel: "items",
+  whack: "items",
+  balloons: "items",
+  truefalse: "items",
+  wordsearch: "items",
+  openbox: "items",
+};
+
+function contentField(game) {
+  return CONTENT_FIELD_BY_ENGINE[game?.engine] ||
+    ["questionBank", "questions", "words", "cards", "items"].find((field) => Array.isArray(game?.[field])) ||
+    "items";
+}
+
+function canonicalContent(value) {
+  if (typeof value === "string") return normalizeText(value);
+  if (Array.isArray(value)) return value.map(canonicalContent);
+  if (value && typeof value === "object") {
+    return Object.keys(value).filter((key) => key !== "id" && key !== "createdAt" && key !== "updatedAt")
+      .sort().reduce((result, key) => {
+        result[key] = canonicalContent(value[key]);
+        return result;
+      }, {});
+  }
+  return value;
+}
+
+function contentItemKey(item, engine) {
+  if (engine === "quiz") return questionKey(item);
+  return stableValue(canonicalContent(item));
+}
+
+function uniqueContentItems(items, engine) {
+  const seen = new Set();
+  return (Array.isArray(items) ? items : []).filter((item) => {
+    if (!item || typeof item !== "object") return false;
+    const key = contentItemKey(item, engine);
+    if (!key || key === "{}" || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/** Returns the original content records for a game without changing its interaction model. */
+export function getGameContentBank(game) {
+  if (!game) return [];
+  if (game.engine === "quiz") return getQuestionBank(game);
+  const field = contentField(game);
+  const source = Array.isArray(game[field]) ? game[field] : sourceItems(game);
+  return uniqueContentItems(source, game.engine);
+}
+
+function gameRoundSize(game, bankLength) {
+  if (!bankLength) return 0;
+  if (Number.isInteger(game?.roundSize) && game.roundSize > 0) return Math.min(game.roundSize, bankLength);
+  if (game?.engine === "wordsearch") return Math.min(6, bankLength);
+  if (game?.engine === "openbox") return Math.min(9, bankLength);
+  if (["match", "memory", "sort"].includes(game?.engine)) return Math.min(8, bankLength);
+  return Math.min(7, bankLength);
+}
+
+/**
+ * Selects a randomized round from the native game bank and keeps the original
+ * engine and record schema intact. Consumption is isolated by account and game.
+ */
+export function createGameRound(game, reason = "open", userId = "guest") {
+  const engine = game?.engine || "quiz";
+  const field = contentField(game);
+  const bank = getGameContentBank(game);
+  const targetCount = gameRoundSize(game, bank.length);
+  const fingerprint = hashValue(bank.map((item) => contentItemKey(item, engine)).join("||"));
+  const key = storageKey(userId, game.id);
+  const previous = readSnapshot(key);
+  let cycleNumber = previous?.bankFingerprint === fingerprint ? (previous.cycleNumber || 1) : 1;
+  let roundNumber = previous?.bankFingerprint === fingerprint ? (previous.roundNumber || 0) : 0;
+  let usedQuestionIds = previous?.bankFingerprint === fingerprint && Array.isArray(previous.usedQuestionIds)
+    ? previous.usedQuestionIds
+    : [];
+
+  let remaining = bank.filter((item) => !usedQuestionIds.includes(hashValue(contentItemKey(item, engine))));
+  if (!remaining.length && bank.length) {
+    cycleNumber += 1;
+    usedQuestionIds = [];
+    remaining = [...bank];
+  }
+
+  const selected = shuffle(remaining).slice(0, targetCount);
+  const selectedIds = selected.map((item) => hashValue(contentItemKey(item, engine)));
+  let roundGame = { ...game, [field]: selected };
+  if (engine === "quiz") {
+    roundGame = { ...game, engine: "quiz", questions: selected.map(normalizeQuestion) };
+  }
+
+  roundNumber += 1;
+  const snapshot = {
+    id: randomId(),
+    gameId: game.id,
+    userId: asText(userId) || "guest",
+    reason,
+    createdAt: new Date().toISOString(),
+    engine,
+    contentField: field,
+    questionCount: bank.length,
+    targetQuestionCount: targetCount,
+    actualQuestionCount: selected.length,
+    roundNumber,
+    cycleNumber,
+    bankFingerprint: fingerprint,
+    usedQuestionIds: [...usedQuestionIds, ...selectedIds],
+    game: roundGame,
+    progress: { index: 0, answers: [] },
+  };
+  writeSnapshot(key, snapshot);
+  return snapshot;
+}
+
 export function createQuestionRound(game, reason = "open", userId = "guest") {
+  return createGameRound(game, reason, userId);
+}
+
+/* Legacy implementation retained in git history; native game rounds use createGameRound. */
+/*
+
+  const bank = getQuestionBank(game);
+  const targetCount = roundSize(game, bank.length);
+  const fingerprint = hashValue(bank.map((question) => `${questionKey(question)}|${normalizeText(question.options?.[question.correctIndex])}`).join("||"));
+  const key = storageKey(userId, game.id);
+  const previous = readSnapshot(key);
+  let cycleNumber = previous?.bankFingerprint === fingerprint ? (previous.cycleNumber || 1) : 1;
+  let roundNumber = previous?.bankFingerprint === fingerprint ? (previous.roundNumber || 0) : 0;
+  let usedQuestionIds = previous?.bankFingerprint === fingerprint && Array.isArray(previous.usedQuestionIds)
+    ? previous.usedQuestionIds
+    : [];
+
+  let remaining = bank.filter((question) => !usedQuestionIds.includes(questionId(question)));
+  if (!remaining.length && bank.length) {
+    cycleNumber += 1;
+    usedQuestionIds = [];
+    remaining = [...bank];
+  }
+
+  const selected = shuffle(remaining).slice(0, targetCount);
+  const selectedIds = selected.map(questionId);
+  const randomizedGame = {
+    ...game,
+    engine: "quiz",
+    questions: selected.map(normalizeQuestion),
+  };
+  roundNumber += 1;
+
+  const snapshot = {
+    id: randomId(),
+    gameId: game.id,
+    userId: asText(userId) || "guest",
+    reason,
+    createdAt: new Date().toISOString(),
+    questionCount: bank.length,
+    targetQuestionCount: targetCount,
+    actualQuestionCount: selected.length,
+    roundNumber,
+    cycleNumber,
+    bankFingerprint: fingerprint,
+    usedQuestionIds: [...usedQuestionIds, ...selectedIds],
+    game: randomizedGame,
+    progress: { index: 0, answers: [] },
+  };
+  writeSnapshot(key, snapshot);
+  return snapshot;
+}
+
+*/
+
   const bank = getQuestionBank(game);
   const targetCount = roundSize(game, bank.length);
   const fingerprint = hashValue(bank.map((question) => `${questionKey(question)}|${normalizeText(question.options?.[question.correctIndex])}`).join("||"));
