@@ -1,3 +1,4 @@
+import { getFallbackContentPool } from "./gameContentPools.js";
 /** Account-scoped, deduplicated multiple-choice question banks and cycle-safe rounds. */
 const ROUND_PREFIX = "klassyar_question_cycle:v2:";
 export const MINIMUM_BANK_SIZE = 400;
@@ -385,7 +386,7 @@ function canonicalContent(value) {
   if (typeof value === "string") return normalizeText(value);
   if (Array.isArray(value)) return value.map(canonicalContent);
   if (value && typeof value === "object") {
-    return Object.keys(value).filter((key) => key !== "id" && key !== "createdAt" && key !== "updatedAt")
+    return Object.keys(value).filter((key) => key !== "id" && key !== "createdAt" && key !== "updatedAt" && key !== "sourceGameId")
       .sort().reduce((result, key) => {
         result[key] = canonicalContent(value[key]);
         return result;
@@ -416,7 +417,10 @@ export function getGameContentBank(game) {
   if (game.engine === "quiz") return getQuestionBank(game);
   const field = contentField(game);
   const source = Array.isArray(game[field]) ? game[field] : sourceItems(game);
-  return uniqueContentItems(source, game.engine);
+  const primary = uniqueContentItems(source, game.engine);
+  if (primary.length >= MINIMUM_BANK_SIZE) return primary;
+  const fallback = getFallbackContentPool(game);
+  return uniqueContentItems([...primary, ...fallback], game.engine);
 }
 
 function gameRoundSize(game, bankLength) {
