@@ -142,7 +142,7 @@ export default function ActivityGrid({ activities }) {
         format: "klassyar-activity",
         schemaVersion: 1,
         exportedAt: new Date().toISOString(),
-        license: activity.license || "teacher-owned-or-authorized",
+        license: activity.license || "unspecified",
         attribution: activity.attribution || null,
         activity,
       };
